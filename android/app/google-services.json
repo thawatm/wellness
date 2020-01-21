@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "157445542741",
+    "firebase_url": "https://wellness-296bf.firebaseio.com",
+    "project_id": "wellness-296bf",
+    "storage_bucket": "wellness-296bf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:157445542741:android:ae37573bf4540603a895dc",
+        "android_client_info": {
+          "package_name": "com.wellnesscenter.welladultclinic"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "157445542741-ns2c3t2861kal6k62p08fr8oioq8a6th.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wellnesscenter.welladultclinic",
+            "certificate_hash": "e7c8b8c461ee8c12d2aa8b7590a075b6f0ab7dbc"
+          }
+        },
+        {
+          "client_id": "157445542741-a7vms2di593b8v603pkmcs2k98tmsgdu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDpfe7QoYUmrw0AFaPXa6_ryifIcwhMbfY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "157445542741-a7vms2di593b8v603pkmcs2k98tmsgdu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
