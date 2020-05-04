@@ -20,7 +20,7 @@ class MonitorPage extends StatelessWidget {
             children: <Widget>[
               GridTile(
                 child: InkResponse(
-                  onTap: () => Navigator.pushNamed(context, '/health'),
+                  onTap: () => Navigator.pushNamed(context, '/pressure'),
                   child: Card(
                     color: Colors.blueAccent,
                     child: Center(

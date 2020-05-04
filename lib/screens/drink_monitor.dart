@@ -205,7 +205,7 @@ class _DrinkMonitorPageState extends State<DrinkMonitorPage> {
       title: Text(socialDate(DateTime(t.year, t.month, t.day))),
       leading: Icon(
         Icons.date_range,
-        color: Colors.blue,
+        color: Colors.blueAccent,
       ),
       onTap: () {
         DatePicker.showDateTimePicker(
@@ -257,12 +257,12 @@ class _DrinkMonitorPageState extends State<DrinkMonitorPage> {
                       child: Icon(
                         Icons.battery_full,
                         size: 80,
-                        color: Colors.blue,
+                        color: Colors.blueAccent,
                       ),
                     ),
                     Text(
                       '+200ml',
-                      style: TextStyle(fontSize: 12, color: Colors.blue),
+                      style: TextStyle(fontSize: 12, color: Colors.blueAccent),
                     )
                   ],
                 ),
@@ -283,10 +283,10 @@ class _DrinkMonitorPageState extends State<DrinkMonitorPage> {
     return Column(children: <Widget>[
       Divider(height: 2.0),
       ListTile(
-        leading: Icon(Icons.access_time, color: Colors.blue),
+        leading: Icon(Icons.access_time, color: Colors.blueAccent),
         title: Text(record.drinkTime, style: TextStyle(color: Colors.black54)),
         trailing: InkWell(
-          child: Icon(Icons.chevron_right, color: Colors.blue),
+          child: Icon(Icons.chevron_right, color: Colors.blueAccent),
           onTap: () {
             // final ConfirmAction action = await confirmDialog(context, record);
             // if (action.toString() == 'ConfirmAction.DELETE') {
@@ -333,6 +333,8 @@ class _DrinkMonitorPageState extends State<DrinkMonitorPage> {
         height: 72,
         child: CupertinoSegmentedControl<int>(
           children: chartPeriod,
+          selectedColor: Colors.blueAccent,
+          borderColor: Colors.blueAccent,
           onValueChanged: (int newValue) {
             setState(() {
               chartDays = newValue;

@@ -14,6 +14,7 @@ class HealthMonitor {
   double rightLegFat;
   double leftLegFat;
   double trunkFat;
+  double hba1c;
   int bodyAge;
   int glucose;
   int cholesterol;
@@ -49,6 +50,7 @@ class HealthMonitor {
         triglycerides = snapshot.data["triglycerides"],
         creatinine = snapshot.data["creatinine"],
         eGFR = snapshot.data["eGFR"],
+        hba1c = snapshot.data["hba1c"],
         uricAcid = snapshot.data["uricAcid"];
 
   String toStringData(String collection) {

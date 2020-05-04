@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:wellness/logic/constant.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -41,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
           height: height,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.blueAccent.shade100, Colors.blueAccent.shade700],
+              colors: [appBarColor1, appBarColor2],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),

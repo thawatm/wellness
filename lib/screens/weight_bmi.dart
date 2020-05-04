@@ -173,6 +173,8 @@ class _WeightPageState extends State<WeightPage> {
           // width: 500.0,
           child: CupertinoSegmentedControl<int>(
             children: chartPeriod,
+            selectedColor: Colors.blueAccent,
+            borderColor: Colors.blueAccent,
             onValueChanged: (int newValue) {
               setState(() {
                 chartDays = newValue;

@@ -1,61 +1,75 @@
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:wellness/logic/constant.dart';
+import 'package:wellness/fitness_app/fitness_app_theme.dart';
 import 'package:wellness/models/state_model.dart';
 import 'package:wellness/models/userdata.dart';
-import 'package:wellness/widgets/image_source.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:wellness/screens/user_profile.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:rounded_modal/rounded_modal.dart';
+import 'package:wellness/widgets/appbar_ui.dart';
 
 class ProfilePage extends StatefulWidget {
+  const ProfilePage({Key key, this.animationController}) : super(key: key);
+  final AnimationController animationController;
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  Animation<double> topBarAnimation;
+  final ScrollController scrollController = ScrollController();
+  double topBarOpacity = 0.0;
+
   final FirebaseStorage storage =
       FirebaseStorage(storageBucket: 'gs://wellness-296bf.appspot.com');
   UserProfile profileData;
   FirebaseUser currentUser;
   ImageProvider profileImage;
-  bool _isTempImage = false;
   File tempImage;
 
   @override
   void initState() {
+    topBarAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(
+            parent: widget.animationController,
+            curve: Interval(0, 0.5, curve: Curves.fastOutSlowIn)));
+
+    scrollController.addListener(() {
+      if (scrollController.offset >= 24) {
+        if (topBarOpacity != 1.0) {
+          setState(() {
+            topBarOpacity = 1.0;
+          });
+        }
+      } else if (scrollController.offset <= 24 &&
+          scrollController.offset >= 0) {
+        if (topBarOpacity != scrollController.offset / 24) {
+          setState(() {
+            topBarOpacity = scrollController.offset / 24;
+          });
+        }
+      } else if (scrollController.offset <= 0) {
+        if (topBarOpacity != 0.0) {
+          setState(() {
+            topBarOpacity = 0.0;
+          });
+        }
+      }
+    });
     super.initState();
     currentUser = ScopedModel.of<StateModel>(context).currentUser;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
-      body: StreamBuilder<DocumentSnapshot>(
-          stream: Firestore.instance
-              .collection('users')
-              .document(currentUser.uid)
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) return LinearProgressIndicator();
-            profileData = UserProfile.fromSnapshot(snapshot.data);
-
-            if (profileData.pictureUrl != null) {
-              profileImage = CachedNetworkImageProvider(profileData.pictureUrl);
-            } else {
-              profileImage = AssetImage('assets/images/user.png');
-            }
-
-            return profileData != null
-                ? buildBody(context)
-                : LinearProgressIndicator();
-          }),
+    return Container(
+      color: FitnessAppTheme.background,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: buildBody(context),
+      ),
     );
   }
 
@@ -67,120 +81,16 @@ class _ProfilePageState extends State<ProfilePage> {
       height: height,
       child: Stack(
         children: <Widget>[
-          Container(
-            width: width,
-            height: height,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.blueAccent.shade100,
-                  Colors.blueAccent.shade700
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-          ),
-          buildHeader(width, height),
-          buildHeaderData(height, width),
           buildNotificationPanel(width, height),
-        ],
-      ),
-    );
-  }
-
-  Widget buildHeader(double width, double height) {
-    return Positioned(
-      top: 24,
-      child: Container(
-        width: width,
-        height: height * .30,
-        child: Column(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    "Profile",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  FlatButton(
-                    child: Text(
-                      "Sign Out",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    onPressed: () => _signOut(),
-                  ),
-                ],
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildHeaderData(double height, double width) {
-    return Positioned(
-      top: (height * .30) / 2 - 40,
-      width: width,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          InkWell(
-            child: Container(
-              height: 80,
-              width: 80,
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: new Border.all(color: Colors.grey.shade300, width: 2),
-                  image: DecorationImage(
-                    fit: BoxFit.cover,
-                    image: _isTempImage ? FileImage(tempImage) : profileImage,
-                  )),
-            ),
-            onTap: () => showRoundedModalBottomSheet(
-                context: context,
-                builder: (context) => ImageSourceModal(
-                      onTabCamera: () => getCameraImage(),
-                      onTabGallery: () => getGalleryImage(),
-                    )),
+          AppBarUI(
+            animationController: widget.animationController,
+            topBarAnimation: topBarAnimation,
+            topBarOpacity: topBarOpacity,
+            title: 'การตั้งค่า',
           ),
-          SizedBox(height: 5),
-          InkWell(
-            onTap: () => Navigator.pushNamed(context, '/user'),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  "${profileData.firstName ?? ''} " +
-                      "${profileData.lastName ?? ''}",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18),
-                ),
-              ],
-            ),
-          ),
-          InkWell(
-            onTap: () => Navigator.pushNamed(context, '/user'),
-            child: Text(
-              "เลขสมาชิก ${profileData.memberId ?? '-'}",
-              style: TextStyle(color: Colors.white70, fontSize: 16),
-            ),
-          ),
+          SizedBox(
+            height: MediaQuery.of(context).padding.bottom,
+          )
         ],
       ),
     );
@@ -190,15 +100,25 @@ class _ProfilePageState extends State<ProfilePage> {
     return Positioned(
       width: width,
       height: height * .70 - 80,
-      top: height * 0.30 + 20,
+      top: height * 0.30 - 100,
       child: Padding(
         padding: const EdgeInsets.only(right: 16, left: 16, top: 0, bottom: 0),
         child: SingleChildScrollView(
-          child: Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: FitnessAppTheme.white,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(8.0),
+                  bottomLeft: Radius.circular(8.0),
+                  bottomRight: Radius.circular(8.0),
+                  topRight: Radius.circular(8.0)),
+              boxShadow: <BoxShadow>[
+                BoxShadow(
+                    color: FitnessAppTheme.grey.withOpacity(0.2),
+                    offset: Offset(1.1, 1.1),
+                    blurRadius: 10.0),
+              ],
             ),
-            elevation: 1,
             child: Padding(
               padding: const EdgeInsets.only(top: 15, bottom: 15),
               child: Column(
@@ -212,34 +132,66 @@ class _ProfilePageState extends State<ProfilePage> {
                             icon: Icons.person,
                             title: 'ข้อมูลส่วนตัว',
                             subtitle: 'รายละเอียดส่วนตัว',
-                            routeName: '/user'),
-                        Divider(
-                          height: 3,
-                          color: Colors.black87,
+                            routeName: '/user',
+                            startColor: Color(0xFFFA7D82),
+                            endColor: Color(0xFFFFB295)),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 24, right: 24, top: 8, bottom: 8),
+                          child: Container(
+                            height: 2,
+                            decoration: BoxDecoration(
+                              color: FitnessAppTheme.background,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(4.0)),
+                            ),
+                          ),
                         ),
                         buildNotificationItem(
-                            icon: Icons.local_hospital,
-                            title: 'ข้อมูลทางการแพทย์',
-                            subtitle: 'ประวัติแพ้ยาและอาหาร',
-                            routeName: '/medical'),
-                        Divider(
-                          height: 3,
-                          color: Colors.black87,
+                            icon: Icons.group_add,
+                            title: 'กลุ่ม',
+                            subtitle: 'สำหรับติดตามผลสมาชิกในกลุ่ม',
+                            routeName: '/group',
+                            startColor: Color(0xFF738AE6),
+                            endColor: Color(0xFF5C5EDD)),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 24, right: 24, top: 8, bottom: 8),
+                          child: Container(
+                            height: 2,
+                            decoration: BoxDecoration(
+                              color: FitnessAppTheme.background,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(4.0)),
+                            ),
+                          ),
                         ),
-                        // buildNotificationItem(
-                        //     icon: Icons.chat,
-                        //     title: 'แบบสอบถาม',
-                        //     subtitle: 'Smart Body',
-                        //     routeName: '/questionnaire'),
-                        // Divider(
-                        //   height: 3,
-                        //   color: Colors.black87,
-                        // ),
                         buildNotificationItem(
-                            icon: Icons.phone_in_talk,
+                            icon: Icons.email,
                             title: 'ติดต่อเรา',
-                            subtitle: 'หมายเลขฉุกเฉิน',
-                            routeName: '/contact'),
+                            subtitle: 'ผู้พัฒนาโปรแกรม',
+                            routeName: '/contact',
+                            startColor: Color(0xFFFE95B6),
+                            endColor: Color(0xFFFF5287)),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 24, right: 24, top: 8, bottom: 8),
+                          child: Container(
+                            height: 2,
+                            decoration: BoxDecoration(
+                              color: FitnessAppTheme.background,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(4.0)),
+                            ),
+                          ),
+                        ),
+                        buildNotificationItem(
+                            icon: Icons.exit_to_app,
+                            title: 'ออกจากระบบ',
+                            subtitle: '',
+                            routeName: '/logout',
+                            startColor: Color(0xFF6F72CA),
+                            endColor: Color(0xFF1E1466)),
                       ],
                     ),
                   ),
@@ -252,32 +204,13 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget buildBodyCardTitle({String title}) {
-    return Container(
-      padding: const EdgeInsets.all(15),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Text(
-            title,
-            style: TextStyle(
-              color: Color(0xff06866C),
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Text(
-            "View All",
-            style: TextStyle(color: Colors.grey),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget buildNotificationItem(
-      {IconData icon, String title, String subtitle, String routeName}) {
+      {IconData icon,
+      String title,
+      String subtitle,
+      String routeName,
+      Color startColor,
+      Color endColor}) {
     return Padding(
       padding: const EdgeInsets.only(left: 15, top: 10, bottom: 10),
       child: ListTile(
@@ -288,7 +221,7 @@ class _ProfilePageState extends State<ProfilePage> {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             gradient: LinearGradient(
-              colors: [appBarColor1, appBarColor2],
+              colors: [startColor, endColor],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -304,7 +237,7 @@ class _ProfilePageState extends State<ProfilePage> {
           style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: Colors.blue.shade700),
+              color: FitnessAppTheme.lightText),
         ),
         subtitle: Text(
           subtitle,
@@ -313,19 +246,23 @@ class _ProfilePageState extends State<ProfilePage> {
             fontSize: 14,
           ),
         ),
-        trailing: Container(
-          height: 40,
-          width: 70,
-          child: Padding(
-              padding: const EdgeInsets.only(left: 5),
-              child: Icon(
-                Icons.chevron_right,
-                color: Colors.grey[400],
-                size: 30,
-              )),
-        ),
         onTap: () {
-          Navigator.pushNamed(context, routeName);
+          // Navigator.pushNamed(context, routeName);
+          switch (routeName) {
+            case '/user':
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => UserProfilePage(
+                            animationController: widget.animationController,
+                          )));
+              break;
+            case '/logout':
+              _signOut();
+              break;
+            default:
+              Navigator.pushNamed(context, routeName);
+          }
         },
       ),
     );
@@ -333,56 +270,5 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void _signOut() async {
     await FirebaseAuth.instance.signOut();
-  }
-
-  Future getCameraImage() async {
-    File image = await ImagePicker.pickImage(
-      source: ImageSource.camera,
-      maxWidth: 200.0,
-    );
-    if (image != null) {
-      setState(() {
-        tempImage = image;
-        _isTempImage = true;
-      });
-      uploadPictureProfile(image);
-    }
-  }
-
-  Future getGalleryImage() async {
-    File image = await ImagePicker.pickImage(
-      source: ImageSource.gallery,
-      maxWidth: 200.0,
-    );
-    if (image != null) {
-      setState(() {
-        tempImage = image;
-        _isTempImage = true;
-      });
-      uploadPictureProfile(image);
-    }
-  }
-
-  uploadPictureProfile(File image) {
-    Map updateData = Map<String, dynamic>();
-
-    final uploadPath = '/profile_images/' + currentUser.uid + '.jpg';
-    final StorageReference ref = storage.ref().child(uploadPath);
-    final StorageUploadTask uploadTask = ref.putFile(image);
-
-    uploadTask.onComplete
-        .then((snapshot) => snapshot.ref.getDownloadURL())
-        .then((url) {
-      updateData['pictureUrl'] = url;
-
-      DocumentReference ref =
-          Firestore.instance.collection("users").document(currentUser.uid);
-
-      Firestore.instance.runTransaction((transaction) async {
-        await transaction.update(ref, updateData);
-
-        _isTempImage = false;
-      });
-    });
   }
 }

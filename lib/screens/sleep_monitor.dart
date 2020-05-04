@@ -125,6 +125,8 @@ class _SleepMonitorPageState extends State<SleepMonitorPage> {
         height: 72,
         child: CupertinoSegmentedControl<int>(
           children: chartPeriod,
+          selectedColor: Colors.blueAccent,
+          borderColor: Colors.blueAccent,
           onValueChanged: (int newValue) {
             setState(() {
               chartDays = newValue;

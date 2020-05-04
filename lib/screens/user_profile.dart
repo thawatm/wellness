@@ -1,41 +1,100 @@
+import 'dart:io';
+
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:gradient_app_bar/gradient_app_bar.dart';
-import 'package:wellness/logic/constant.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:wellness/fitness_app/fitness_app_theme.dart';
 import 'package:wellness/models/state_model.dart';
+import 'package:wellness/models/userdata.dart';
 import 'package:wellness/widgets/edit_profile.dart';
 import 'package:intl/intl.dart';
 import 'package:rounded_modal/rounded_modal.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:wellness/widgets/appbar_ui.dart';
+import 'package:wellness/widgets/image_source.dart';
 
 class UserProfilePage extends StatefulWidget {
+  const UserProfilePage({Key key, this.animationController}) : super(key: key);
+  final AnimationController animationController;
   @override
   _UserProfilePageState createState() => _UserProfilePageState();
 }
 
 class _UserProfilePageState extends State<UserProfilePage> {
+  Animation<double> topBarAnimation;
+  final ScrollController scrollController = ScrollController();
+  double topBarOpacity = 0.0;
+
   // UserProfile profileData;
   TextEditingController _numberController;
   FirebaseUser currentUser;
 
+  final FirebaseStorage storage =
+      FirebaseStorage(storageBucket: 'gs://wellness-296bf.appspot.com');
+  UserProfile profileData;
+  ImageProvider profileImage;
+  bool _isTempImage = false;
+  File tempImage;
+
   @override
   void initState() {
+    topBarAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(
+            parent: widget.animationController,
+            curve: Interval(0, 0.5, curve: Curves.fastOutSlowIn)));
+
+    scrollController.addListener(() {
+      if (scrollController.offset >= 24) {
+        if (topBarOpacity != 1.0) {
+          setState(() {
+            topBarOpacity = 1.0;
+          });
+        }
+      } else if (scrollController.offset <= 24 &&
+          scrollController.offset >= 0) {
+        if (topBarOpacity != scrollController.offset / 24) {
+          setState(() {
+            topBarOpacity = scrollController.offset / 24;
+          });
+        }
+      } else if (scrollController.offset <= 0) {
+        if (topBarOpacity != 0.0) {
+          setState(() {
+            topBarOpacity = 0.0;
+          });
+        }
+      }
+    });
     super.initState();
     currentUser = ScopedModel.of<StateModel>(context).currentUser;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: GradientAppBar(
-        title: Text("ข้อมูลส่วนตัว"),
-        gradient: LinearGradient(colors: [appBarColor1, appBarColor2]),
+    return Container(
+      color: FitnessAppTheme.background,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Stack(children: <Widget>[
+          _buildBody(context),
+          AppBarUI(
+            animationController: widget.animationController,
+            topBarAnimation: topBarAnimation,
+            topBarOpacity: topBarOpacity,
+            title: 'ผู้ใช้งาน',
+            isPop: true,
+          ),
+          SizedBox(
+            height: MediaQuery.of(context).padding.bottom,
+          )
+        ]),
       ),
-      body: _buildBody(context),
     );
   }
 
@@ -47,17 +106,27 @@ class _UserProfilePageState extends State<UserProfilePage> {
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
-        // profileData = UserProfile.fromSnapshot(snapshot.data);
+        profileData = UserProfile.fromSnapshot(snapshot.data);
 
-        return _buildList(context, snapshot.data);
+        if (profileData.pictureUrl != null) {
+          profileImage = CachedNetworkImageProvider(profileData.pictureUrl);
+        } else {
+          profileImage = AssetImage('assets/images/user.png');
+        }
+
+        return profileData != null
+            ? _buildList(context, snapshot.data)
+            : LinearProgressIndicator();
       },
     );
   }
 
   Widget _buildList(BuildContext context, DocumentSnapshot snapshot) {
     Map<String, dynamic> header = {
+      'profileImage': 'รูปโปร์ไฟล์',
       'firstName': 'ชื่อ',
       'lastName': 'นามสกุล',
+      'memberId': 'เลขที่สมาชิก',
       'phoneNumber': 'มือถือ',
       'height': 'ส่วนสูง (cm)',
       'sex': 'เพศ',
@@ -70,50 +139,79 @@ class _UserProfilePageState extends State<UserProfilePage> {
       'address': 'ที่อยู่',
     };
 
-    return ListView.builder(
-        itemCount: header.length,
-        itemBuilder: (BuildContext context, int index) {
-          String key = header.keys.elementAt(index);
-          String value = "${snapshot.data[key] ?? ''}";
-          String subtitle = '';
+    return Container(
+      decoration: BoxDecoration(
+        color: FitnessAppTheme.white,
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(8.0),
+            bottomLeft: Radius.circular(8.0),
+            bottomRight: Radius.circular(8.0),
+            topRight: Radius.circular(8.0)),
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+              color: FitnessAppTheme.grey.withOpacity(0.2),
+              offset: Offset(1.1, 1.1),
+              blurRadius: 10.0),
+        ],
+      ),
+      child: ListView.builder(
+          controller: scrollController,
+          padding: EdgeInsets.only(
+            top: AppBar().preferredSize.height +
+                MediaQuery.of(context).padding.top +
+                24,
+            bottom: 62 + MediaQuery.of(context).padding.bottom,
+          ),
+          itemCount: header.length,
+          itemBuilder: (BuildContext context, int index) {
+            String key = header.keys.elementAt(index);
+            String value = "${snapshot.data[key] ?? ''}";
+            String subtitle = '';
 
-          if (key == 'birthday' && value != '') {
-            value = DateFormat.yMMMd().format(snapshot.data[key].toDate());
-          }
+            if (key == 'birthday' && value != '') {
+              value = DateFormat.yMMMd().format(snapshot.data[key].toDate());
+            }
 
-          if (key == 'address' && value != '') {
-            subtitle = value;
-            value = '';
-          }
+            if (key == 'address' && value != '') {
+              subtitle = value;
+              value = '';
+            }
 
-          return Column(
-            children: <Widget>[
-              ListTile(
-                  title: Text("${header[key]}",
-                      style: TextStyle(color: Colors.black54)),
-                  trailing: Text(value,
-                      style: TextStyle(
-                          color: Colors.lightBlue.shade700, fontSize: 16)),
-                  subtitle: subtitle != ''
-                      ? Padding(
-                          padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
-                          child: Text(subtitle,
-                              style:
-                                  TextStyle(color: Colors.lightBlue.shade700)))
-                      : null,
-                  onTap: () =>
-                      inputOption(key, header[key], snapshot.data[key])),
-              Divider(
-                height: 2.0,
-              ),
-            ],
-          );
-        });
+            if (key == 'profileImage') {
+              return buildHeaderData();
+            }
+
+            return Column(
+              children: <Widget>[
+                ListTile(
+                    title: Text("${header[key]}",
+                        style: TextStyle(color: Colors.black54)),
+                    trailing: Text(value,
+                        style: TextStyle(
+                            color: Colors.lightBlue.shade700, fontSize: 16)),
+                    subtitle: subtitle != ''
+                        ? Padding(
+                            padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
+                            child: Text(subtitle,
+                                style: TextStyle(
+                                    color: Colors.lightBlue.shade700)))
+                        : null,
+                    onTap: () =>
+                        inputOption(key, header[key], snapshot.data[key])),
+                Divider(
+                  height: 2.0,
+                ),
+              ],
+            );
+          }),
+    );
   }
 
   void inputOption(String key, String title, dynamic value) {
     switch (key) {
       case 'phoneNumber':
+        break;
+      case 'memberId':
         break;
       case 'birthday':
         DatePicker.showDatePicker(
@@ -252,6 +350,91 @@ class _UserProfilePageState extends State<UserProfilePage> {
         Firestore.instance.collection("users").document(currentUser.uid);
     Firestore.instance.runTransaction((transaction) async {
       await transaction.update(ref, updateData);
+    });
+  }
+
+  Widget buildHeaderData() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        InkWell(
+          child: Container(
+            height: 120,
+            width: 120,
+            decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: new Border.all(color: Colors.grey.shade300, width: 2),
+                image: DecorationImage(
+                  fit: BoxFit.cover,
+                  image: _isTempImage ? FileImage(tempImage) : profileImage,
+                )),
+          ),
+          onTap: () => showRoundedModalBottomSheet(
+              context: context,
+              builder: (context) => ImageSourceModal(
+                    onTabCamera: () => getCameraImage(),
+                    onTabGallery: () => getGalleryImage(),
+                  )),
+        ),
+        // SizedBox(height: 10),
+        // Text(
+        //   "เลขที่สมาชิก: ${profileData.memberId ?? '-'}",
+        //   style: TextStyle(color: FitnessAppTheme.lightText, fontSize: 18),
+        // ),
+        SizedBox(height: 20),
+      ],
+    );
+  }
+
+  Future getCameraImage() async {
+    File image = await ImagePicker.pickImage(
+      source: ImageSource.camera,
+      maxWidth: 200.0,
+    );
+    if (image != null) {
+      setState(() {
+        tempImage = image;
+        _isTempImage = true;
+      });
+      uploadPictureProfile(image);
+    }
+  }
+
+  Future getGalleryImage() async {
+    File image = await ImagePicker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 200.0,
+    );
+    if (image != null) {
+      setState(() {
+        tempImage = image;
+        _isTempImage = true;
+      });
+      uploadPictureProfile(image);
+    }
+  }
+
+  uploadPictureProfile(File image) {
+    Map updateData = Map<String, dynamic>();
+
+    final uploadPath = '/profile_images/' + currentUser.uid + '.jpg';
+    final StorageReference ref = storage.ref().child(uploadPath);
+    final StorageUploadTask uploadTask = ref.putFile(image);
+
+    uploadTask.onComplete
+        .then((snapshot) => snapshot.ref.getDownloadURL())
+        .then((url) {
+      updateData['pictureUrl'] = url;
+
+      DocumentReference ref =
+          Firestore.instance.collection("users").document(currentUser.uid);
+
+      Firestore.instance.runTransaction((transaction) async {
+        await transaction.update(ref, updateData);
+
+        _isTempImage = false;
+      });
     });
   }
 }

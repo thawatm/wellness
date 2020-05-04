@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:wellness/screens/blood_tests.dart';
 import 'package:wellness/screens/contact.dart';
 import 'package:wellness/screens/medical_profile.dart';
@@ -8,7 +7,6 @@ import 'package:wellness/screens/newuser.dart';
 import 'package:wellness/screens/user_profile.dart';
 import 'package:wellness/screens/weight_bmi.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 
 import 'package:wellness/models/state_model.dart';
 import 'package:wellness/screens/home.dart';
@@ -41,25 +39,15 @@ class WellnessApp extends StatelessWidget {
         '/home': (context) => HomePage(),
         '/signup': (context) => SignInPage(),
         '/newuser': (context) => NewUserPage(),
-        '/health': (context) => HealthMonitorPage(),
+        '/pressure': (context) => HealthMonitorPage(),
         '/weight': (context) => WeightPage(),
         '/blood': (context) => BloodTestPage(),
         '/food': (context) => FoodMonitorPage(),
         '/sleep': (context) => SleepMonitorPage(),
         '/drink': (context) => DrinkMonitorPage(),
-        '/medical': (context) => MedicalProfilePage(),
+        '/group': (context) => MedicalProfilePage(),
         '/user': (context) => UserProfilePage(),
         '/contact': (context) => ContactPage(),
-        '/questionnaire': (context) => WebviewScaffold(
-              url: questionnaire,
-              appBar: GradientAppBar(
-                title: const Text("Smart Body"),
-                gradient: LinearGradient(
-                    colors: [Color(0xff38bbad), Color(0xff2b7a98)]),
-              ),
-              withLocalStorage: true,
-              hidden: true,
-            ),
       },
     );
   }

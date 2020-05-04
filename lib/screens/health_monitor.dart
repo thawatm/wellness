@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/painting.dart';
+import 'package:wellness/fitness_app/fitness_app_theme.dart';
 import 'package:wellness/logic/constant.dart';
 import 'package:wellness/models/healthdata.dart';
 import 'package:wellness/widgets/chart.dart';
@@ -57,97 +58,102 @@ class _HealthMonitorPageState extends State<HealthMonitorPage> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        key: _scaffoldKey,
-        body: NestedScrollView(
-          controller: _scrollViewController,
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return <Widget>[
-              SliverAppBar(
-                title: Text("ความดันและหัวใจ"),
-                pinned: true,
-                floating: true,
-                forceElevated: innerBoxIsScrolled,
-                flexibleSpace: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        appBarColor1,
-                        appBarColor2,
-                      ],
+    return Container(
+      color: FitnessAppTheme.background,
+      child: DefaultTabController(
+        length: 3,
+        child: Scaffold(
+          key: _scaffoldKey,
+          backgroundColor: Colors.transparent,
+          body: NestedScrollView(
+            controller: _scrollViewController,
+            headerSliverBuilder:
+                (BuildContext context, bool innerBoxIsScrolled) {
+              return <Widget>[
+                SliverAppBar(
+                  title: Text("ความดันและหัวใจ"),
+                  pinned: true,
+                  floating: true,
+                  forceElevated: innerBoxIsScrolled,
+                  flexibleSpace: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          appBarColor1,
+                          appBarColor2,
+                        ],
+                      ),
                     ),
                   ),
+                  bottom: TabBar(
+                    tabs: <Tab>[
+                      Tab(
+                        key: Key('AddTab'),
+                        text: "เพิ่มข้อมูล",
+                        // icon: Icon(Icons.add),
+                      ),
+                      Tab(
+                        key: Key('StatisticsTab'),
+                        text: "รายงาน",
+                        // icon: Icon(Icons.show_chart),
+                      ),
+                      Tab(
+                        key: Key('HistoryTab'),
+                        text: "ข้อมูลย้อนหลัง",
+                        // icon: Icon(Icons.history),
+                      ),
+                    ],
+                  ),
+                  // actions: _buildMenuActions(context),
                 ),
-                bottom: TabBar(
-                  tabs: <Tab>[
-                    Tab(
-                      key: Key('AddTab'),
-                      text: "เพิ่มข้อมูล",
-                      // icon: Icon(Icons.add),
-                    ),
-                    Tab(
-                      key: Key('StatisticsTab'),
-                      text: "รายงาน",
-                      // icon: Icon(Icons.show_chart),
-                    ),
-                    Tab(
-                      key: Key('HistoryTab'),
-                      text: "ข้อมูลย้อนหลัง",
-                      // icon: Icon(Icons.history),
-                    ),
-                  ],
-                ),
-                // actions: _buildMenuActions(context),
-              ),
-            ];
-          },
-          body: StreamBuilder<QuerySnapshot>(
-              stream: Firestore.instance
-                  .collection('monitor')
-                  .document(currentUser.uid)
-                  .collection(collection)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) return LoadingIndicator();
-                healthData = snapshot.data.documents
-                  ..sort((a, b) => b.data['date']
-                      .toDate()
-                      .compareTo(a.data['date'].toDate()));
-                // PRESSURE DATA
-                pressureData = healthData
-                    .map((data) => HealthMonitor.fromSnapshot(data))
-                    .toList()
-                      ..removeWhere(
-                          (v) => today.difference(v.date).inDays > chartDays)
-                      ..removeWhere((v) => v.pressureUpper == null)
-                      ..removeWhere((v) => v.pressureLower == null);
+              ];
+            },
+            body: StreamBuilder<QuerySnapshot>(
+                stream: Firestore.instance
+                    .collection('monitor')
+                    .document(currentUser.uid)
+                    .collection(collection)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) return LoadingIndicator();
+                  healthData = snapshot.data.documents
+                    ..sort((a, b) => b.data['date']
+                        .toDate()
+                        .compareTo(a.data['date'].toDate()));
+                  // PRESSURE DATA
+                  pressureData = healthData
+                      .map((data) => HealthMonitor.fromSnapshot(data))
+                      .toList()
+                        ..removeWhere(
+                            (v) => today.difference(v.date).inDays > chartDays)
+                        ..removeWhere((v) => v.pressureUpper == null)
+                        ..removeWhere((v) => v.pressureLower == null);
 
-                // HR DATA
-                hrData = healthData
-                    .map((data) => HealthMonitor.fromSnapshot(data))
-                    .toList()
-                      ..removeWhere(
-                          (v) => today.difference(v.date).inDays > chartDays)
-                      ..removeWhere((v) => v.hr == null);
+                  // HR DATA
+                  hrData = healthData
+                      .map((data) => HealthMonitor.fromSnapshot(data))
+                      .toList()
+                        ..removeWhere(
+                            (v) => today.difference(v.date).inDays > chartDays)
+                        ..removeWhere((v) => v.hr == null);
 
-                return TabBarView(
-                  children: <Widget>[
-                    DataEntryDialog(),
-                    healthData.isEmpty
-                        ? FirstLoad(title: "เพิ่มข้อมูลใหม่\nแตะที่แทบด้านบน")
-                        : _buildChart(),
-                    healthData.isEmpty
-                        ? FirstLoad(title: "เพิ่มข้อมูลใหม่\nแตะที่แทบด้านบน")
-                        : HistoryList(
-                            snapshot: healthData,
-                            currentUser: currentUser,
-                            collection: collection,
-                          ),
-                  ],
-                );
-              }),
+                  return TabBarView(
+                    children: <Widget>[
+                      DataEntryDialog(),
+                      healthData.isEmpty
+                          ? FirstLoad(title: "เพิ่มข้อมูลใหม่\nแตะที่แทบด้านบน")
+                          : _buildChart(),
+                      healthData.isEmpty
+                          ? FirstLoad(title: "เพิ่มข้อมูลใหม่\nแตะที่แทบด้านบน")
+                          : HistoryList(
+                              snapshot: healthData,
+                              currentUser: currentUser,
+                              collection: collection,
+                            ),
+                    ],
+                  );
+                }),
+          ),
         ),
       ),
     );
@@ -160,6 +166,8 @@ class _HealthMonitorPageState extends State<HealthMonitorPage> {
           // width: 500.0,
           child: CupertinoSegmentedControl<int>(
             children: chartPeriod,
+            selectedColor: Colors.blueAccent,
+            borderColor: Colors.blueAccent,
             onValueChanged: (int newValue) {
               setState(() {
                 chartDays = newValue;

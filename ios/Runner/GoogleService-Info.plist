@@ -3,23 +3,23 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>425804694255-s769co3ol2kubs80ik12snspmlbjmvdn.apps.googleusercontent.com</string>
+	<string>157445542741-dcgqv8qgcb3g0cgvld9ce0h437sqia9o.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.425804694255-s769co3ol2kubs80ik12snspmlbjmvdn</string>
+	<string>com.googleusercontent.apps.157445542741-dcgqv8qgcb3g0cgvld9ce0h437sqia9o</string>
 	<key>ANDROID_CLIENT_ID</key>
-	<string>425804694255-sq8v0us1n0cplekae097gfhbnttids73.apps.googleusercontent.com</string>
+	<string>157445542741-rli57femn0vtjfb9qttd2bl3tldbod81.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyBqP7Uq8pz_3x7YdEafd6JlAoLhsgXSEMY</string>
+	<string>AIzaSyBSMrCcQxNxyjLXgv0boZSv3pWdSYdHVBg</string>
 	<key>GCM_SENDER_ID</key>
-	<string>425804694255</string>
+	<string>157445542741</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.wellnesscenter.welladultclinic</string>
 	<key>PROJECT_ID</key>
-	<string>health-street-app</string>
+	<string>wellness-296bf</string>
 	<key>STORAGE_BUCKET</key>
-	<string>health-street-app.appspot.com</string>
+	<string>wellness-296bf.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,8 +31,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:425804694255:ios:312d388caa0c78d9</string>
+	<string>1:157445542741:ios:d7fcaa612a010935a895dc</string>
 	<key>DATABASE_URL</key>
-	<string>https://health-street-app.firebaseio.com</string>
+	<string>https://wellness-296bf.firebaseio.com</string>
 </dict>
 </plist>

@@ -130,7 +130,7 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
               });
             },
             padding: EdgeInsets.all(12),
-            color: Colors.blueAccent,
+            color: Colors.blueAccent.shade700,
             child: Text('ขอรหัส OTP',
                 style: TextStyle(color: Colors.white, fontSize: 20)),
           ),
@@ -174,7 +174,7 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
                   _signInWithPhoneNumber();
                 });
               },
-              color: Colors.blueAccent,
+              color: Colors.blueAccent.shade700,
               child: Text('ยืนยัน',
                   style: TextStyle(color: Colors.white, fontSize: 20)),
             )),
