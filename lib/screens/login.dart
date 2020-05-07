@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
-import 'package:wellness/logic/constant.dart';
+import 'package:wellness/fitness_app/app_theme.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -42,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
           height: height,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [appBarColor1, appBarColor2],
+              colors: [AppTheme.appBarColor1, AppTheme.appBarColor2],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -90,14 +90,14 @@ class _LoginPageState extends State<LoginPage> {
                 child: RaisedButton.icon(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
-                  icon: Icon(Icons.vpn_key, color: Colors.blue.shade800),
+                  icon: Icon(Icons.vpn_key, color: AppTheme.nearlyDarkBlue),
                   // elevation: 7.0,
                   onPressed: () => Navigator.pushNamed(context, '/signup'),
                   // padding: EdgeInsets.all(12),
                   color: Colors.grey.shade300,
                   label: Text('เข้าสู่ระบบ',
-                      style:
-                          TextStyle(color: Colors.blue.shade800, fontSize: 18)),
+                      style: TextStyle(
+                          color: AppTheme.nearlyDarkBlue, fontSize: 18)),
                 ),
               ),
             ],

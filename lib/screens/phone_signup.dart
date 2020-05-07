@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 
 import 'package:modal_progress_hud/modal_progress_hud.dart';
-import 'package:wellness/logic/constant.dart';
+import 'package:wellness/fitness_app/app_theme.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -21,7 +21,8 @@ class SignInPageState extends State<SignInPage> {
     return Scaffold(
       appBar: GradientAppBar(
         title: Text('Login'),
-        gradient: LinearGradient(colors: [appBarColor1, appBarColor2]),
+        gradient: LinearGradient(
+            colors: [AppTheme.appBarColor1, AppTheme.appBarColor2]),
       ),
       body: Builder(builder: (BuildContext context) {
         return _PhoneSignInSection(Scaffold.of(context));
@@ -130,7 +131,7 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
               });
             },
             padding: EdgeInsets.all(12),
-            color: Colors.blueAccent.shade700,
+            color: AppTheme.buttonColor,
             child: Text('ขอรหัส OTP',
                 style: TextStyle(color: Colors.white, fontSize: 20)),
           ),
@@ -174,7 +175,7 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
                   _signInWithPhoneNumber();
                 });
               },
-              color: Colors.blueAccent.shade700,
+              color: AppTheme.buttonColor,
               child: Text('ยืนยัน',
                   style: TextStyle(color: Colors.white, fontSize: 20)),
             )),

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:wellness/fitness_app/fitness_app_theme.dart';
+import 'package:wellness/fitness_app/app_theme.dart';
 import 'package:wellness/fitness_app/models/meals_list_data.dart';
 import 'package:wellness/main.dart';
 import 'package:flutter/material.dart';
@@ -74,6 +74,14 @@ class _MealsListViewState extends State<MealsListView>
                   endColor: '#1E1466',
                 ))
             .toList();
+
+        if (mealsListData.isEmpty) {
+          mealsListData.add(MealsListData(
+            titleTxt: 'ผัก ผลไม้',
+            startColor: '#738AE6',
+            endColor: '#5C5EDD',
+          ));
+        }
 
         return AnimatedBuilder(
           animation: widget.mainScreenAnimationController,
@@ -185,11 +193,11 @@ class MealsView extends StatelessWidget {
                               mealsListData.titleTxt,
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                fontFamily: FitnessAppTheme.fontName,
+                                fontFamily: AppTheme.fontName,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
                                 letterSpacing: 0.2,
-                                color: FitnessAppTheme.white,
+                                color: AppTheme.white,
                               ),
                             ),
                             // Expanded(
@@ -203,11 +211,11 @@ class MealsView extends StatelessWidget {
                             //         Text(
                             //           mealsListData.meals.join('\n'),
                             //           style: TextStyle(
-                            //             fontFamily: FitnessAppTheme.fontName,
+                            //             fontFamily: AppTheme.fontName,
                             //             fontWeight: FontWeight.w500,
                             //             fontSize: 10,
                             //             letterSpacing: 0.2,
-                            //             color: FitnessAppTheme.white,
+                            //             color: AppTheme.white,
                             //           ),
                             //         ),
                             //       ],
@@ -223,11 +231,11 @@ class MealsView extends StatelessWidget {
                                         mealsListData.serving,
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
-                                          fontFamily: FitnessAppTheme.fontName,
+                                          fontFamily: AppTheme.fontName,
                                           fontWeight: FontWeight.w500,
                                           fontSize: 24,
                                           letterSpacing: 0.2,
-                                          color: FitnessAppTheme.white,
+                                          color: AppTheme.white,
                                         ),
                                       ),
                                       Padding(
@@ -236,12 +244,11 @@ class MealsView extends StatelessWidget {
                                         child: Text(
                                           'serving',
                                           style: TextStyle(
-                                            fontFamily:
-                                                FitnessAppTheme.fontName,
+                                            fontFamily: AppTheme.fontName,
                                             fontWeight: FontWeight.w500,
                                             fontSize: 10,
                                             letterSpacing: 0.2,
-                                            color: FitnessAppTheme.white,
+                                            color: AppTheme.white,
                                           ),
                                         ),
                                       ),
@@ -249,11 +256,11 @@ class MealsView extends StatelessWidget {
                                   )
                                 : Container(
                                     decoration: BoxDecoration(
-                                      color: FitnessAppTheme.nearlyWhite,
+                                      color: AppTheme.nearlyWhite,
                                       shape: BoxShape.circle,
                                       boxShadow: <BoxShadow>[
                                         BoxShadow(
-                                            color: FitnessAppTheme.nearlyBlack
+                                            color: AppTheme.nearlyBlack
                                                 .withOpacity(0.4),
                                             offset: Offset(8.0, 8.0),
                                             blurRadius: 8.0),
@@ -277,10 +284,10 @@ class MealsView extends StatelessWidget {
                     top: 0,
                     left: 0,
                     child: Container(
-                      width: 84,
-                      height: 84,
+                      width: 150,
+                      height: 100,
                       decoration: BoxDecoration(
-                        color: FitnessAppTheme.nearlyWhite.withOpacity(0.2),
+                        color: AppTheme.nearlyWhite.withOpacity(0.2),
                         shape: BoxShape.circle,
                       ),
                     ),

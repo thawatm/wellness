@@ -8,7 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:wellness/fitness_app/fitness_app_theme.dart';
+import 'package:wellness/fitness_app/app_theme.dart';
 import 'package:wellness/models/state_model.dart';
 import 'package:wellness/models/userdata.dart';
 import 'package:wellness/widgets/edit_profile.dart';
@@ -78,7 +78,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: FitnessAppTheme.background,
+      color: AppTheme.background,
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: Stack(children: <Widget>[
@@ -141,7 +141,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
     return Container(
       decoration: BoxDecoration(
-        color: FitnessAppTheme.white,
+        color: AppTheme.white,
         borderRadius: BorderRadius.only(
             topLeft: Radius.circular(8.0),
             bottomLeft: Radius.circular(8.0),
@@ -149,7 +149,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
             topRight: Radius.circular(8.0)),
         boxShadow: <BoxShadow>[
           BoxShadow(
-              color: FitnessAppTheme.grey.withOpacity(0.2),
+              color: AppTheme.grey.withOpacity(0.2),
               offset: Offset(1.1, 1.1),
               blurRadius: 10.0),
         ],
@@ -380,7 +380,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
         // SizedBox(height: 10),
         // Text(
         //   "เลขที่สมาชิก: ${profileData.memberId ?? '-'}",
-        //   style: TextStyle(color: FitnessAppTheme.lightText, fontSize: 18),
+        //   style: TextStyle(color: AppTheme.lightText, fontSize: 18),
         // ),
         SizedBox(height: 20),
       ],

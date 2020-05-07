@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
-import 'package:wellness/logic/constant.dart';
+import 'package:wellness/fitness_app/app_theme.dart';
 import 'package:wellness/models/fooddata.dart';
 import 'package:wellness/models/state_model.dart';
 import 'package:wellness/widgets/bar_chart.dart';
@@ -181,8 +181,8 @@ class _FoodMonitorPageState extends State<FoodMonitorPage> {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        appBarColor1,
-                        appBarColor2,
+                        AppTheme.appBarColor1,
+                        AppTheme.appBarColor2,
                       ],
                     ),
                   ),
@@ -405,16 +405,17 @@ class SectionTitle extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(10.0, 0.0, 8.0, 6.0),
           child: Align(
             alignment: Alignment.centerLeft,
-            child: Text(title, style: Theme.of(context).textTheme.headline),
+            child: Text(title, style: Theme.of(context).textTheme.headline5),
           ),
         ),
-        Text(' $calories แคลอรี่', style: Theme.of(context).textTheme.subhead),
+        Text(' $calories แคลอรี่',
+            style: Theme.of(context).textTheme.subtitle1),
         Expanded(
           child: Container(
             alignment: Alignment.centerRight,
             padding: EdgeInsets.only(right: 12),
             child: Text('$hours ชั่วโมง',
-                style: Theme.of(context).textTheme.subhead),
+                style: Theme.of(context).textTheme.subtitle1),
           ),
         )
 
@@ -436,9 +437,9 @@ class FoodContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final TextStyle titleStyle =
-        theme.textTheme.title.copyWith(color: Colors.white);
+        theme.textTheme.headline6.copyWith(color: Colors.white);
     TextStyle subtitleStyle =
-        theme.textTheme.subtitle.copyWith(color: Colors.white);
+        theme.textTheme.subtitle2.copyWith(color: Colors.white);
 
     final List<Widget> children = <Widget>[
       // Photo and title.
@@ -574,7 +575,8 @@ class _FoodContentEditDialogState extends State<FoodContentEditDialog> {
       key: _scaffoldKey,
       appBar: GradientAppBar(
         title: Text('แก้ไข'),
-        gradient: LinearGradient(colors: [appBarColor1, appBarColor2]),
+        gradient: LinearGradient(
+            colors: [AppTheme.appBarColor1, AppTheme.appBarColor2]),
       ),
       body: SafeArea(
         child: Form(
@@ -841,7 +843,8 @@ class _FoodContentAddDialogState extends State<FoodContentAddDialog> {
         key: _scaffoldKey,
         appBar: GradientAppBar(
           title: Text('เพิ่มข้อมูล'),
-          gradient: LinearGradient(colors: [appBarColor1, appBarColor2]),
+          gradient: LinearGradient(
+              colors: [AppTheme.appBarColor1, AppTheme.appBarColor2]),
         ),
         body: SafeArea(
             child: Form(

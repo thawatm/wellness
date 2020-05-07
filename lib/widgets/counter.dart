@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wellness/fitness_app/fitness_app_theme.dart';
+import 'package:wellness/fitness_app/app_theme.dart';
 
 class Counter extends StatelessWidget {
   final num number;
@@ -14,6 +14,8 @@ class Counter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String display = '-';
+    if (number > 0) display = '$number';
     return Column(
       children: <Widget>[
         // Container(
@@ -37,14 +39,14 @@ class Counter extends StatelessWidget {
         // ),
         // SizedBox(height: 10),
         Text(
-          "$number",
+          display,
           style: TextStyle(
             fontSize: 32,
             fontWeight: FontWeight.w600,
             color: color,
           ),
         ),
-        Text(title, style: FitnessAppTheme.kSubTextStyle),
+        Text(title, style: AppTheme.kSubTextStyle),
       ],
     );
   }

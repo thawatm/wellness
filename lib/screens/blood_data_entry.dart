@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_picker/flutter_picker.dart';
+import 'package:wellness/fitness_app/app_theme.dart';
 import 'package:wellness/models/state_model.dart';
 import 'package:intl/intl.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -95,6 +96,14 @@ class _BloodDataEntryState extends State<BloodDataEntry> {
                 _showPickerNumber(context, 0, 400, 50, 'LDL (mg/dL)', 'ldl');
               }),
           ListTile(
+              leading: Icon(Icons.highlight, color: Colors.grey[500]),
+              title: Text("HbA1c"),
+              trailing: Text("${monitorData['hba1c'] ?? ''} %",
+                  style: TextStyle(color: Colors.grey[500])),
+              onTap: () {
+                _showPickerDouble(context, 0, 100, 10, 'HbA1c (%)', 'hba1c');
+              }),
+          ListTile(
               leading: Icon(Icons.terrain, color: Colors.grey[500]),
               title: Text("Triglycerides"),
               trailing: Text("${monitorData['triglycerides'] ?? ''} mg/dL",
@@ -136,7 +145,7 @@ class _BloodDataEntryState extends State<BloodDataEntry> {
               elevation: 1.0,
               onPressed: _saveData,
               padding: EdgeInsets.all(12),
-              color: Colors.blueAccent,
+              color: AppTheme.buttonColor,
               child: Text('Save',
                   style: TextStyle(color: Colors.white, fontSize: 16)),
             ),

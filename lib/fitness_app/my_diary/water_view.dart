@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:wellness/fitness_app/ui_view/wave_view.dart';
-import 'package:wellness/fitness_app/fitness_app_theme.dart';
+import 'package:wellness/fitness_app/app_theme.dart';
 import 'package:wellness/main.dart';
 import 'package:flutter/material.dart';
 import 'package:wellness/models/state_model.dart';
@@ -81,7 +81,7 @@ class _WaterViewState extends State<WaterView> with TickerProviderStateMixin {
                       left: 24, right: 24, top: 16, bottom: 18),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: FitnessAppTheme.white,
+                      color: AppTheme.white,
                       borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(8.0),
                           bottomLeft: Radius.circular(8.0),
@@ -89,7 +89,7 @@ class _WaterViewState extends State<WaterView> with TickerProviderStateMixin {
                           topRight: Radius.circular(8.0)),
                       boxShadow: <BoxShadow>[
                         BoxShadow(
-                            color: FitnessAppTheme.grey.withOpacity(0.2),
+                            color: AppTheme.grey.withOpacity(0.2),
                             offset: const Offset(1.1, 1.1),
                             blurRadius: 10.0),
                       ],
@@ -119,12 +119,10 @@ class _WaterViewState extends State<WaterView> with TickerProviderStateMixin {
                                             '$drink',
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
-                                              fontFamily:
-                                                  FitnessAppTheme.fontName,
+                                              fontFamily: AppTheme.fontName,
                                               fontWeight: FontWeight.w600,
                                               fontSize: 32,
-                                              color: FitnessAppTheme
-                                                  .nearlyDarkBlue,
+                                              color: AppTheme.nearlyDarkBlue,
                                             ),
                                           ),
                                         ),
@@ -135,13 +133,11 @@ class _WaterViewState extends State<WaterView> with TickerProviderStateMixin {
                                             'ml',
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
-                                              fontFamily:
-                                                  FitnessAppTheme.fontName,
+                                              fontFamily: AppTheme.fontName,
                                               fontWeight: FontWeight.w500,
                                               fontSize: 18,
                                               letterSpacing: -0.2,
-                                              color: FitnessAppTheme
-                                                  .nearlyDarkBlue,
+                                              color: AppTheme.nearlyDarkBlue,
                                             ),
                                           ),
                                         ),
@@ -154,11 +150,11 @@ class _WaterViewState extends State<WaterView> with TickerProviderStateMixin {
                                         'จากทั้งหมด 2.4L',
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
-                                          fontFamily: FitnessAppTheme.fontName,
+                                          fontFamily: AppTheme.fontName,
                                           fontWeight: FontWeight.w500,
                                           fontSize: 14,
                                           letterSpacing: 0.0,
-                                          color: FitnessAppTheme.darkText,
+                                          color: AppTheme.darkText,
                                         ),
                                       ),
                                     ),
@@ -170,7 +166,7 @@ class _WaterViewState extends State<WaterView> with TickerProviderStateMixin {
                                   child: Container(
                                     height: 2,
                                     decoration: BoxDecoration(
-                                      color: FitnessAppTheme.background,
+                                      color: AppTheme.background,
                                       borderRadius: const BorderRadius.all(
                                           Radius.circular(4.0)),
                                     ),
@@ -193,7 +189,7 @@ class _WaterViewState extends State<WaterView> with TickerProviderStateMixin {
                                                 const EdgeInsets.only(left: 4),
                                             child: Icon(
                                               Icons.access_time,
-                                              color: FitnessAppTheme.grey
+                                              color: AppTheme.grey
                                                   .withOpacity(0.5),
                                               size: 16,
                                             ),
@@ -205,12 +201,11 @@ class _WaterViewState extends State<WaterView> with TickerProviderStateMixin {
                                               '$lastDrink',
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
-                                                fontFamily:
-                                                    FitnessAppTheme.fontName,
+                                                fontFamily: AppTheme.fontName,
                                                 fontWeight: FontWeight.w500,
                                                 fontSize: 14,
                                                 letterSpacing: 0.0,
-                                                color: FitnessAppTheme.grey
+                                                color: AppTheme.grey
                                                     .withOpacity(0.5),
                                               ),
                                             ),
@@ -236,8 +231,7 @@ class _WaterViewState extends State<WaterView> with TickerProviderStateMixin {
                                                 'ควรดื่มน้ำอย่างน้อยมันละ 8 แก้ว',
                                                 textAlign: TextAlign.start,
                                                 style: TextStyle(
-                                                  fontFamily:
-                                                      FitnessAppTheme.fontName,
+                                                  fontFamily: AppTheme.fontName,
                                                   fontWeight: FontWeight.w500,
                                                   fontSize: 12,
                                                   letterSpacing: 0.0,
@@ -269,8 +263,7 @@ class _WaterViewState extends State<WaterView> with TickerProviderStateMixin {
                                     topRight: Radius.circular(80.0)),
                                 boxShadow: <BoxShadow>[
                                   BoxShadow(
-                                      color:
-                                          FitnessAppTheme.grey.withOpacity(0.4),
+                                      color: AppTheme.grey.withOpacity(0.4),
                                       offset: const Offset(2, 2),
                                       blurRadius: 4),
                                 ],

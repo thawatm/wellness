@@ -6,7 +6,7 @@ import 'package:collection/collection.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wellness/logic/constant.dart';
+import 'package:wellness/fitness_app/app_theme.dart';
 import 'package:wellness/models/state_model.dart';
 import 'package:wellness/models/waterdata.dart';
 import 'package:wellness/widgets/bar_chart.dart';
@@ -19,6 +19,7 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:intl/intl.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:flutter/src/painting/text_style.dart' as Flutter;
 
 enum ConfirmAction { CANCEL, DELETE }
 
@@ -133,8 +134,8 @@ class _DrinkMonitorPageState extends State<DrinkMonitorPage> {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        appBarColor1,
-                        appBarColor2,
+                        AppTheme.appBarColor1,
+                        AppTheme.appBarColor2,
                       ],
                     ),
                   ),
@@ -244,7 +245,7 @@ class _DrinkMonitorPageState extends State<DrinkMonitorPage> {
                     SizedBox(height: 24),
                     Text(
                       '$drink/2400ml',
-                      style: TextStyle(fontSize: 18),
+                      style: Flutter.TextStyle(fontSize: 18),
                     ),
                     SizedBox(height: 24),
                     InkResponse(
@@ -262,7 +263,8 @@ class _DrinkMonitorPageState extends State<DrinkMonitorPage> {
                     ),
                     Text(
                       '+200ml',
-                      style: TextStyle(fontSize: 12, color: Colors.blueAccent),
+                      style: Flutter.TextStyle(
+                          fontSize: 12, color: Colors.blueAccent),
                     )
                   ],
                 ),
@@ -284,7 +286,8 @@ class _DrinkMonitorPageState extends State<DrinkMonitorPage> {
       Divider(height: 2.0),
       ListTile(
         leading: Icon(Icons.access_time, color: Colors.blueAccent),
-        title: Text(record.drinkTime, style: TextStyle(color: Colors.black54)),
+        title: Text(record.drinkTime,
+            style: Flutter.TextStyle(color: Colors.black54)),
         trailing: InkWell(
           child: Icon(Icons.chevron_right, color: Colors.blueAccent),
           onTap: () {
@@ -303,7 +306,7 @@ class _DrinkMonitorPageState extends State<DrinkMonitorPage> {
                 DialogButton(
                   child: Text(
                     "ยกเลิก",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+                    style: Flutter.TextStyle(color: Colors.white, fontSize: 16),
                   ),
                   onPressed: () => Navigator.pop(context),
                   color: Colors.green,
@@ -311,7 +314,7 @@ class _DrinkMonitorPageState extends State<DrinkMonitorPage> {
                 DialogButton(
                   child: Text(
                     "ลบ",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+                    style: Flutter.TextStyle(color: Colors.white, fontSize: 16),
                   ),
                   onPressed: () {
                     deleteData(record.documentID);

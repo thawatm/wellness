@@ -1,8 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:collection/collection.dart';
+import 'package:scoped_model/scoped_model.dart';
+import 'package:wellness/fitness_app/app_theme.dart';
 import 'package:wellness/fitness_app/my_diary/my_diary_screen.dart';
+import 'package:wellness/models/fitkitdata.dart';
+import 'package:wellness/models/state_model.dart';
+import 'package:wellness/report/report_screen.dart';
 
-import 'package:wellness/screens/monitor.dart';
 import 'package:wellness/screens/newsfeed.dart';
 import 'package:wellness/screens/profile.dart';
 
@@ -16,6 +24,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   AnimationController animationController;
 
   List _pageOptions;
+  FirebaseUser currentUser;
 
   @override
   void initState() {
@@ -24,10 +33,45 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _pageOptions = [
       MyDiaryScreen(animationController: animationController),
       NewsPage(animationController: animationController),
-      MonitorPage(),
+      ReportScreen(animationController: animationController),
       ProfilePage(animationController: animationController),
     ];
     super.initState();
+    currentUser = ScopedModel.of<StateModel>(context).currentUser;
+    DateTime start = DateTime.now().subtract(Duration(days: 7));
+    DateTime dateFrom = DateTime(start.year, start.month, start.day);
+    FitKitData(dateFrom: dateFrom).read().then((fitData) {
+      if (fitData != null && fitData.isNotEmpty) {
+        var data = fitData.map((v) {
+          return {
+            'date': DateFormat('yyyyMMdd').format(v.dateFrom),
+            'value': v.value
+          };
+        });
+        groupBy(data, (obj) => obj['date']).forEach((k, v) {
+          DateTime recordDate = DateTime.parse(k);
+          num sum = v.fold(0, (a, b) => a + b['value']);
+          _saveData(recordDate, sum);
+        });
+      }
+    });
+  }
+
+  void _saveData(DateTime recordDate, int stepsCount) async {
+    int timestamp = recordDate.millisecondsSinceEpoch;
+    Map<String, dynamic> monitorData = {
+      'date': recordDate,
+      'steps': stepsCount,
+    };
+
+    DocumentReference monitor = Firestore.instance
+        .collection("monitor")
+        .document(currentUser.uid)
+        .collection('workout')
+        .document(timestamp.toString());
+    Firestore.instance.runTransaction((transaction) async {
+      await transaction.set(monitor, monitorData);
+    });
   }
 
   @override
@@ -55,10 +99,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               tabBackgroundColor: Colors.grey[800],
               tabs: [
                 GButton(
-                  iconActiveColor: Colors.purple,
+                  iconActiveColor: AppTheme.nearlyPurple,
                   iconColor: Colors.grey.shade600,
-                  textColor: Colors.purple,
-                  backgroundColor: Colors.purple.withOpacity(.2),
+                  textColor: AppTheme.nearlyPurple,
+                  backgroundColor: AppTheme.nearlyPurple.withOpacity(.2),
                   iconSize: 24,
                   icon: Icons.home,
                   text: 'Home',
@@ -73,12 +117,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   iconSize: 24,
                 ),
                 GButton(
-                  icon: Icons.chat,
+                  icon: Icons.insert_chart,
                   text: 'Report',
-                  iconActiveColor: Colors.amber[600],
+                  iconActiveColor: Colors.blueAccent,
                   iconColor: Colors.grey.shade600,
-                  textColor: Colors.amber[600],
-                  backgroundColor: Colors.amber[600].withOpacity(.2),
+                  textColor: Colors.blueAccent,
+                  backgroundColor: Colors.blueAccent.withOpacity(.2),
                   iconSize: 24,
                 ),
                 GButton(

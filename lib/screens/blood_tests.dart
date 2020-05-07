@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:wellness/logic/constant.dart';
+import 'package:wellness/fitness_app/app_theme.dart';
 import 'package:wellness/models/healthdata.dart';
 import 'package:wellness/screens/blood_data_entry.dart';
 import 'package:wellness/widgets/chart.dart';
@@ -34,6 +34,7 @@ class _BloodTestPageState extends State<BloodTestPage> {
   List<HealthMonitor> creatinineData;
   List<HealthMonitor> eGFRData;
   List<HealthMonitor> uricAcidData;
+  List<HealthMonitor> hba1cData;
   int chartDays = 5;
   DateTime today;
 
@@ -77,8 +78,8 @@ class _BloodTestPageState extends State<BloodTestPage> {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        appBarColor1,
-                        appBarColor2,
+                        AppTheme.appBarColor1,
+                        AppTheme.appBarColor2,
                       ],
                     ),
                   ),
@@ -150,6 +151,13 @@ class _BloodTestPageState extends State<BloodTestPage> {
                       ..removeWhere(
                           (v) => today.difference(v.date).inDays > chartDays)
                       ..removeWhere((v) => v.ldl == null);
+                // LDL DATA
+                hba1cData = healthData
+                    .map((data) => HealthMonitor.fromSnapshot(data))
+                    .toList()
+                      ..removeWhere(
+                          (v) => today.difference(v.date).inDays > chartDays)
+                      ..removeWhere((v) => v.hba1c == null);
 
                 // triglycerides DATA
                 triglyceridesData = healthData
@@ -277,6 +285,21 @@ class _BloodTestPageState extends State<BloodTestPage> {
                   Container(
                     height: 220,
                     child: _buildLDLChart(),
+                  ),
+                ],
+              ),
+        SizedBox(height: 30),
+        hba1cData.isEmpty
+            ? SizedBox(height: 0)
+            : Column(
+                children: <Widget>[
+                  ChartPercentTitle(
+                      title: 'HbA1c',
+                      first: hba1cData.first.hba1c,
+                      last: hba1cData.last.hba1c),
+                  Container(
+                    height: 220,
+                    child: _buildHbA1cChart(),
                   ),
                 ],
               ),
@@ -414,6 +437,24 @@ class _BloodTestPageState extends State<BloodTestPage> {
 
     return SimpleTimeSeriesChart(_chartData(),
         animate: true, title: 'LDL', unit: 'mg/dL');
+  }
+
+  Widget _buildHbA1cChart() {
+    List<Series<HealthMonitor, DateTime>> _chartData() {
+      return [
+        new Series<HealthMonitor, DateTime>(
+          id: 'HbA1c',
+          colorFn: (_, __) => MaterialPalette.pink.shadeDefault,
+          domainFn: (HealthMonitor health, _) =>
+              DateTime(health.date.year, health.date.month, health.date.day),
+          measureFn: (HealthMonitor health, _) => health.hba1c,
+          data: hba1cData,
+        )..setAttribute(rendererIdKey, 'customArea')
+      ];
+    }
+
+    return SimpleTimeSeriesChart(_chartData(),
+        animate: true, title: 'HbA1c', unit: '%');
   }
 
   Widget _buildTriglyceridesChart() {

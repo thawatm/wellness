@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:wellness/logic/constant.dart';
+import 'package:wellness/fitness_app/app_theme.dart';
 
 class ContactPage extends StatelessWidget {
   @override
@@ -9,7 +9,8 @@ class ContactPage extends StatelessWidget {
     return Scaffold(
       appBar: GradientAppBar(
         title: Text('ติดต่อเรา'),
-        gradient: LinearGradient(colors: [appBarColor1, appBarColor2]),
+        gradient: LinearGradient(
+            colors: [AppTheme.appBarColor1, AppTheme.appBarColor2]),
       ),
       body: SafeArea(
         child: ListView(

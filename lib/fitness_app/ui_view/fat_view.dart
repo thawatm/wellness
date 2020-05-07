@@ -8,43 +8,43 @@ import 'package:wellness/models/healthdata.dart';
 import 'package:wellness/models/state_model.dart';
 import 'package:wellness/widgets/counter.dart';
 
-class BloodTestView extends StatelessWidget {
+class FatView extends StatelessWidget {
   final AnimationController animationController;
   final Animation animation;
 
-  const BloodTestView({Key key, this.animationController, this.animation})
+  const FatView({Key key, this.animationController, this.animation})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     FirebaseUser currentUser = ScopedModel.of<StateModel>(context).currentUser;
-    int cholesterol = 0;
-    int ldl = 0;
-    int glucose = 0;
-    double hba1c = 0;
-    String recordDate = '';
+    double bodyFat = 0;
+    int bodyAge = 0;
+    double visceralFat = 0;
+    String recordDate = 'ไม่มีข้อมูล';
 
     return StreamBuilder<QuerySnapshot>(
       stream: Firestore.instance
           .collection('monitor')
           .document(currentUser.uid)
-          .collection('bloodtests')
+          .collection('weightfat')
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return SizedBox();
         try {
           DocumentSnapshot snapshotData = snapshot.data.documents
-              .lastWhere((v) => v.data['cholesterol'] != null);
+              .lastWhere((v) => v.data['bodyFat'] != null);
 
           if (snapshotData != null) {
-            HealthMonitor bloodData = HealthMonitor.fromSnapshot(snapshotData);
-            cholesterol = bloodData.cholesterol ?? 0;
-            ldl = bloodData.ldl ?? 0;
-            glucose = bloodData.glucose ?? 0;
-            hba1c = bloodData.hba1c ?? 0;
-            recordDate = DateFormat.yMMMd().format(bloodData.date);
+            HealthMonitor fatData = HealthMonitor.fromSnapshot(snapshotData);
+            bodyAge = fatData.bodyAge ?? 0;
+            bodyFat = fatData.bodyFat ?? 0;
+            visceralFat = fatData.visceralFat ?? 0;
+            recordDate = DateFormat.yMMMd().format(fatData.date);
           }
-        } catch (e) {}
+        } catch (e) {
+          print(e);
+        }
         return AnimatedBuilder(
           animation: animationController,
           builder: (BuildContext context, Widget child) {
@@ -81,24 +81,19 @@ class BloodTestView extends StatelessWidget {
                                     MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
                                   Counter(
-                                    color: AppTheme.kRecovercolor,
-                                    number: cholesterol,
-                                    title: "Cholesterol",
+                                    color: AppTheme.nearlyDarkBlue,
+                                    number: bodyFat,
+                                    title: "Body Fat",
                                   ),
                                   Counter(
-                                    color: AppTheme.kInfectedColor,
-                                    number: ldl,
-                                    title: "LDL",
+                                    color: AppTheme.nearlyDarkBlue,
+                                    number: visceralFat,
+                                    title: "Visceral Fat",
                                   ),
                                   Counter(
-                                    color: AppTheme.kDeathColor,
-                                    number: glucose,
-                                    title: "Glucose",
-                                  ),
-                                  Counter(
-                                    color: AppTheme.kRecovercolor,
-                                    number: hba1c,
-                                    title: "HbA1c",
+                                    color: AppTheme.nearlyDarkBlue,
+                                    number: bodyAge,
+                                    title: "Body Age",
                                   ),
                                 ])),
                         Padding(

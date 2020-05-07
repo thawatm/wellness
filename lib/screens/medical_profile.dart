@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
-import 'package:wellness/logic/constant.dart';
+import 'package:wellness/fitness_app/app_theme.dart';
 import 'package:wellness/models/state_model.dart';
 import 'package:wellness/models/userdata.dart';
 import 'package:wellness/widgets/edit_profile.dart';
@@ -49,7 +49,8 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
     return Scaffold(
         appBar: GradientAppBar(
           title: Text('ข้อมูลทางการแพทย์'),
-          gradient: LinearGradient(colors: [appBarColor1, appBarColor2]),
+          gradient: LinearGradient(
+              colors: [AppTheme.appBarColor1, AppTheme.appBarColor2]),
         ),
         body: StreamBuilder<DocumentSnapshot>(
             stream: Firestore.instance

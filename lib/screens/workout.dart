@@ -4,8 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wellness/fitness_app/app_theme.dart';
-import 'package:wellness/models/healthdata.dart';
-import 'package:wellness/screens/weight_data_entry.dart';
+import 'package:wellness/models/workoutdata.dart';
+import 'package:wellness/screens/workout_data_entry.dart';
 import 'package:wellness/widgets/chart.dart';
 import 'package:wellness/widgets/chart_title.dart';
 import 'package:wellness/widgets/first_load.dart';
@@ -15,24 +15,24 @@ import 'package:scoped_model/scoped_model.dart';
 
 import 'package:wellness/models/state_model.dart';
 
-class WeightPage extends StatefulWidget {
+class WorkoutPage extends StatefulWidget {
   @override
-  _WeightPageState createState() => _WeightPageState();
+  _WorkoutPageState createState() => _WorkoutPageState();
 }
 
-class _WeightPageState extends State<WeightPage> {
+class _WorkoutPageState extends State<WorkoutPage> {
   ScrollController _scrollViewController;
   FirebaseUser currentUser;
-  String collection = 'weightfat';
+  String collection = 'workout';
 
-  List<DocumentSnapshot> healthData;
-  List<HealthMonitor> weightData;
-  List<HealthMonitor> bodyAgeData;
-  List<HealthMonitor> fatData;
-
-  DateTime today;
+  List<DocumentSnapshot> snapshotData;
+  List<WorkoutMonitor> stepsData;
+  List<WorkoutMonitor> runWorkoutData;
+  List<WorkoutMonitor> cyclingWorkoutData;
+  List<WorkoutMonitor> etcWorkoutData;
 
   int chartDays = 5;
+  DateTime today;
 
   final Map<int, Widget> chartPeriod = const <int, Widget>{
     5: Text('สัปดาห์'),
@@ -66,7 +66,7 @@ class _WeightPageState extends State<WeightPage> {
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
               SliverAppBar(
-                title: Text("น้ำหนัก ไขมัน"),
+                title: Text("การออกกำลังกาย"),
                 pinned: true,
                 floating: true,
                 forceElevated: innerBoxIsScrolled,
@@ -111,29 +111,48 @@ class _WeightPageState extends State<WeightPage> {
                   .snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) return LoadingIndicator();
-                healthData = snapshot.data.documents
+                snapshotData = snapshot.data.documents
                   ..sort((a, b) => b.data['date']
                       .toDate()
                       .compareTo(a.data['date'].toDate()));
 
-                // Weight DATA
-                weightData = healthData
-                    .map((data) => HealthMonitor.fromSnapshot(data))
+                // Sugar DATA
+                stepsData = snapshotData
+                    .map((data) => WorkoutMonitor.fromSnapshot(data))
                     .toList()
                       ..removeWhere(
                           (v) => today.difference(v.date).inDays > chartDays)
-                      ..removeWhere((v) => v.weight == null);
+                      ..removeWhere((v) => v.steps == null);
+                // Sugar DATA
+                runWorkoutData = snapshotData
+                    .map((data) => WorkoutMonitor.fromSnapshot(data))
+                    .toList()
+                      ..removeWhere(
+                          (v) => today.difference(v.date).inDays > chartDays)
+                      ..removeWhere((v) => v.run == null);
+                cyclingWorkoutData = snapshotData
+                    .map((data) => WorkoutMonitor.fromSnapshot(data))
+                    .toList()
+                      ..removeWhere(
+                          (v) => today.difference(v.date).inDays > chartDays)
+                      ..removeWhere((v) => v.cycling == null);
+                etcWorkoutData = snapshotData
+                    .map((data) => WorkoutMonitor.fromSnapshot(data))
+                    .toList()
+                      ..removeWhere(
+                          (v) => today.difference(v.date).inDays > chartDays)
+                      ..removeWhere((v) => v.etc == null);
 
                 return TabBarView(
                   children: <Widget>[
-                    WeightDataEntry(),
-                    healthData.isEmpty
+                    WorkoutDataEntry(),
+                    snapshotData.isEmpty
                         ? FirstLoad(title: "เพิ่มข้อมูลใหม่\nแตะที่แทบด้านบน")
                         : _buildChart(),
-                    healthData.isEmpty
+                    snapshotData.isEmpty
                         ? FirstLoad(title: "เพิ่มข้อมูลใหม่\nแตะที่แทบด้านบน")
                         : HistoryList(
-                            snapshot: healthData,
+                            snapshot: snapshotData,
                             currentUser: currentUser,
                             collection: collection,
                           ),
@@ -163,32 +182,62 @@ class _WeightPageState extends State<WeightPage> {
           ),
         ),
         SizedBox(height: 8),
-        weightData.isEmpty
+        stepsData.isEmpty
             ? SizedBox(height: 0)
             : Column(
                 children: <Widget>[
                   ChartPercentTitle(
-                      title: 'น้ำหนัก',
-                      first: weightData.first.weight,
-                      last: weightData.last.weight),
+                      title: 'การเดิน',
+                      first: stepsData.first.steps,
+                      last: stepsData.last.steps),
                   Container(
                     height: 220,
-                    child: _buildWeightChart(),
+                    child: _buildStepsChart(),
                   ),
                 ],
               ),
         SizedBox(height: 30),
-        weightData.isEmpty
+        runWorkoutData.isEmpty
             ? SizedBox(height: 0)
             : Column(
                 children: <Widget>[
                   ChartPercentTitle(
-                      title: 'BMI',
-                      first: weightData.first.weight,
-                      last: weightData.last.weight),
+                      title: 'วิ่ง',
+                      first: runWorkoutData.first.cycling,
+                      last: runWorkoutData.last.cycling),
                   Container(
                     height: 220,
-                    child: _buildBMIChart(),
+                    child: _buildRunChart(),
+                  ),
+                ],
+              ),
+        SizedBox(height: 30),
+        cyclingWorkoutData.isEmpty
+            ? SizedBox(height: 0)
+            : Column(
+                children: <Widget>[
+                  ChartPercentTitle(
+                      title: 'ปั่นจักรยาน',
+                      first: cyclingWorkoutData.first.cycling,
+                      last: cyclingWorkoutData.last.cycling),
+                  Container(
+                    height: 220,
+                    child: _buildCyclingChart(),
+                  ),
+                ],
+              ),
+        SizedBox(height: 30),
+        etcWorkoutData.isEmpty
+            ? SizedBox(height: 0)
+            : Column(
+                children: <Widget>[
+                  ChartPercentTitle(
+                      title: 'ออกกำลังอื่นๆ',
+                      first: etcWorkoutData.first.etc,
+                      last: etcWorkoutData.last.etc),
+                  Container(
+                    height: 220,
+                    child: _buildEtcChart(),
                   ),
                 ],
               ),
@@ -197,40 +246,71 @@ class _WeightPageState extends State<WeightPage> {
     );
   }
 
-  Widget _buildWeightChart() {
-    List<Series<HealthMonitor, DateTime>> _chartData() {
+  Widget _buildStepsChart() {
+    List<Series<WorkoutMonitor, DateTime>> _chartData() {
       return [
-        new Series<HealthMonitor, DateTime>(
-          id: 'น้ำหนัก',
-          colorFn: (_, __) => MaterialPalette.green.shadeDefault,
-          domainFn: (HealthMonitor health, _) =>
-              DateTime(health.date.year, health.date.month, health.date.day),
-          measureFn: (HealthMonitor health, _) => health.weight,
-          data: weightData,
+        new Series<WorkoutMonitor, DateTime>(
+          id: 'Steps',
+          colorFn: (_, __) => MaterialPalette.purple.shadeDefault,
+          domainFn: (WorkoutMonitor workout, _) => workout.date,
+          measureFn: (WorkoutMonitor workout, _) => workout.steps,
+          data: stepsData,
         )..setAttribute(rendererIdKey, 'customArea')
       ];
     }
 
     return SimpleTimeSeriesChart(_chartData(),
-        animate: true, title: 'น้ำหนัก', unit: 'kg');
+        animate: true, title: 'จำนวนก้าว', unit: 'ก้าว');
   }
 
-  Widget _buildBMIChart() {
-    List<HealthMonitor> bmiData = weightData..removeWhere((v) => v.bmi == null);
-    List<Series<HealthMonitor, DateTime>> _chartData() {
+  Widget _buildRunChart() {
+    List<Series<WorkoutMonitor, DateTime>> _chartData() {
       return [
-        new Series<HealthMonitor, DateTime>(
-          id: 'bmi',
-          colorFn: (_, __) => MaterialPalette.red.shadeDefault,
-          domainFn: (HealthMonitor health, _) =>
-              DateTime(health.date.year, health.date.month, health.date.day),
-          measureFn: (HealthMonitor health, _) => health.bmi,
-          data: bmiData,
+        new Series<WorkoutMonitor, DateTime>(
+          id: 'run',
+          colorFn: (_, __) => MaterialPalette.green.shadeDefault,
+          domainFn: (WorkoutMonitor workout, _) => workout.date,
+          measureFn: (WorkoutMonitor workout, _) => workout.run,
+          data: runWorkoutData,
         )..setAttribute(rendererIdKey, 'customArea')
       ];
     }
 
     return SimpleTimeSeriesChart(_chartData(),
-        animate: true, title: 'น้ำหนัก', unit: '');
+        animate: true, title: 'วิ่ง', unit: 'นาที');
+  }
+
+  Widget _buildCyclingChart() {
+    List<Series<WorkoutMonitor, DateTime>> _chartData() {
+      return [
+        new Series<WorkoutMonitor, DateTime>(
+          id: 'cycling',
+          colorFn: (_, __) => MaterialPalette.blue.shadeDefault,
+          domainFn: (WorkoutMonitor workout, _) => workout.date,
+          measureFn: (WorkoutMonitor workout, _) => workout.cycling,
+          data: cyclingWorkoutData,
+        )..setAttribute(rendererIdKey, 'customArea')
+      ];
+    }
+
+    return SimpleTimeSeriesChart(_chartData(),
+        animate: true, title: 'ปั่นจักรยาน', unit: 'นาที');
+  }
+
+  Widget _buildEtcChart() {
+    List<Series<WorkoutMonitor, DateTime>> _chartData() {
+      return [
+        new Series<WorkoutMonitor, DateTime>(
+          id: 'etc',
+          colorFn: (_, __) => MaterialPalette.red.shadeDefault,
+          domainFn: (WorkoutMonitor workout, _) => workout.date,
+          measureFn: (WorkoutMonitor workout, _) => workout.etc,
+          data: etcWorkoutData,
+        )..setAttribute(rendererIdKey, 'customArea')
+      ];
+    }
+
+    return SimpleTimeSeriesChart(_chartData(),
+        animate: true, title: 'อื่นๆ', unit: 'นาที');
   }
 }

@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
-import 'package:wellness/logic/constant.dart';
+import 'package:wellness/fitness_app/app_theme.dart';
 import 'package:wellness/models/state_model.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
@@ -104,7 +104,8 @@ class _NewUserPageState extends State<NewUserPage> {
       key: _scaffoldKey,
       appBar: GradientAppBar(
         title: Text('ผู้ใช้งานใหม่'),
-        gradient: LinearGradient(colors: [appBarColor1, appBarColor2]),
+        gradient: LinearGradient(
+            colors: [AppTheme.appBarColor1, AppTheme.appBarColor2]),
       ),
       body: ModalProgressHUD(child: _formView(), inAsyncCall: _isLoading),
     );
@@ -190,7 +191,7 @@ class _NewUserPageState extends State<NewUserPage> {
                     child: RaisedButton.icon(
                       onPressed: _handleSubmitted,
                       elevation: 7.0,
-                      color: Colors.blueAccent,
+                      color: AppTheme.buttonColor,
                       icon: Icon(Icons.check, color: Colors.white),
                       label: Text('ยืนยัน',
                           style: TextStyle(color: Colors.white, fontSize: 18)),

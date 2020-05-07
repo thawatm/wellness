@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:wellness/fitness_app/fitness_app_theme.dart';
+import 'package:wellness/fitness_app/app_theme.dart';
 import 'package:wellness/models/news.dart';
 import 'package:wellness/widgets/appbar_ui.dart';
 
@@ -73,7 +73,7 @@ class _NewsPageState extends State<NewsPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: FitnessAppTheme.background,
+      color: AppTheme.background,
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: SafeArea(

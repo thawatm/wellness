@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:wellness/fitness_app/fitness_app_theme.dart';
+import 'package:wellness/fitness_app/app_theme.dart';
 import 'package:wellness/models/state_model.dart';
 import 'package:wellness/models/userdata.dart';
 import 'package:wellness/screens/user_profile.dart';
@@ -65,7 +65,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: FitnessAppTheme.background,
+      color: AppTheme.background,
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: buildBody(context),
@@ -106,7 +106,7 @@ class _ProfilePageState extends State<ProfilePage> {
         child: SingleChildScrollView(
           child: Container(
             decoration: BoxDecoration(
-              color: FitnessAppTheme.white,
+              color: AppTheme.white,
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(8.0),
                   bottomLeft: Radius.circular(8.0),
@@ -114,7 +114,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   topRight: Radius.circular(8.0)),
               boxShadow: <BoxShadow>[
                 BoxShadow(
-                    color: FitnessAppTheme.grey.withOpacity(0.2),
+                    color: AppTheme.grey.withOpacity(0.2),
                     offset: Offset(1.1, 1.1),
                     blurRadius: 10.0),
               ],
@@ -141,7 +141,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: Container(
                             height: 2,
                             decoration: BoxDecoration(
-                              color: FitnessAppTheme.background,
+                              color: AppTheme.background,
                               borderRadius:
                                   BorderRadius.all(Radius.circular(4.0)),
                             ),
@@ -160,7 +160,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: Container(
                             height: 2,
                             decoration: BoxDecoration(
-                              color: FitnessAppTheme.background,
+                              color: AppTheme.background,
                               borderRadius:
                                   BorderRadius.all(Radius.circular(4.0)),
                             ),
@@ -179,7 +179,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: Container(
                             height: 2,
                             decoration: BoxDecoration(
-                              color: FitnessAppTheme.background,
+                              color: AppTheme.background,
                               borderRadius:
                                   BorderRadius.all(Radius.circular(4.0)),
                             ),
@@ -237,7 +237,7 @@ class _ProfilePageState extends State<ProfilePage> {
           style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: FitnessAppTheme.lightText),
+              color: AppTheme.lightText),
         ),
         subtitle: Text(
           subtitle,

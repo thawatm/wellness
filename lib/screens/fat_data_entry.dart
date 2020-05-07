@@ -11,12 +11,12 @@ import 'package:intl/intl.dart';
 
 import 'package:scoped_model/scoped_model.dart';
 
-class WeightDataEntry extends StatefulWidget {
+class FatDataEntry extends StatefulWidget {
   @override
-  _WeightDataEntryState createState() => _WeightDataEntryState();
+  _FatDataEntryState createState() => _FatDataEntryState();
 }
 
-class _WeightDataEntryState extends State<WeightDataEntry> {
+class _FatDataEntryState extends State<FatDataEntry> {
   // final _scaffoldKey = GlobalKey<ScaffoldState>();
   FirebaseUser currentUser;
   String collection = 'weightfat';
@@ -73,78 +73,77 @@ class _WeightDataEntryState extends State<WeightDataEntry> {
           ),
           ListTile(
               leading: Icon(Icons.event, color: Colors.grey[500]),
-              title: Text("น้ำหนัก"),
-              trailing: Text("${monitorData['weight'] ?? ''} kg",
+              title: Text("Body Fat"),
+              trailing: Text("${monitorData['bodyFat'] ?? ''} %",
                   style: TextStyle(color: Colors.grey[500])),
               onTap: () {
                 _showPickerDouble(
-                    context, 20, 300, 70, 'น้ำหนัก (kg)', 'weight');
+                    context, 0, 100, 20, 'Body Fat (%)', 'bodyFat');
               }),
           ListTile(
-              leading: Text('BMI', style: TextStyle(color: Colors.grey[500])),
-              title: Text('ค่าดัชนีมวลกาย'),
+              leading: Icon(Icons.assignment_ind, color: Colors.grey[500]),
+              title: Text('Visceral Fat'),
               // title: bmiBarCart(),
-              trailing: Text(
-                  "${height != null ? (monitorData['bmi'] ?? '') : 'ต้องระบุส่วนสูงที่โปรไฟล์'}",
-                  style: TextStyle(fontSize: 16, color: Colors.black)),
+              trailing: Text("${monitorData['Visceral Fat'] ?? ''} %",
+                  style: TextStyle(color: Colors.grey[500])),
               onTap: () {
                 _showPickerDouble(
-                    context, 20, 300, 70, 'น้ำหนัก (kg)', 'weight');
+                    context, 0, 100, 10, 'visceralFat (%)', 'visceralFat');
               }),
-          // ListTile(
-          //     leading: Icon(Icons.person, color: Colors.grey[500]),
-          //     title: Text("Body Age"),
-          //     trailing: Text("${monitorData['bodyAge'] ?? ''} ปี",
-          //         style: TextStyle(color: Colors.grey[500])),
-          //     onTap: () {
-          //       _showPickerNumber(
-          //           context, 0, 150, 35, 'Body Age (ปี)', 'bodyAge');
-          //     }),
-          // ListTile(
-          //     leading: Icon(Icons.border_right, color: Colors.grey[500]),
-          //     title: Text("ไขมัน แขนขวา"),
-          //     trailing: Text("${monitorData['rightArmFat'] ?? ''} %",
-          //         style: TextStyle(color: Colors.grey[500])),
-          //     onTap: () {
-          //       _showPickerDouble(
-          //           context, 0, 100, 20, '%ไขมัน แขนขวา', 'rightArmFat');
-          //     }),
-          // ListTile(
-          //     leading: Icon(Icons.border_left, color: Colors.grey[500]),
-          //     title: Text("ไขมัน แขนซ้าย"),
-          //     trailing: Text("${monitorData['leftArmFat'] ?? ''} %",
-          //         style: TextStyle(color: Colors.grey[500])),
-          //     onTap: () {
-          //       _showPickerDouble(
-          //           context, 0, 100, 20, '%ไขมัน แขนขวา', 'leftArmFat');
-          //     }),
-          // ListTile(
-          //     leading: Icon(Icons.rotate_right, color: Colors.grey[500]),
-          //     title: Text("ไขมัน ขาขวา"),
-          //     trailing: Text("${monitorData['rightLegFat'] ?? ''} %",
-          //         style: TextStyle(color: Colors.grey[500])),
-          //     onTap: () {
-          //       _showPickerDouble(
-          //           context, 0, 100, 20, '%ไขมัน ขาขวา', 'rightLegFat');
-          //     }),
-          // ListTile(
-          //     leading: Icon(Icons.rotate_left, color: Colors.grey[500]),
-          //     title: Text("ไขมัน ขาซ้าย"),
-          //     trailing: Text("${monitorData['leftLegFat'] ?? ''} %",
-          //         style: TextStyle(color: Colors.grey[500])),
-          //     onTap: () {
-          //       _showPickerDouble(
-          //           context, 0, 100, 20, '%ไขมัน ขาซ้าย', 'leftLegFat');
-          //     }),
-          // ListTile(
-          //     leading: Icon(Icons.border_all, color: Colors.grey[500]),
-          //     title: Text("ไขมัน หน้าท้อง"),
-          //     trailing: Text("${monitorData['trunkFat'] ?? ''} %",
-          //         style: TextStyle(color: Colors.grey[500])),
-          //     onTap: () {
-          //       _showPickerDouble(
-          //           context, 0, 100, 20, '%ไขมัน หน้าท้อง', 'trunkFat');
-          //     }),
+          ListTile(
+              leading: Icon(Icons.person, color: Colors.grey[500]),
+              title: Text("Body Age"),
+              trailing: Text("${monitorData['bodyAge'] ?? ''} ปี",
+                  style: TextStyle(color: Colors.grey[500])),
+              onTap: () {
+                _showPickerNumber(
+                    context, 0, 150, 35, 'Body Age (ปี)', 'bodyAge');
+              }),
+          ListTile(
+              leading: Icon(Icons.border_right, color: Colors.grey[500]),
+              title: Text("ไขมัน แขนขวา"),
+              trailing: Text("${monitorData['rightArmFat'] ?? ''} %",
+                  style: TextStyle(color: Colors.grey[500])),
+              onTap: () {
+                _showPickerDouble(
+                    context, 0, 100, 20, '%ไขมัน แขนขวา', 'rightArmFat');
+              }),
+          ListTile(
+              leading: Icon(Icons.border_left, color: Colors.grey[500]),
+              title: Text("ไขมัน แขนซ้าย"),
+              trailing: Text("${monitorData['leftArmFat'] ?? ''} %",
+                  style: TextStyle(color: Colors.grey[500])),
+              onTap: () {
+                _showPickerDouble(
+                    context, 0, 100, 20, '%ไขมัน แขนขวา', 'leftArmFat');
+              }),
+          ListTile(
+              leading: Icon(Icons.rotate_right, color: Colors.grey[500]),
+              title: Text("ไขมัน ขาขวา"),
+              trailing: Text("${monitorData['rightLegFat'] ?? ''} %",
+                  style: TextStyle(color: Colors.grey[500])),
+              onTap: () {
+                _showPickerDouble(
+                    context, 0, 100, 20, '%ไขมัน ขาขวา', 'rightLegFat');
+              }),
+          ListTile(
+              leading: Icon(Icons.rotate_left, color: Colors.grey[500]),
+              title: Text("ไขมัน ขาซ้าย"),
+              trailing: Text("${monitorData['leftLegFat'] ?? ''} %",
+                  style: TextStyle(color: Colors.grey[500])),
+              onTap: () {
+                _showPickerDouble(
+                    context, 0, 100, 20, '%ไขมัน ขาซ้าย', 'leftLegFat');
+              }),
+          ListTile(
+              leading: Icon(Icons.border_all, color: Colors.grey[500]),
+              title: Text("ไขมัน หน้าท้อง"),
+              trailing: Text("${monitorData['trunkFat'] ?? ''} %",
+                  style: TextStyle(color: Colors.grey[500])),
+              onTap: () {
+                _showPickerDouble(
+                    context, 0, 100, 20, '%ไขมัน หน้าท้อง', 'trunkFat');
+              }),
           SizedBox(height: 24),
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -210,6 +209,27 @@ class _WeightDataEntryState extends State<WeightDataEntry> {
     // // print(monitorData.keys);
     // // print(monitorData.values);
     // showInSnackBar("Successful");
+  }
+
+  _showPickerNumber(BuildContext context, int begin, int end, int initValue,
+      String title, String updateKey) {
+    new Picker(
+        adapter: NumberPickerAdapter(
+          data: [
+            NumberPickerColumn(begin: begin, end: end, initValue: initValue),
+          ],
+        ),
+        hideHeader: true,
+        textStyle: TextStyle(color: Colors.blue, fontSize: 20.0),
+        confirmText: 'OK',
+        cancelText: 'CANCEL',
+        itemExtent: 40.0,
+        title: Text(title),
+        onConfirm: (Picker picker, List value) {
+          setState(() {
+            monitorData[updateKey] = picker.getSelectedValues()[0];
+          });
+        }).showDialog(context);
   }
 
   _showPickerDouble(BuildContext context, int begin, int end, int initValue,

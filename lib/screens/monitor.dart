@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
-import 'package:wellness/logic/constant.dart';
+import 'package:wellness/fitness_app/app_theme.dart';
 
 class MonitorPage extends StatelessWidget {
   @override
@@ -8,7 +8,8 @@ class MonitorPage extends StatelessWidget {
     return Scaffold(
       appBar: GradientAppBar(
         title: Text('สุขภาพประจำวัน'),
-        gradient: LinearGradient(colors: [appBarColor1, appBarColor2]),
+        gradient: LinearGradient(
+            colors: [AppTheme.appBarColor1, AppTheme.appBarColor2]),
       ),
       backgroundColor: Colors.grey.shade100,
       body: SafeArea(

@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_picker/flutter_picker.dart';
 import 'package:flutter/src/material/dialog.dart' as Dialog;
 import 'package:gradient_app_bar/gradient_app_bar.dart';
-import 'package:wellness/logic/constant.dart';
+import 'package:wellness/fitness_app/app_theme.dart';
 import 'package:wellness/models/sleepdata.dart';
 import 'package:wellness/models/state_model.dart';
 import 'package:wellness/widgets/bar_chart.dart';
@@ -92,7 +92,8 @@ class _SleepMonitorPageState extends State<SleepMonitorPage> {
       key: _scaffoldKey,
       appBar: GradientAppBar(
         title: Text('การนอน'),
-        gradient: LinearGradient(colors: [appBarColor1, appBarColor2]),
+        gradient: LinearGradient(
+            colors: [AppTheme.appBarColor1, AppTheme.appBarColor2]),
       ),
       body: StreamBuilder<QuerySnapshot>(
           stream: Firestore.instance

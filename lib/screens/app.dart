@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wellness/screens/blood_tests.dart';
 import 'package:wellness/screens/contact.dart';
+import 'package:wellness/screens/fat.dart';
 import 'package:wellness/screens/medical_profile.dart';
 import 'package:wellness/screens/newuser.dart';
 import 'package:wellness/screens/user_profile.dart';
@@ -16,6 +17,7 @@ import 'package:wellness/screens/drink_monitor.dart';
 import 'package:wellness/screens/food_monitor.dart';
 import 'package:wellness/screens/health_monitor.dart';
 import 'package:wellness/screens/sleep_monitor.dart';
+import 'package:wellness/screens/workout.dart';
 
 class WellnessApp extends StatelessWidget {
   final String questionnaire =
@@ -30,7 +32,7 @@ class WellnessApp extends StatelessWidget {
         fontFamily: 'Kanit',
         primarySwatch: Colors.blue,
         primaryTextTheme: TextTheme(
-          title: TextStyle(color: Colors.white),
+          headline6: TextStyle(color: Colors.white),
         ),
       ),
       routes: {
@@ -41,6 +43,7 @@ class WellnessApp extends StatelessWidget {
         '/newuser': (context) => NewUserPage(),
         '/pressure': (context) => HealthMonitorPage(),
         '/weight': (context) => WeightPage(),
+        '/fat': (context) => FatPage(),
         '/blood': (context) => BloodTestPage(),
         '/food': (context) => FoodMonitorPage(),
         '/sleep': (context) => SleepMonitorPage(),
@@ -48,6 +51,7 @@ class WellnessApp extends StatelessWidget {
         '/group': (context) => MedicalProfilePage(),
         '/user': (context) => UserProfilePage(),
         '/contact': (context) => ContactPage(),
+        '/workout': (context) => WorkoutPage(),
       },
     );
   }

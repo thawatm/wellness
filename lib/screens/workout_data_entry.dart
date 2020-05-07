@@ -6,21 +6,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_picker/flutter_picker.dart';
 import 'package:wellness/fitness_app/app_theme.dart';
+import 'package:wellness/models/fitkitdata.dart';
 import 'package:wellness/models/state_model.dart';
 import 'package:intl/intl.dart';
-
 import 'package:scoped_model/scoped_model.dart';
 
-class DataEntryDialog extends StatefulWidget {
+class WorkoutDataEntry extends StatefulWidget {
   @override
-  _DataEntryDialogState createState() => _DataEntryDialogState();
+  _WorkoutDataEntryState createState() => _WorkoutDataEntryState();
 }
 
-class _DataEntryDialogState extends State<DataEntryDialog> {
+class _WorkoutDataEntryState extends State<WorkoutDataEntry> {
+  // final _scaffoldKey = GlobalKey<ScaffoldState>();
   FirebaseUser currentUser;
-  String collection = 'healthdata';
-
-  String _pressureText = '';
+  String collection = 'workout';
 
   Map<String, dynamic> monitorData = {
     'date': DateTime.now(),
@@ -35,6 +34,7 @@ class _DataEntryDialogState extends State<DataEntryDialog> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      // key: _scaffoldKey,
       child: ListView(
         children: <Widget>[
           ListTile(
@@ -63,25 +63,38 @@ class _DataEntryDialogState extends State<DataEntryDialog> {
             },
           ),
           ListTile(
-              leading: Image.asset(
-                "assets/images/scale-bathroom.png",
-                color: Colors.grey[500],
-                height: 24.0,
-                width: 24.0,
-              ),
-              title: Text("ความดันเลือด"),
-              trailing: Text("$_pressureText mmHg",
+              leading: Icon(Icons.local_drink, color: Colors.grey[500]),
+              title: Text("เดิน"),
+              trailing: Text("${monitorData['steps'] ?? ''} ก้าว",
                   style: TextStyle(color: Colors.grey[500])),
               onTap: () {
-                _showPressurePicker(context);
+                _showPickerNumber(
+                    context, 0, 20000, 1000, 'เดิน (ก้าว)', 'steps');
               }),
           ListTile(
-              leading: Icon(Icons.favorite, color: Colors.grey[500]),
-              title: Text("อัตราการเต้นของหัวใจ"),
-              trailing: Text("${monitorData['hr'] ?? ''} bpm",
+              leading: Icon(Icons.fastfood, color: Colors.grey[500]),
+              title: Text("วิ่ง"),
+              trailing: Text("${monitorData['run'] ?? ''} นาที",
                   style: TextStyle(color: Colors.grey[500])),
               onTap: () {
-                _showHeartRatePicker(context);
+                _showPickerNumber(context, 0, 500, 20, 'วิ่ง (นาที)', 'run');
+              }),
+          ListTile(
+              leading: Icon(Icons.brightness_high, color: Colors.grey[500]),
+              title: Text("ปั่นจักรยาน"),
+              trailing: Text("${monitorData['cycling'] ?? ''} นาที",
+                  style: TextStyle(color: Colors.grey[500])),
+              onTap: () {
+                _showPickerNumber(
+                    context, 0, 500, 20, 'ปั่นจักรยาน (นาที)', 'cycling');
+              }),
+          ListTile(
+              leading: Icon(Icons.low_priority, color: Colors.grey[500]),
+              title: Text("ออกกำลังกายแบบอื่นๆ"),
+              trailing: Text("${monitorData['etc'] ?? ''} นาที",
+                  style: TextStyle(color: Colors.grey[500])),
+              onTap: () {
+                _showPickerNumber(context, 0, 500, 20, 'อื่นๆ (นาที)', 'etc');
               }),
           SizedBox(height: 24),
           Padding(
@@ -92,6 +105,19 @@ class _DataEntryDialogState extends State<DataEntryDialog> {
               padding: EdgeInsets.all(12),
               color: AppTheme.buttonColor,
               child: Text('Save',
+                  style: TextStyle(color: Colors.white, fontSize: 16)),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: RaisedButton(
+              elevation: 1.0,
+              onPressed: () async {
+                FitKitData().revokePermissions();
+              },
+              padding: EdgeInsets.all(12),
+              color: AppTheme.buttonColor,
+              child: Text('Remove Google Fit',
                   style: TextStyle(color: Colors.white, fontSize: 16)),
             ),
           )
@@ -134,59 +160,14 @@ class _DataEntryDialogState extends State<DataEntryDialog> {
       showInSnackBar("No Internet Connection");
       return;
     }
-
-    // int timestamp = monitorData['date'].millisecondsSinceEpoch;
-
-    // DocumentReference monitor = Firestore.instance
-    //     .collection("monitor")
-    //     .document(currentUser.uid)
-    //     .collection(collection)
-    //     .document(timestamp.toString());
-    // Firestore.instance.runTransaction((transaction) async {
-    //   await transaction.set(monitor, monitorData);
-    // });
-    // showInSnackBar("Successful");
   }
 
-  _showPressurePicker(BuildContext context) {
-    new Picker(
-        adapter: NumberPickerAdapter(data: [
-          NumberPickerColumn(begin: 80, end: 200, initValue: 110),
-          NumberPickerColumn(begin: 50, end: 120, initValue: 70),
-        ]),
-        delimiter: [
-          PickerDelimiter(
-              child: Container(
-            width: 30.0,
-            alignment: Alignment.center,
-            child: Text(
-              '/',
-              style: TextStyle(color: Colors.blue, fontSize: 20.0),
-            ),
-          ))
-        ],
-        textStyle: TextStyle(color: Colors.blue, fontSize: 20.0),
-        confirmText: 'OK',
-        cancelText: 'CANCEL',
-        itemExtent: 40.0,
-        hideHeader: true,
-        title: Text("ความดันเลือด"),
-        onConfirm: (Picker picker, List value) {
-          setState(() {
-            monitorData['pressureUpper'] = picker.getSelectedValues()[0];
-            monitorData['pressureLower'] = picker.getSelectedValues()[1];
-            _pressureText = monitorData['pressureUpper'].toString() +
-                '/' +
-                monitorData['pressureLower'].toString();
-          });
-        }).showDialog(context);
-  }
-
-  _showHeartRatePicker(BuildContext context) {
+  _showPickerNumber(BuildContext context, int begin, int end, int initValue,
+      String title, String updateKey) {
     new Picker(
         adapter: NumberPickerAdapter(
           data: [
-            NumberPickerColumn(begin: 20, end: 220, initValue: 60),
+            NumberPickerColumn(begin: begin, end: end, initValue: initValue),
           ],
         ),
         hideHeader: true,
@@ -194,10 +175,10 @@ class _DataEntryDialogState extends State<DataEntryDialog> {
         confirmText: 'OK',
         cancelText: 'CANCEL',
         itemExtent: 40.0,
-        title: Text("ครั้งต่อนาที"),
+        title: Text(title),
         onConfirm: (Picker picker, List value) {
           setState(() {
-            monitorData['hr'] = picker.getSelectedValues()[0];
+            monitorData[updateKey] = picker.getSelectedValues()[0];
           });
         }).showDialog(context);
   }

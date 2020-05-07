@@ -1,4 +1,4 @@
-import 'package:wellness/fitness_app/fitness_app_theme.dart';
+import 'package:wellness/fitness_app/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class TitleView extends StatelessWidget {
@@ -39,11 +39,11 @@ class TitleView extends StatelessWidget {
                         titleTxt,
                         textAlign: TextAlign.left,
                         style: TextStyle(
-                          fontFamily: FitnessAppTheme.fontName,
+                          fontFamily: AppTheme.fontName,
                           fontWeight: FontWeight.w500,
                           fontSize: 18,
                           letterSpacing: 0.5,
-                          color: FitnessAppTheme.lightText,
+                          color: AppTheme.lightText,
                         ),
                       ),
                     ),
@@ -55,23 +55,23 @@ class TitleView extends StatelessWidget {
                         padding: const EdgeInsets.only(left: 8),
                         child: Row(
                           children: <Widget>[
-                            Text(
-                              subTxt,
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                fontFamily: FitnessAppTheme.fontName,
-                                fontWeight: FontWeight.normal,
-                                fontSize: 16,
-                                letterSpacing: 0.5,
-                                color: FitnessAppTheme.nearlyDarkBlue,
-                              ),
-                            ),
+                            // Text(
+                            //   subTxt,
+                            //   textAlign: TextAlign.left,
+                            //   style: TextStyle(
+                            //     fontFamily: AppTheme.fontName,
+                            //     fontWeight: FontWeight.normal,
+                            //     fontSize: 16,
+                            //     letterSpacing: 0.5,
+                            //     color: AppTheme.nearlyDarkBlue,
+                            //   ),
+                            // ),
                             SizedBox(
                               height: 38,
                               width: 26,
                               child: Icon(
-                                Icons.arrow_forward,
-                                color: FitnessAppTheme.darkText,
+                                Icons.more_vert,
+                                color: AppTheme.darkText,
                                 size: 18,
                               ),
                             ),
