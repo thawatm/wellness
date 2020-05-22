@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
-import 'package:wellness/fitness_app/app_theme.dart';
+import 'package:wellness/dashboard/app_theme.dart';
 import 'package:wellness/models/state_model.dart';
 import 'package:wellness/models/userdata.dart';
 import 'package:wellness/widgets/edit_profile.dart';

@@ -6,8 +6,10 @@ import '../app_theme.dart';
 class GlassView extends StatelessWidget {
   final AnimationController animationController;
   final Animation animation;
+  final String text;
 
-  const GlassView({Key key, this.animationController, this.animation})
+  const GlassView(
+      {Key key, this.animationController, this.animation, this.text})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -50,7 +52,7 @@ class GlassView extends StatelessWidget {
                                 padding: const EdgeInsets.only(
                                     left: 68, bottom: 12, right: 16, top: 12),
                                 child: Text(
-                                  "Simple 7 is the 7 risk factors that people can improve through lifestyle changes to help achieve ideal cardiovascular health.",
+                                  text,
                                   textAlign: TextAlign.left,
                                   style: TextStyle(
                                     fontFamily: AppTheme.fontName,

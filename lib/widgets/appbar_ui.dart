@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:wellness/fitness_app/app_theme.dart';
+import 'package:wellness/dashboard/app_theme.dart';
 
 class AppBarUI extends StatelessWidget {
   final AnimationController animationController;
@@ -8,12 +8,14 @@ class AppBarUI extends StatelessWidget {
   final double topBarOpacity;
   final String title;
   final bool isPop;
+  final Widget calendar;
   AppBarUI(
       {@required this.animationController,
       @required this.topBarAnimation,
       @required this.topBarOpacity,
       @required this.title,
-      this.isPop: false});
+      this.isPop: false,
+      this.calendar});
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -69,17 +71,18 @@ class AppBarUI extends StatelessWidget {
                             Expanded(
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  title,
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                    fontFamily: AppTheme.fontName,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 22 + 6 - 6 * topBarOpacity,
-                                    letterSpacing: 1.2,
-                                    color: AppTheme.darkerText,
-                                  ),
-                                ),
+                                child: calendar ??
+                                    Text(
+                                      title,
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                        fontFamily: AppTheme.fontName,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 22 + 6 - 6 * topBarOpacity,
+                                        letterSpacing: 1.2,
+                                        color: AppTheme.darkerText,
+                                      ),
+                                    ),
                               ),
                             ),
                           ],

@@ -3,12 +3,13 @@ import 'package:wellness/dashboard/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:wellness/widgets/weeklybar_chart.dart';
 
-class StepCountChartView extends StatelessWidget {
+class TotalWorkoutChartView extends StatelessWidget {
   final String uid;
   final DateTime startDate;
   final QuerySnapshot snapshot;
 
-  const StepCountChartView({Key key, this.uid, this.startDate, this.snapshot})
+  const TotalWorkoutChartView(
+      {Key key, this.uid, this.startDate, this.snapshot})
       : super(key: key);
 
   @override
@@ -33,10 +34,10 @@ class StepCountChartView extends StatelessWidget {
         child: WeeklyBarChart(
           snapshot: snapshot,
           startDate: startDate,
-          value: 'steps',
-          barColor: Colors.orange,
-          scale: 2000,
-          unit: ' ก้าว',
+          value: 'totalWorkout',
+          barColor: Colors.blueAccent,
+          scale: 20,
+          unit: ' นาที',
         ),
         // child: BarChartSample1(),
       ),

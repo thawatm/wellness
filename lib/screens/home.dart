@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:collection/collection.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:wellness/fitness_app/app_theme.dart';
-import 'package:wellness/fitness_app/my_diary/my_diary_screen.dart';
+import 'package:wellness/dashboard/app_theme.dart';
+import 'package:wellness/dashboard/my_diary/my_diary_screen.dart';
 import 'package:wellness/models/fitkitdata.dart';
 import 'package:wellness/models/state_model.dart';
 import 'package:wellness/report/report_screen.dart';
@@ -62,6 +62,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     Map<String, dynamic> monitorData = {
       'date': recordDate,
       'steps': stepsCount,
+      'totalWorkout': stepsCount ~/ 400,
     };
 
     DocumentReference monitor = Firestore.instance

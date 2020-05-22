@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:wellness/fitness_app/app_theme.dart';
+import 'package:wellness/dashboard/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:wellness/models/sleepdata.dart';
 import 'package:wellness/models/state_model.dart';

@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
-import 'package:wellness/fitness_app/app_theme.dart';
+import 'package:wellness/dashboard/app_theme.dart';
 import 'package:wellness/models/fooddata.dart';
 import 'package:wellness/models/state_model.dart';
 import 'package:wellness/widgets/bar_chart.dart';

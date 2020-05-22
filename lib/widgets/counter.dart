@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wellness/fitness_app/app_theme.dart';
+import 'package:wellness/dashboard/app_theme.dart';
 
 class Counter extends StatelessWidget {
   final num number;

@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:wellness/fitness_app/app_theme.dart';
+import 'package:wellness/dashboard/app_theme.dart';
 import 'package:wellness/models/healthdata.dart';
 import 'package:wellness/screens/blood_data_entry.dart';
 import 'package:wellness/widgets/chart.dart';

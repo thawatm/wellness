@@ -6,7 +6,7 @@ import 'package:collection/collection.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wellness/fitness_app/app_theme.dart';
+import 'package:wellness/dashboard/app_theme.dart';
 import 'package:wellness/models/state_model.dart';
 import 'package:wellness/models/waterdata.dart';
 import 'package:wellness/widgets/bar_chart.dart';

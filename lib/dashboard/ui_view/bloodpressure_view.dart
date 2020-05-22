@@ -2,49 +2,49 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:wellness/fitness_app/app_theme.dart';
+import 'package:wellness/dashboard/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:wellness/models/healthdata.dart';
 import 'package:wellness/models/state_model.dart';
 import 'package:wellness/widgets/counter.dart';
 
-class FatView extends StatelessWidget {
+class BloodPressureView extends StatelessWidget {
   final AnimationController animationController;
   final Animation animation;
 
-  const FatView({Key key, this.animationController, this.animation})
+  const BloodPressureView({Key key, this.animationController, this.animation})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     FirebaseUser currentUser = ScopedModel.of<StateModel>(context).currentUser;
-    double bodyFat = 0;
-    int bodyAge = 0;
-    double visceralFat = 0;
-    String recordDate = 'ไม่มีข้อมูล';
+    int bpupper = 0;
+    int bplower = 0;
+    int pulse = 0;
+    String recordDate = '';
 
     return StreamBuilder<QuerySnapshot>(
       stream: Firestore.instance
           .collection('monitor')
           .document(currentUser.uid)
-          .collection('weightfat')
+          .collection('healthdata')
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return SizedBox();
         try {
-          DocumentSnapshot snapshotData = snapshot.data.documents
-              .lastWhere((v) => v.data['bodyFat'] != null);
+          DocumentSnapshot snapshotData = snapshot.data.documents.lastWhere(
+              (v) =>
+                  v.data['pressureUpper'] != null &&
+                  v.data['pressureLower'] != null);
 
           if (snapshotData != null) {
-            HealthMonitor fatData = HealthMonitor.fromSnapshot(snapshotData);
-            bodyAge = fatData.bodyAge ?? 0;
-            bodyFat = fatData.bodyFat ?? 0;
-            visceralFat = fatData.visceralFat ?? 0;
-            recordDate = DateFormat.yMMMd().format(fatData.date);
+            HealthMonitor bloodData = HealthMonitor.fromSnapshot(snapshotData);
+            bpupper = bloodData.pressureUpper ?? 0;
+            bplower = bloodData.pressureLower ?? 0;
+            pulse = bloodData.hr ?? 0;
+            recordDate = DateFormat.yMMMd().format(bloodData.date);
           }
-        } catch (e) {
-          print(e);
-        }
+        } catch (e) {}
         return AnimatedBuilder(
           animation: animationController,
           builder: (BuildContext context, Widget child) {
@@ -81,19 +81,19 @@ class FatView extends StatelessWidget {
                                     MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
                                   Counter(
-                                    color: AppTheme.nearlyDarkBlue,
-                                    number: bodyFat,
-                                    title: "Body Fat",
+                                    color: AppTheme.kRecovercolor,
+                                    number: bpupper,
+                                    title: "ตัวบน",
+                                  ),
+                                  Counter(
+                                    color: AppTheme.kRecovercolor,
+                                    number: bplower,
+                                    title: "ตัวล่าง",
                                   ),
                                   Counter(
                                     color: AppTheme.nearlyDarkBlue,
-                                    number: visceralFat,
-                                    title: "Visceral Fat",
-                                  ),
-                                  Counter(
-                                    color: AppTheme.nearlyDarkBlue,
-                                    number: bodyAge,
-                                    title: "Body Age",
+                                    number: pulse,
+                                    title: "Pulse",
                                   ),
                                 ])),
                         Padding(

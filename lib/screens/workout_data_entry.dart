@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_picker/flutter_picker.dart';
-import 'package:wellness/fitness_app/app_theme.dart';
+import 'package:wellness/dashboard/app_theme.dart';
 import 'package:wellness/models/fitkitdata.dart';
 import 'package:wellness/models/state_model.dart';
 import 'package:intl/intl.dart';
@@ -142,6 +142,11 @@ class _WorkoutDataEntryState extends State<WorkoutDataEntry> {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         int timestamp = monitorData['date'].millisecondsSinceEpoch;
+
+        monitorData['totalWorkout'] = monitorData['run'] ??
+            0 + monitorData['cycling'] ??
+            0 + monitorData['etc'] ??
+            0;
 
         DocumentReference monitor = Firestore.instance
             .collection("monitor")

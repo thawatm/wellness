@@ -2,49 +2,49 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:wellness/fitness_app/app_theme.dart';
+import 'package:wellness/dashboard/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:wellness/models/healthdata.dart';
 import 'package:wellness/models/state_model.dart';
 import 'package:wellness/widgets/counter.dart';
 
-class BloodPressureView extends StatelessWidget {
+class FatView extends StatelessWidget {
   final AnimationController animationController;
   final Animation animation;
 
-  const BloodPressureView({Key key, this.animationController, this.animation})
+  const FatView({Key key, this.animationController, this.animation})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     FirebaseUser currentUser = ScopedModel.of<StateModel>(context).currentUser;
-    int bpupper = 0;
-    int bplower = 0;
-    int pulse = 0;
-    String recordDate = '';
+    double bodyFat = 0;
+    int bodyAge = 0;
+    double visceralFat = 0;
+    String recordDate = 'ไม่มีข้อมูล';
 
     return StreamBuilder<QuerySnapshot>(
       stream: Firestore.instance
           .collection('monitor')
           .document(currentUser.uid)
-          .collection('healthdata')
+          .collection('weightfat')
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return SizedBox();
         try {
-          DocumentSnapshot snapshotData = snapshot.data.documents.lastWhere(
-              (v) =>
-                  v.data['pressureUpper'] != null &&
-                  v.data['pressureLower'] != null);
+          DocumentSnapshot snapshotData = snapshot.data.documents
+              .lastWhere((v) => v.data['bodyFat'] != null);
 
           if (snapshotData != null) {
-            HealthMonitor bloodData = HealthMonitor.fromSnapshot(snapshotData);
-            bpupper = bloodData.pressureUpper ?? 0;
-            bplower = bloodData.pressureLower ?? 0;
-            pulse = bloodData.hr ?? 0;
-            recordDate = DateFormat.yMMMd().format(bloodData.date);
+            HealthMonitor fatData = HealthMonitor.fromSnapshot(snapshotData);
+            bodyAge = fatData.bodyAge ?? 0;
+            bodyFat = fatData.bodyFat ?? 0;
+            visceralFat = fatData.visceralFat ?? 0;
+            recordDate = DateFormat.yMMMd().format(fatData.date);
           }
-        } catch (e) {}
+        } catch (e) {
+          print(e);
+        }
         return AnimatedBuilder(
           animation: animationController,
           builder: (BuildContext context, Widget child) {
@@ -81,19 +81,19 @@ class BloodPressureView extends StatelessWidget {
                                     MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
                                   Counter(
-                                    color: AppTheme.kRecovercolor,
-                                    number: bpupper,
-                                    title: "ตัวบน",
-                                  ),
-                                  Counter(
-                                    color: AppTheme.kRecovercolor,
-                                    number: bplower,
-                                    title: "ตัวล่าง",
+                                    color: AppTheme.nearlyDarkBlue,
+                                    number: bodyFat,
+                                    title: "Body Fat",
                                   ),
                                   Counter(
                                     color: AppTheme.nearlyDarkBlue,
-                                    number: pulse,
-                                    title: "Pulse",
+                                    number: visceralFat,
+                                    title: "Visceral Fat",
+                                  ),
+                                  Counter(
+                                    color: AppTheme.nearlyDarkBlue,
+                                    number: bodyAge,
+                                    title: "Body Age",
                                   ),
                                 ])),
                         Padding(

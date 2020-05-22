@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 
 import 'package:modal_progress_hud/modal_progress_hud.dart';
-import 'package:wellness/fitness_app/app_theme.dart';
+import 'package:wellness/dashboard/app_theme.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -298,7 +298,8 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
     if (snap.data == null) {
       Navigator.pushReplacementNamed(context, '/newuser');
     } else {
-      Navigator.pop(context);
+      // Navigator.pop(context);
+      Navigator.pushReplacementNamed(context, '/');
     }
   }
 }

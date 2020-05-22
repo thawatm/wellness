@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:wellness/fitness_app/app_theme.dart';
+import 'package:wellness/dashboard/app_theme.dart';
 import 'package:wellness/main.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
@@ -10,12 +10,11 @@ import 'dart:math' as math;
 import 'package:wellness/models/state_model.dart';
 import 'package:wellness/models/workoutdata.dart';
 
-class MediterranesnDietView extends StatelessWidget {
+class WorkoutView extends StatelessWidget {
   final AnimationController animationController;
   final Animation animation;
 
-  const MediterranesnDietView(
-      {Key key, this.animationController, this.animation})
+  const WorkoutView({Key key, this.animationController, this.animation})
       : super(key: key);
 
   @override
@@ -83,7 +82,7 @@ class MediterranesnDietView extends StatelessWidget {
                     0.0, 30 * (1.0 - animation.value), 0.0),
                 child: Padding(
                   padding: const EdgeInsets.only(
-                      left: 24, right: 24, top: 16, bottom: 18),
+                      left: 24, right: 24, top: 16, bottom: 0),
                   child: Container(
                     decoration: BoxDecoration(
                       color: AppTheme.white,

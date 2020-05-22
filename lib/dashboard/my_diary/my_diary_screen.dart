@@ -1,13 +1,13 @@
-import 'package:wellness/fitness_app/ui_view/bloodpressure_view.dart';
-import 'package:wellness/fitness_app/ui_view/bloodtest_view.dart';
-import 'package:wellness/fitness_app/ui_view/body_measurement.dart';
-import 'package:wellness/fitness_app/ui_view/fat_view.dart';
-import 'package:wellness/fitness_app/ui_view/mediterranesn_diet_view.dart';
-import 'package:wellness/fitness_app/ui_view/sleep_view.dart';
-import 'package:wellness/fitness_app/app_theme.dart';
-import 'package:wellness/fitness_app/my_diary/meals_list_view.dart';
-import 'package:wellness/fitness_app/my_diary/water_view.dart';
+import 'package:wellness/dashboard/ui_view/bloodpressure_view.dart';
+import 'package:wellness/dashboard/ui_view/bloodtest_view.dart';
+import 'package:wellness/dashboard/ui_view/body_measurement.dart';
+import 'package:wellness/dashboard/ui_view/fat_view.dart';
+import 'package:wellness/dashboard/ui_view/sleep_view.dart';
+import 'package:wellness/dashboard/app_theme.dart';
+import 'package:wellness/dashboard/my_diary/meals_list_view.dart';
+import 'package:wellness/dashboard/my_diary/water_view.dart';
 import 'package:flutter/material.dart';
+import 'package:wellness/dashboard/ui_view/workout_view.dart';
 import 'package:wellness/models/userdata.dart';
 import 'package:wellness/widgets/appbar_ui.dart';
 
@@ -79,7 +79,7 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
     listViews.add(
       InkWell(
         onTap: () => Navigator.of(context).pushNamed('/workout'),
-        child: MediterranesnDietView(
+        child: WorkoutView(
           animation: Tween<double>(begin: 0.0, end: 1.0).animate(
               CurvedAnimation(
                   parent: widget.animationController,

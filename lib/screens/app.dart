@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wellness/screens/blood_tests.dart';
 import 'package:wellness/screens/contact.dart';
 import 'package:wellness/screens/fat.dart';
+import 'package:wellness/screens/intro_page.dart';
 import 'package:wellness/screens/medical_profile.dart';
 import 'package:wellness/screens/newuser.dart';
 import 'package:wellness/screens/user_profile.dart';
@@ -66,7 +67,7 @@ class WellnessApp extends StatelessWidget {
           return HomePage();
         } else {
           ScopedModel.of<StateModel>(context).dispose();
-          return LoginPage();
+          return IntroPage();
         }
       },
     );
