@@ -2,7 +2,6 @@ import 'package:charts_flutter/flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/painting.dart';
 import 'package:wellness/dashboard/app_theme.dart';
 import 'package:wellness/models/healthdata.dart';
@@ -24,7 +23,7 @@ class HealthMonitorPage extends StatefulWidget {
 class _HealthMonitorPageState extends State<HealthMonitorPage> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   ScrollController _scrollViewController;
-  FirebaseUser currentUser;
+  String uid;
   List<DocumentSnapshot> healthData;
   List<HealthMonitor> pressureData;
   List<HealthMonitor> hrData;
@@ -44,7 +43,7 @@ class _HealthMonitorPageState extends State<HealthMonitorPage> {
   void initState() {
     super.initState();
     _scrollViewController = ScrollController();
-    currentUser = ScopedModel.of<StateModel>(context).currentUser;
+    uid = ScopedModel.of<StateModel>(context).uid;
     DateTime now = DateTime.now();
     today = DateTime(now.year, now.month, now.day);
   }
@@ -109,8 +108,8 @@ class _HealthMonitorPageState extends State<HealthMonitorPage> {
             },
             body: StreamBuilder<QuerySnapshot>(
                 stream: Firestore.instance
-                    .collection('monitor')
-                    .document(currentUser.uid)
+                    .collection('wellness_data')
+                    .document(uid)
                     .collection(collection)
                     .snapshots(),
                 builder: (context, snapshot) {
@@ -146,8 +145,8 @@ class _HealthMonitorPageState extends State<HealthMonitorPage> {
                           ? FirstLoad(title: "เพิ่มข้อมูลใหม่\nแตะที่แทบด้านบน")
                           : HistoryList(
                               snapshot: healthData,
-                              currentUser: currentUser,
-                              collection: collection,
+                              uid: uid,
+                              collection: 'pressure',
                             ),
                     ],
                   );

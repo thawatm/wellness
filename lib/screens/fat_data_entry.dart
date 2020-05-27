@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_picker/flutter_picker.dart';
@@ -18,8 +17,8 @@ class FatDataEntry extends StatefulWidget {
 
 class _FatDataEntryState extends State<FatDataEntry> {
   // final _scaffoldKey = GlobalKey<ScaffoldState>();
-  FirebaseUser currentUser;
-  String collection = 'weightfat';
+  String uid;
+  String collection = 'healthdata';
   int height = 170;
 
   Map<String, dynamic> monitorData = {
@@ -29,16 +28,7 @@ class _FatDataEntryState extends State<FatDataEntry> {
   @override
   void initState() {
     super.initState();
-    currentUser = ScopedModel.of<StateModel>(context).currentUser;
-
-    final DocumentReference ref =
-        Firestore.instance.collection('users').document(currentUser.uid);
-
-    ref.get().then((snapshot) {
-      if (snapshot.data.containsKey('height')) {
-        height = int.parse(snapshot.data['height']);
-      }
-    });
+    uid = ScopedModel.of<StateModel>(context).uid;
   }
 
   @override
@@ -179,14 +169,14 @@ class _FatDataEntryState extends State<FatDataEntry> {
         int timestamp = monitorData['date'].millisecondsSinceEpoch;
 
         DocumentReference monitor = Firestore.instance
-            .collection("monitor")
-            .document(currentUser.uid)
+            .collection('wellness_data')
+            .document(uid)
             .collection(collection)
             .document(timestamp.toString());
         Firestore.instance.runTransaction((transaction) async {
           await transaction
               .set(monitor, monitorData)
-              .whenComplete(() => showInSnackBar("Successful"));
+              .whenComplete(() => Navigator.pop(context));
         });
       } else {
         showInSnackBar("No Internet Connection");
@@ -199,7 +189,7 @@ class _FatDataEntryState extends State<FatDataEntry> {
     // int timestamp = monitorData['date'].millisecondsSinceEpoch;
 
     // DocumentReference monitor = Firestore.instance
-    //     .collection("monitor")
+    //     .collection('wellness_data')
     //     .document(currentUser.uid)
     //     .collection(collection)
     //     .document(timestamp.toString());

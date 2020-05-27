@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wellness/dashboard/app_theme.dart';
 import 'package:wellness/report/weekly_card.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class Simple7Card extends StatelessWidget {
   final String workout;
@@ -52,9 +53,9 @@ class Simple7Card extends StatelessWidget {
           children: <Widget>[
             SizedBox(height: 10),
             WeeklyCard(
-              iconColor: Colors.blueGrey,
+              iconColor: Colors.blue,
               dataColor: Colors.green,
-              icon: Icons.fitness_center,
+              icon: FontAwesomeIcons.running,
               title: "ออกกำลังกายรวม",
               data: workout + " นาที",
               width: width - 16,
@@ -62,7 +63,7 @@ class Simple7Card extends StatelessWidget {
             WeeklyCard(
               iconColor: Colors.green,
               dataColor: Colors.green,
-              icon: Icons.album,
+              icon: FontAwesomeIcons.appleAlt,
               title: "ผักผลไม้เฉลี่ยวันละ",
               data: food + " ส่วน",
               width: width - 16,
@@ -73,7 +74,7 @@ class Simple7Card extends StatelessWidget {
                 WeeklyCard(
                   iconColor: Colors.teal,
                   dataColor: Colors.green,
-                  icon: Icons.person,
+                  icon: FontAwesomeIcons.weight,
                   title: "BMI",
                   data: bmi,
                   width: width / 2 - 16,
@@ -92,7 +93,7 @@ class Simple7Card extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 WeeklyCard(
-                  iconColor: Colors.blue,
+                  iconColor: Colors.grey,
                   dataColor: Colors.green,
                   icon: Icons.fastfood,
                   title: "ไขมันรวม",
@@ -102,7 +103,7 @@ class Simple7Card extends StatelessWidget {
                 WeeklyCard(
                   iconColor: Colors.purple,
                   dataColor: Colors.green,
-                  icon: Icons.menu,
+                  icon: FontAwesomeIcons.tint,
                   title: "LDL",
                   data: ldl,
                   width: width / 2 - 16,
@@ -115,7 +116,7 @@ class Simple7Card extends StatelessWidget {
                 WeeklyCard(
                   iconColor: Colors.orangeAccent,
                   dataColor: Colors.green,
-                  icon: Icons.subtitles,
+                  icon: FontAwesomeIcons.cookie,
                   title: "น้ำตาล",
                   data: glucose,
                   width: width / 2 - 16,
@@ -123,7 +124,7 @@ class Simple7Card extends StatelessWidget {
                 WeeklyCard(
                   iconColor: Colors.yellow.shade600,
                   dataColor: Colors.green,
-                  icon: Icons.list,
+                  icon: FontAwesomeIcons.stroopwafel,
                   title: "น้ำตาลสะสม",
                   data: hba1c,
                   width: width / 2 - 16,

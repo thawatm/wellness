@@ -3,19 +3,19 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:wellness/dashboard/app_theme.dart';
+import 'package:wellness/models/datepicker_custom.dart';
 import 'package:wellness/models/state_model.dart';
 import 'package:wellness/models/userdata.dart';
 import 'package:wellness/widgets/edit_profile.dart';
 import 'package:intl/intl.dart';
 import 'package:rounded_modal/rounded_modal.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:wellness/widgets/appbar_ui.dart';
 import 'package:wellness/widgets/image_source.dart';
 
@@ -33,10 +33,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
   // UserProfile profileData;
   TextEditingController _numberController;
-  FirebaseUser currentUser;
+  bool isLinkKiosk = false;
+  String uid;
 
   final FirebaseStorage storage =
-      FirebaseStorage(storageBucket: 'gs://wellness-296bf.appspot.com');
+      FirebaseStorage(storageBucket: 'gs://bsp-kiosk.appspot.com');
   UserProfile profileData;
   ImageProvider profileImage;
   bool _isTempImage = false;
@@ -72,7 +73,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
       }
     });
     super.initState();
-    currentUser = ScopedModel.of<StateModel>(context).currentUser;
+    uid = ScopedModel.of<StateModel>(context).uid;
   }
 
   @override
@@ -101,8 +102,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
   Widget _buildBody(BuildContext context) {
     return StreamBuilder<DocumentSnapshot>(
       stream: Firestore.instance
-          .collection('users')
-          .document(currentUser.uid)
+          .collection('wellness_users')
+          .document(uid)
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
@@ -114,6 +115,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
           profileImage = AssetImage('assets/images/user.png');
         }
 
+        final citizenId = snapshot.data.data['citizenId'];
+        (citizenId != null && citizenId.length == 13)
+            ? isLinkKiosk = true
+            : isLinkKiosk = false;
+
         return profileData != null
             ? _buildList(context, snapshot.data)
             : LinearProgressIndicator();
@@ -121,113 +127,161 @@ class _UserProfilePageState extends State<UserProfilePage> {
     );
   }
 
-  Widget _buildList(BuildContext context, DocumentSnapshot snapshot) {
-    Map<String, dynamic> header = {
-      'profileImage': 'รูปโปร์ไฟล์',
-      'firstName': 'ชื่อ',
-      'lastName': 'นามสกุล',
-      'memberId': 'เลขที่สมาชิก',
-      'phoneNumber': 'มือถือ',
-      'height': 'ส่วนสูง (cm)',
-      'sex': 'เพศ',
-      'birthday': 'วันเกิด',
-      'citizenId': 'เลขบัตรประชาชน',
-      'bloodGroup': 'กรุ๊ปเลือด',
-      'expense': 'สิทธิการรักษา',
-      'email': 'อีเมล',
-      'lineId': 'ไลน์ไอดี',
-      'address': 'ที่อยู่',
-    };
+  _buildList(BuildContext context, DocumentSnapshot data) {
+    String bDate = data['birthdate'] == null
+        ? ''
+        : DateFormat('dd/MM/yyyy').format(data['birthdate'].toDate());
+    String gender;
+    String smoke = (data['smoke']) ? 'สูบ' : 'ไม่สูบ';
 
-    return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.white,
-        borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(8.0),
-            bottomLeft: Radius.circular(8.0),
-            bottomRight: Radius.circular(8.0),
-            topRight: Radius.circular(8.0)),
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-              color: AppTheme.grey.withOpacity(0.2),
-              offset: Offset(1.1, 1.1),
-              blurRadius: 10.0),
-        ],
-      ),
-      child: ListView.builder(
-          controller: scrollController,
-          padding: EdgeInsets.only(
-            top: AppBar().preferredSize.height +
-                MediaQuery.of(context).padding.top +
-                24,
-            bottom: 62 + MediaQuery.of(context).padding.bottom,
-          ),
-          itemCount: header.length,
-          itemBuilder: (BuildContext context, int index) {
-            String key = header.keys.elementAt(index);
-            String value = "${snapshot.data[key] ?? ''}";
-            String subtitle = '';
+    if (data['gender'] == 'male') gender = 'ชาย';
+    if (data['gender'] == 'female') gender = 'หญิง';
 
-            if (key == 'birthday' && value != '') {
-              value = DateFormat.yMMMd().format(snapshot.data[key].toDate());
-            }
-
-            if (key == 'address' && value != '') {
-              subtitle = value;
-              value = '';
-            }
-
-            if (key == 'profileImage') {
-              return buildHeaderData();
-            }
-
-            return Column(
-              children: <Widget>[
-                ListTile(
-                    title: Text("${header[key]}",
-                        style: TextStyle(color: Colors.black54)),
-                    trailing: Text(value,
-                        style: TextStyle(
-                            color: Colors.lightBlue.shade700, fontSize: 16)),
-                    subtitle: subtitle != ''
-                        ? Padding(
-                            padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
-                            child: Text(subtitle,
-                                style: TextStyle(
-                                    color: Colors.lightBlue.shade700)))
-                        : null,
-                    onTap: () =>
-                        inputOption(key, header[key], snapshot.data[key])),
-                Divider(
-                  height: 2.0,
-                ),
-              ],
-            );
-          }),
+    return ListView(
+      padding: EdgeInsets.all(8),
+      children: <Widget>[
+        SizedBox(height: 80),
+        buildHeaderData(),
+        ListTile(
+          leading: Icon(FontAwesomeIcons.user),
+          title: Text("ชื่อ", style: TextStyle(color: Colors.black54)),
+          trailing: Text("${data['firstname'] ?? ''}",
+              style: TextStyle(color: Colors.cyan[800], fontSize: 16)),
+          onTap: () => inputOption('firstname', 'ชื่อ', data['firstname']),
+        ),
+        Divider(
+          height: 2.0,
+        ),
+        ListTile(
+          leading: Icon(FontAwesomeIcons.userFriends),
+          title: Text("นามสกุล", style: TextStyle(color: Colors.black54)),
+          trailing: Text("${data['lastname'] ?? ''}",
+              style: TextStyle(color: Colors.cyan[800], fontSize: 16)),
+          onTap: () => inputOption('lastname', 'นามสกุล', data['lastname']),
+        ),
+        Divider(
+          height: 2.0,
+        ),
+        ListTile(
+          leading: Icon(FontAwesomeIcons.venusMars),
+          title: Text("เพศ", style: TextStyle(color: Colors.black54)),
+          trailing: Text("${gender ?? ''}",
+              style: TextStyle(color: Colors.cyan[800], fontSize: 16)),
+          onTap: () => inputOption('gender', 'เพศ', gender),
+        ),
+        Divider(
+          height: 2.0,
+        ),
+        ListTile(
+          leading: Icon(FontAwesomeIcons.calendar),
+          title: Text("วันเกิด", style: TextStyle(color: Colors.black54)),
+          trailing: Text(bDate,
+              style: TextStyle(color: Colors.cyan[800], fontSize: 16)),
+          onTap: () => inputOption('birthdate', 'วันเกิด', data['birthdate']),
+        ),
+        Divider(
+          height: 2.0,
+        ),
+        ListTile(
+          leading: Icon(FontAwesomeIcons.male),
+          title: Text("ส่วนสูง", style: TextStyle(color: Colors.black54)),
+          trailing: Text("${data['height'] ?? '-'} cm",
+              style: TextStyle(color: Colors.cyan[800], fontSize: 16)),
+          onTap: () =>
+              inputOption('height', 'ส่วนสูง', data['height'].toString()),
+        ),
+        Divider(
+          height: 2.0,
+        ),
+        ListTile(
+          leading: data['smoke']
+              ? Icon(FontAwesomeIcons.smoking)
+              : Icon(FontAwesomeIcons.smokingBan),
+          title: Text("ท่านสูบบุหรีหรือไม่",
+              style: TextStyle(color: Colors.black54)),
+          trailing: Text("${smoke ?? 'ไม่ระบุ'} ",
+              style: TextStyle(color: Colors.cyan[800], fontSize: 16)),
+          onTap: () => inputOption('smoke', 'สูบบุหรี่', smoke),
+        ),
+        Divider(
+          height: 2.0,
+        ),
+        isLinkKiosk
+            ? ListTile(
+                leading: Icon(FontAwesomeIcons.idCard),
+                title: Text("เลขบัตรประชาชน",
+                    style: TextStyle(color: Colors.black54)),
+                trailing: Text("${data['citizenId'] ?? ''}",
+                    style: TextStyle(color: Colors.cyan[800], fontSize: 16)),
+                // onTap: () =>
+                //     inputOption('citizenId', 'เลขบัตรประชาชน', data['citizenId']),
+              )
+            : SizedBox(),
+        Divider(
+          height: 2.0,
+        ),
+        SizedBox(height: 30),
+        !isLinkKiosk
+            ? ListTile(
+                title: Wrap(
+                children: <Widget>[
+                  Text("เชื่อมต่อเพื่อดูข้อมูลจากระบบ NSTDA Kiosk",
+                      style: TextStyle(color: Colors.black54)),
+                  InkResponse(
+                    child: Text('(ดูข้อมูลเพิ่มเติม)',
+                        style: TextStyle(color: Colors.blue)),
+                    onTap: () {
+                      Navigator.pushNamed(context, '/kioskinfo');
+                    },
+                  )
+                ],
+              ))
+            : ListTile(
+                title: Text("ท่านได้เชื่อมต่อกับระบบ NSTDA Kiosk แล้ว",
+                    style: TextStyle(color: Colors.black54))),
+        isLinkKiosk ? unlinkKioskButton() : linkKioskButton(),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: FlatButton(
+              padding: EdgeInsets.all(12),
+              color: Colors.blueAccent,
+              child: Text('ข้อมูลทางการแพทย์',
+                  style: TextStyle(color: Colors.white, fontSize: 16)),
+              onPressed: () {
+                // await unlinkKiosk();
+                Navigator.pushNamed(context, '/medical');
+              }),
+        )
+      ],
     );
   }
 
-  void inputOption(String key, String title, dynamic value) {
+  void inputOption(String key, String title, dynamic value) async {
+    if (isLinkKiosk && key != 'height')
+      return _buildDialog(context, 'แจ้งเตือน',
+          'ไม่สามารถแก้ไขได้เนื่องจากท่านได้เชื่อมต่อข้อมูลกับระบบ NSTDA Kiosk');
     switch (key) {
-      case 'phoneNumber':
-        break;
-      case 'memberId':
-        break;
-      case 'birthday':
-        DatePicker.showDatePicker(
+      case 'birthdate':
+        DatePicker.showPicker(
           context,
           showTitleActions: true,
           onConfirm: (date) {
             saveData(key, date);
           },
           locale: LocaleType.en,
-          minTime: DateTime(1900, 01, 01),
-          currentTime: value != null ? value.toDate() : DateTime.now(),
+          pickerModel: DatePickerModelCustom(
+              locale: LocaleType.en,
+              minTime: DateTime(1900, 01, 01),
+              currentTime: value != null ? value.toDate() : DateTime.now()),
         );
         break;
-      case 'sex':
+      case 'gender':
         showRoundedModalBottomSheet(
-            context: context, builder: (context) => inputSex());
+            context: context, builder: (context) => inputGender());
+        break;
+      case 'smoke':
+        showRoundedModalBottomSheet(
+            context: context, builder: (context) => inputSmoke());
         break;
 
       case 'height':
@@ -242,9 +296,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
             context: context,
             builder: (context) => EditProfile(
                   updateKey: key,
-                  currentUser: currentUser,
                   title: title,
                   initialValue: value,
+                  uid: uid,
                 ));
     }
   }
@@ -280,14 +334,15 @@ class _UserProfilePageState extends State<UserProfilePage> {
             Container(
               height: 50,
               width: 150,
-              child: RaisedButton(
-                elevation: 7.0,
+              child: FlatButton(
                 onPressed: () {
-                  saveData(key, _numberController.value.text);
+                  dynamic updateValue = _numberController.value.text;
+                  if (key == 'height') updateValue = int.tryParse(updateValue);
+                  saveData(key, updateValue);
                   Navigator.pop(context);
                 },
                 padding: EdgeInsets.all(12),
-                color: Colors.blueAccent,
+                color: Colors.blue,
                 child: Text('Save',
                     style: TextStyle(color: Colors.white, fontSize: 16)),
               ),
@@ -296,21 +351,21 @@ class _UserProfilePageState extends State<UserProfilePage> {
         ));
   }
 
-  Widget inputSex() {
+  Widget inputGender() {
     return Container(
       height: 250,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           InkWell(
             onTap: () {
-              saveData('sex', 'ชาย');
+              saveData('gender', 'male');
               Navigator.pop(context);
             },
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Icon(MdiIcons.humanMale, size: 60, color: Colors.blue),
+                Icon(FontAwesomeIcons.male, size: 60, color: Colors.blue),
                 Text(
                   'ชาย',
                   style: TextStyle(fontSize: 18, color: Colors.black54),
@@ -318,16 +373,16 @@ class _UserProfilePageState extends State<UserProfilePage> {
               ],
             ),
           ),
-          SizedBox(width: 70),
           InkWell(
             onTap: () {
-              saveData('sex', 'หญิง');
+              saveData('gender', 'female');
               Navigator.pop(context);
             },
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Icon(MdiIcons.humanFemale, size: 60, color: Colors.pink[300]),
+                Icon(FontAwesomeIcons.female,
+                    size: 60, color: Colors.pink[300]),
                 Text(
                   'หญิง',
                   style: TextStyle(fontSize: 18, color: Colors.black54),
@@ -340,17 +395,124 @@ class _UserProfilePageState extends State<UserProfilePage> {
     );
   }
 
+  Widget inputSmoke() {
+    return Container(
+      height: 250,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          InkWell(
+            onTap: () {
+              saveData('smoke', true);
+              Navigator.pop(context);
+            },
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(FontAwesomeIcons.smoking, size: 60, color: Colors.red),
+                Text(
+                  'สูบ',
+                  style: TextStyle(fontSize: 18, color: Colors.black54),
+                ),
+              ],
+            ),
+          ),
+          InkWell(
+            onTap: () {
+              saveData('smoke', false);
+              Navigator.pop(context);
+            },
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(FontAwesomeIcons.smokingBan,
+                    size: 60, color: Colors.green),
+                Text(
+                  'ไม่สูบ',
+                  style: TextStyle(fontSize: 18, color: Colors.black54),
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
   saveData(String updateKey, dynamic value) {
-    if (value == null) return;
+    if (value == null || uid == null) return;
     Map updateData = Map<String, dynamic>();
 
     updateData[updateKey] = value;
 
     DocumentReference ref =
-        Firestore.instance.collection("users").document(currentUser.uid);
+        Firestore.instance.collection('wellness_users').document(uid);
     Firestore.instance.runTransaction((transaction) async {
       await transaction.update(ref, updateData);
     });
+  }
+
+  unlinkKiosk() async {
+    Map updateData = Map<String, dynamic>();
+    updateData['citizenId'] = '';
+    DocumentReference ref =
+        Firestore.instance.collection('wellness_users').document(uid);
+    Firestore.instance.runTransaction((transaction) {
+      transaction.update(ref, updateData).then((_) => _buildDialog(
+          context, 'ยกเลิก', 'ยกเลิกการเชื่อมต่อกับ NSTDA Kiosk สำเร็จ'));
+      return;
+    });
+  }
+
+  Widget unlinkKioskButton() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      child: OutlineButton(
+          padding: EdgeInsets.all(12),
+          color: Colors.blueAccent,
+          borderSide: BorderSide(color: Colors.blue.shade600),
+          child: Text('ยกเลิกการเชื่อมต่อ',
+              style: TextStyle(color: Colors.blue.shade600, fontSize: 16)),
+          onPressed: () async {
+            await unlinkKiosk();
+          }),
+    );
+  }
+
+  Widget linkKioskButton() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: FlatButton(
+          padding: EdgeInsets.all(12),
+          color: Colors.blueAccent,
+          child: Text('เชื่อมต่อกับ NSTDA Kiosk',
+              style: TextStyle(color: Colors.white, fontSize: 16)),
+          onPressed: () {
+            // await unlinkKiosk();
+            Navigator.pushNamed(context, '/verifycitizenId');
+          }),
+    );
+  }
+
+  Future _buildDialog(BuildContext context, _title, _message) {
+    return showDialog(
+      builder: (context) {
+        return AlertDialog(
+          // shape: RoundedRectangleBorder(
+          //     borderRadius: BorderRadius.all(Radius.circular(5))),
+          title: Text(_title),
+          content: Text(_message),
+          actions: <Widget>[
+            FlatButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                })
+          ],
+        );
+      },
+      context: context,
+    );
   }
 
   Widget buildHeaderData() {
@@ -360,8 +522,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
       children: <Widget>[
         InkWell(
           child: Container(
-            height: 120,
-            width: 120,
+            height: 80,
+            width: 80,
             decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: new Border.all(color: Colors.grey.shade300, width: 2),
@@ -377,12 +539,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     onTabGallery: () => getGalleryImage(),
                   )),
         ),
-        // SizedBox(height: 10),
-        // Text(
-        //   "เลขที่สมาชิก: ${profileData.memberId ?? '-'}",
-        //   style: TextStyle(color: AppTheme.lightText, fontSize: 18),
-        // ),
-        SizedBox(height: 20),
       ],
     );
   }
@@ -418,7 +574,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   uploadPictureProfile(File image) {
     Map updateData = Map<String, dynamic>();
 
-    final uploadPath = '/profile_images/' + currentUser.uid + '.jpg';
+    final uploadPath = '/profile_images/' + uid + '.jpg';
     final StorageReference ref = storage.ref().child(uploadPath);
     final StorageUploadTask uploadTask = ref.putFile(image);
 
@@ -428,7 +584,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
       updateData['pictureUrl'] = url;
 
       DocumentReference ref =
-          Firestore.instance.collection("users").document(currentUser.uid);
+          Firestore.instance.collection('wellness_users').document(uid);
 
       Firestore.instance.runTransaction((transaction) async {
         await transaction.update(ref, updateData);

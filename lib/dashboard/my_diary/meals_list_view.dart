@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:wellness/dashboard/app_theme.dart';
@@ -28,13 +27,13 @@ class _MealsListViewState extends State<MealsListView>
   List<MealsListData> mealsListData;
   // MealsListData mealsListData;
 
-  FirebaseUser currentUser;
+  String uid;
   List<FoodMonitor> todayData;
   String today = DateFormat.yMd().format(DateTime.now());
 
   @override
   void initState() {
-    currentUser = ScopedModel.of<StateModel>(context).currentUser;
+    uid = ScopedModel.of<StateModel>(context).uid;
     animationController = AnimationController(
         duration: const Duration(milliseconds: 2000), vsync: this);
     super.initState();
@@ -50,8 +49,8 @@ class _MealsListViewState extends State<MealsListView>
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
       stream: Firestore.instance
-          .collection('monitor')
-          .document(currentUser.uid)
+          .collection('wellness_data')
+          .document(uid)
           .collection('food')
           .snapshots(),
       builder: (context, snapshot) {
@@ -68,7 +67,7 @@ class _MealsListViewState extends State<MealsListView>
             .map((f) => MealsListData(
                   imagePath: f.imageUrl,
                   titleTxt: f.menu,
-                  serving: f.calories,
+                  serving: f.serving,
                   meals: <String>['', f.dateString],
                   startColor: '#6F72CA',
                   endColor: '#1E1466',

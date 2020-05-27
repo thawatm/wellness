@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:wellness/dashboard/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:wellness/models/healthdata.dart';
+import 'package:wellness/models/rulebase_ai.dart';
 import 'package:wellness/models/state_model.dart';
 import 'package:wellness/widgets/counter.dart';
 
@@ -17,7 +18,7 @@ class FatView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FirebaseUser currentUser = ScopedModel.of<StateModel>(context).currentUser;
+    String uid = ScopedModel.of<StateModel>(context).uid;
     double bodyFat = 0;
     int bodyAge = 0;
     double visceralFat = 0;
@@ -25,9 +26,9 @@ class FatView extends StatelessWidget {
 
     return StreamBuilder<QuerySnapshot>(
       stream: Firestore.instance
-          .collection('monitor')
-          .document(currentUser.uid)
-          .collection('weightfat')
+          .collection('wellness_data')
+          .document(uid)
+          .collection('healthdata')
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return SizedBox();
@@ -55,7 +56,7 @@ class FatView extends StatelessWidget {
                     0.0, 30 * (1.0 - animation.value), 0.0),
                 child: Padding(
                   padding: const EdgeInsets.only(
-                      left: 24, right: 24, top: 16, bottom: 18),
+                      left: 16, right: 16, top: 16, bottom: 16),
                   child: Container(
                     decoration: BoxDecoration(
                       color: AppTheme.white,
@@ -74,60 +75,45 @@ class FatView extends StatelessWidget {
                     child: Column(
                       children: <Widget>[
                         Padding(
-                            padding: const EdgeInsets.only(
-                                left: 24, right: 24, top: 16, bottom: 8),
-                            child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Counter(
-                                    color: AppTheme.nearlyDarkBlue,
-                                    number: bodyFat,
-                                    title: "Body Fat",
-                                  ),
-                                  Counter(
-                                    color: AppTheme.nearlyDarkBlue,
-                                    number: visceralFat,
-                                    title: "Visceral Fat",
-                                  ),
-                                  Counter(
-                                    color: AppTheme.nearlyDarkBlue,
-                                    number: bodyAge,
-                                    title: "Body Age",
-                                  ),
-                                ])),
-                        Padding(
                           padding: const EdgeInsets.only(
-                              left: 24, right: 24, top: 8, bottom: 8),
-                          child: Container(
-                            height: 2,
-                            decoration: BoxDecoration(
-                              color: AppTheme.background,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(4.0)),
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 24, right: 24, top: 0, bottom: 16),
+                              left: 16, right: 24, top: 24, bottom: 0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
                               Icon(
-                                Icons.access_time,
-                                color: AppTheme.grey.withOpacity(0.5),
+                                FontAwesomeIcons.cookieBite,
+                                color: Colors.purple.withOpacity(0.9),
                                 size: 16,
                               ),
                               Padding(
-                                padding: const EdgeInsets.only(left: 4.0),
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: Text(
+                                  'ไขมัน',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontFamily: AppTheme.fontName,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 16,
+                                    letterSpacing: 0.0,
+                                    color: AppTheme.nearlyBlack,
+                                  ),
+                                ),
+                              ),
+                              Spacer(),
+                              Icon(
+                                Icons.access_time,
+                                color: AppTheme.grey.withOpacity(0.5),
+                                size: 14,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 5.0),
                                 child: Text(
                                   recordDate,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontFamily: AppTheme.fontName,
                                     fontWeight: FontWeight.w500,
-                                    fontSize: 14,
+                                    fontSize: 12,
                                     letterSpacing: 0.0,
                                     color: AppTheme.grey.withOpacity(0.5),
                                   ),
@@ -136,6 +122,33 @@ class FatView extends StatelessWidget {
                             ],
                           ),
                         ),
+                        Padding(
+                            padding: const EdgeInsets.only(
+                                left: 24, right: 24, top: 16, bottom: 16),
+                            child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Counter(
+                                    color:
+                                        RuleBaseAI.fat(bodyFat).display.color,
+                                    number: bodyFat.toString(),
+                                    title: "Body Fat",
+                                  ),
+                                  Counter(
+                                    color: RuleBaseAI.fat(visceralFat)
+                                        .display
+                                        .color,
+                                    number: visceralFat.toString(),
+                                    title: "Visceral Fat",
+                                  ),
+                                  Counter(
+                                    color:
+                                        RuleBaseAI.fat(bodyAge).display.color,
+                                    number: bodyAge.toString(),
+                                    title: "Body Age",
+                                  ),
+                                ])),
                       ],
                     ),
                   ),

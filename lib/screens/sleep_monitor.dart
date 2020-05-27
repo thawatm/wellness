@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:easy_alert/easy_alert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +16,6 @@ import 'package:wellness/widgets/first_load.dart';
 import 'package:wellness/widgets/loading_indicator.dart';
 import 'package:wellness/widgets/social_date.dart';
 import 'package:intl/intl.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import "package:collection/collection.dart";
@@ -30,7 +29,7 @@ class SleepMonitorPage extends StatefulWidget {
 
 class _SleepMonitorPageState extends State<SleepMonitorPage> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  FirebaseUser currentUser;
+  String uid;
   List<DocumentSnapshot> snapshotData;
 
   DateTime selectedDate;
@@ -81,7 +80,7 @@ class _SleepMonitorPageState extends State<SleepMonitorPage> {
   @override
   void initState() {
     super.initState();
-    currentUser = ScopedModel.of<StateModel>(context).currentUser;
+    uid = ScopedModel.of<StateModel>(context).uid;
     DateTime now = DateTime.now();
     today = DateTime(now.year, now.month, now.day);
   }
@@ -97,8 +96,8 @@ class _SleepMonitorPageState extends State<SleepMonitorPage> {
       ),
       body: StreamBuilder<QuerySnapshot>(
           stream: Firestore.instance
-              .collection('monitor')
-              .document(currentUser.uid)
+              .collection('wellness_data')
+              .document(uid)
               .collection('sleep')
               .snapshots(),
           builder: (context, snapshot) {
@@ -277,44 +276,18 @@ class _SleepMonitorPageState extends State<SleepMonitorPage> {
             trailing: InkWell(
               child: Icon(Icons.chevron_right, color: Colors.purple),
               onTap: () {
-                // final ConfirmAction action =
-                //     await confirmDialog(context, record);
-                // if (action.toString() == 'ConfirmAction.DELETE') {
-                //   deleteData(data.documentID);
-                // }
-                Alert(
-                  context: context,
-                  type: AlertType.warning,
-                  title: "ลบข้อมูล: ",
-                  desc: DateFormat('dd/MM/yyyy').format(record.date) +
+                Alert.confirm(
+                  context,
+                  title: "ลบข้อมูล",
+                  content: DateFormat('dd/MM/yyyy').format(record.date) +
                       '\nเวลานอน ' +
                       record.sleepHours.toString() +
                       ' ชม.\n' +
                       record.startTime +
                       ' - ' +
                       record.endTime,
-                  buttons: [
-                    DialogButton(
-                      child: Text(
-                        "ยกเลิก",
-                        style: TextStyle(color: Colors.white, fontSize: 16),
-                      ),
-                      onPressed: () => Navigator.pop(context),
-                      color: Colors.green,
-                    ),
-                    DialogButton(
-                      child: Text(
-                        "ลบ",
-                        style: TextStyle(color: Colors.white, fontSize: 16),
-                      ),
-                      onPressed: () {
-                        deleteData(data.documentID);
-                        Navigator.pop(context);
-                      },
-                      color: Colors.red,
-                    )
-                  ],
-                ).show();
+                ).then((int ret) =>
+                    ret == Alert.OK ? deleteData(data.documentID) : null);
               },
             )),
         Divider(
@@ -326,8 +299,8 @@ class _SleepMonitorPageState extends State<SleepMonitorPage> {
 
   deleteData(docId) {
     Firestore.instance
-        .collection('monitor')
-        .document(currentUser.uid)
+        .collection('wellness_data')
+        .document(uid)
         .collection('sleep')
         .document(docId)
         .delete()
@@ -353,8 +326,8 @@ class _SleepMonitorPageState extends State<SleepMonitorPage> {
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         int timestamp = monitorData['date'].millisecondsSinceEpoch;
         DocumentReference monitor = Firestore.instance
-            .collection("monitor")
-            .document(currentUser.uid)
+            .collection('wellness_data')
+            .document(uid)
             .collection('sleep')
             .document(timestamp.toString());
         Firestore.instance.runTransaction((transaction) async {

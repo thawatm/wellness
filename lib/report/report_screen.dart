@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:wellness/dashboard/ui_view/glass_view.dart';
@@ -8,21 +7,24 @@ import 'package:wellness/dashboard/ui_view/title_view.dart';
 import 'package:wellness/dashboard/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:wellness/models/state_model.dart';
-import 'package:wellness/models/userdata.dart';
 import 'package:wellness/report/card_simple7.dart';
+import 'package:wellness/report/food_trend.dart';
 import 'package:wellness/report/food_view.dart';
+import 'package:wellness/report/sleep_trend.dart';
 import 'package:wellness/report/sleep_view.dart';
 import 'package:wellness/report/stepcount_view.dart';
 import 'package:wellness/report/totalworkout_view.dart';
+import 'package:wellness/report/water_trend.dart';
 import 'package:wellness/report/water_view.dart';
+import 'package:wellness/report/workout_trend.dart';
 import 'package:wellness/widgets/appbar_ui.dart';
 
 class ReportScreen extends StatefulWidget {
-  const ReportScreen({Key key, this.animationController, this.userProfile})
+  const ReportScreen({Key key, this.animationController, this.uid})
       : super(key: key);
 
   final AnimationController animationController;
-  final UserProfile userProfile;
+  final String uid;
   @override
   _ReportScreenState createState() => _ReportScreenState();
 }
@@ -35,7 +37,7 @@ class _ReportScreenState extends State<ReportScreen>
   final ScrollController scrollController = ScrollController();
   double topBarOpacity = 0.0;
 
-  FirebaseUser currentUser;
+  String uid;
   String totalWorkout = '-';
   String avgServing = '-';
   String bmi = '-';
@@ -47,8 +49,6 @@ class _ReportScreenState extends State<ReportScreen>
   DateTime startDate = DateTime.now();
   Future<bool> initData; //changed
 
-  QuerySnapshot bloodSn;
-  QuerySnapshot weightSn;
   QuerySnapshot healthSn;
   QuerySnapshot workoutSn;
   QuerySnapshot foodSn;
@@ -84,23 +84,17 @@ class _ReportScreenState extends State<ReportScreen>
         }
       }
     });
-    currentUser = ScopedModel.of<StateModel>(context).currentUser;
+    uid = ScopedModel.of<StateModel>(context).uid;
     initData = getData();
     super.initState();
   }
 
   void addAllListData() {
-    const int count = 9;
     listViews.add(
       GlassView(
-          text:
-              "สุขภาพของท่านอยู่ในเกณฑ์ที่ดี การออกกำลังกายมากกว่าอาทิตย์ที่ผ่านมา ควรเพิ่มการกินผักและผลไม้ให้มากขึ้น",
-          animation: Tween<double>(begin: 0.0, end: 1.0).animate(
-              CurvedAnimation(
-                  parent: widget.animationController,
-                  curve: Interval((1 / count) * 8, 1.0,
-                      curve: Curves.fastOutSlowIn))),
-          animationController: widget.animationController),
+        text:
+            "สุขภาพของท่านอยู่ในเกณฑ์ที่ดี การออกกำลังกายมากกว่าอาทิตย์ที่ผ่านมา ควรเพิ่มการกินผักและผลไม้ให้มากขึ้น",
+      ),
     );
 
     listViews.add(Simple7Card(
@@ -118,102 +112,72 @@ class _ReportScreenState extends State<ReportScreen>
       TitleView(
         titleTxt: 'ก้าวเดิน',
         subTxt: 'เพิ่ม',
-        routeName: '/workout',
-        animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-            parent: widget.animationController,
-            curve:
-                Interval((1 / count) * 0, 1.0, curve: Curves.fastOutSlowIn))),
-        animationController: widget.animationController,
+        targetPage: WorkoutTrendChart(snapshot: workoutSn),
       ),
     );
     listViews.add(
       StepCountChartView(
         startDate: startDate,
         snapshot: workoutSn,
-        uid: widget.userProfile?.uid ?? currentUser.uid,
       ),
     );
     listViews.add(
       TitleView(
         titleTxt: 'ออกกำลังกาย',
         subTxt: '',
-        routeName: '/workout',
-        animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-            parent: widget.animationController,
-            curve:
-                Interval((1 / count) * 0, 1.0, curve: Curves.fastOutSlowIn))),
-        animationController: widget.animationController,
+        targetPage: WorkoutTrendChart(snapshot: workoutSn),
       ),
     );
     listViews.add(
       TotalWorkoutChartView(
         startDate: startDate,
         snapshot: workoutSn,
-        uid: widget.userProfile?.uid ?? currentUser.uid,
       ),
     );
     listViews.add(
       TitleView(
         titleTxt: 'ผักและผลไม้',
         subTxt: 'เพิ่ม',
-        routeName: '/food',
-        animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-            parent: widget.animationController,
-            curve:
-                Interval((1 / count) * 0, 1.0, curve: Curves.fastOutSlowIn))),
-        animationController: widget.animationController,
+        targetPage: FoodTrendChart(snapshot: foodSn),
       ),
     );
     listViews.add(
       FoodChartView(
         startDate: startDate,
         snapshot: foodSn,
-        uid: widget.userProfile?.uid ?? currentUser.uid,
       ),
     );
     listViews.add(
       TitleView(
         titleTxt: 'ดื่มน้ำ',
         subTxt: 'เพิ่ม',
-        routeName: '/drink',
-        animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-            parent: widget.animationController,
-            curve:
-                Interval((1 / count) * 0, 1.0, curve: Curves.fastOutSlowIn))),
-        animationController: widget.animationController,
+        targetPage: WaterTrendChart(snapshot: waterSn),
       ),
     );
     listViews.add(
       WaterChartView(
         startDate: startDate,
         snapshot: waterSn,
-        uid: widget.userProfile?.uid ?? currentUser.uid,
       ),
     );
     listViews.add(
       TitleView(
         titleTxt: 'การนอน',
         subTxt: 'เพิ่ม',
-        routeName: '/sleep',
-        animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-            parent: widget.animationController,
-            curve:
-                Interval((1 / count) * 0, 1.0, curve: Curves.fastOutSlowIn))),
-        animationController: widget.animationController,
+        targetPage: SleepTrendChart(snapshot: sleepSn),
       ),
     );
     listViews.add(
       SleepChartView(
         startDate: startDate,
         snapshot: sleepSn,
-        uid: widget.userProfile?.uid ?? currentUser.uid,
       ),
     );
   }
 
   Future<bool> getData() async {
     DocumentReference docRef =
-        Firestore.instance.collection('monitor').document(currentUser.uid);
+        Firestore.instance.collection('wellness_data').document(uid);
 
     await docRef.collection('workout').getDocuments().then((snapshot) {
       workoutSn = snapshot;
@@ -223,12 +187,6 @@ class _ReportScreenState extends State<ReportScreen>
     });
     await docRef.collection('healthdata').getDocuments().then((snapshot) {
       healthSn = snapshot;
-    });
-    await docRef.collection('weightfat').getDocuments().then((snapshot) {
-      weightSn = snapshot;
-    });
-    await docRef.collection('bloodtests').getDocuments().then((snapshot) {
-      bloodSn = snapshot;
     });
     await docRef.collection('water').getDocuments().then((snapshot) {
       waterSn = snapshot;
@@ -240,10 +198,6 @@ class _ReportScreenState extends State<ReportScreen>
     return true;
   }
 
-  // Future<bool> getData() async {
-  //   return true;
-  // }
-
   void buildSimple7Data(DateTime startDate) {
     DateTime s = DateTime.now();
     if (startDate != null) s = startDate;
@@ -252,14 +206,14 @@ class _ReportScreenState extends State<ReportScreen>
         getWeeklyData(workoutSn, 'date', 'totalWorkout', s);
     totalWorkout = getSum(workoutSnapshot, 'totalWorkout').toString();
     List<DocumentSnapshot> foodSnapshot =
-        getWeeklyData(foodSn, 'date', 'calories', s);
-    avgServing = (getSum(foodSnapshot, 'calories') / 7).toStringAsFixed(1);
+        getWeeklyData(foodSn, 'date', 'serving', s);
+    avgServing = (getSum(foodSnapshot, 'serving') / 7).toStringAsFixed(1);
     pressure = getLastPressureData(healthSn);
-    bmi = getLastData(weightSn, 'bmi', decimal: 1);
-    cholesterol = getLastData(bloodSn, 'cholesterol');
-    ldl = getLastData(bloodSn, 'ldl');
-    glucose = getLastData(bloodSn, 'glucose');
-    hba1c = getLastData(bloodSn, 'hba1c', decimal: 1, unit: '%');
+    bmi = getLastData(healthSn, 'bmi', decimal: 1);
+    cholesterol = getLastData(healthSn, 'cholesterol');
+    ldl = getLastData(healthSn, 'ldl');
+    glucose = getLastData(healthSn, 'glucose');
+    hba1c = getLastData(healthSn, 'hba1c', decimal: 1, unit: '%');
   }
 
   @override
@@ -276,7 +230,8 @@ class _ReportScreenState extends State<ReportScreen>
               topBarAnimation: topBarAnimation,
               topBarOpacity: topBarOpacity,
               title: 'รายงาน',
-              calendar: _buildWeeklyCalendar(),
+              // calendar: _buildWeeklyCalendar(),
+              isPop: true,
             ),
             SizedBox(
               height: MediaQuery.of(context).padding.bottom,
@@ -403,21 +358,31 @@ class _ReportScreenState extends State<ReportScreen>
 
   String getLastData(QuerySnapshot snapshot, String key,
       {int decimal: 0, String unit: ''}) {
-    DocumentSnapshot s4 = snapshot.documents.where((v) => v[key] != null).last;
-    if (s4 != null) {
-      return s4.data[key].toStringAsFixed(0);
+    try {
+      DocumentSnapshot s4 =
+          snapshot.documents.where((v) => v[key] != null).last;
+      if (s4 != null) {
+        return s4.data[key].toStringAsFixed(0);
+      }
+    } catch (e) {
+      print(e);
     }
     return '-';
   }
 
   String getLastPressureData(QuerySnapshot snapshot) {
-    DocumentSnapshot s = snapshot.documents
-        .where((v) => v['pressureUpper'] != null && v['pressureLower'] != null)
-        .last;
-    if (s != null) {
-      return s.data['pressureUpper'].toStringAsFixed(0) +
-          '/' +
-          s.data['pressureLower'].toStringAsFixed(0);
+    try {
+      DocumentSnapshot s = snapshot.documents
+          .where(
+              (v) => v['pressureUpper'] != null && v['pressureLower'] != null)
+          .last;
+      if (s != null) {
+        return s.data['pressureUpper'].toStringAsFixed(0) +
+            '/' +
+            s.data['pressureLower'].toStringAsFixed(0);
+      }
+    } catch (e) {
+      print(e);
     }
     return '-';
   }

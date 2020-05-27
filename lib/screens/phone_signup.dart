@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,7 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 
 import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:scoped_model/scoped_model.dart';
 import 'package:wellness/dashboard/app_theme.dart';
+import 'package:wellness/models/state_model.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -207,11 +208,10 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
         (AuthCredential phoneAuthCredential) async {
       try {
         await _auth.signInWithCredential(phoneAuthCredential);
-        FirebaseUser user = await _auth.currentUser();
         setState(() {
           _isLoading = true;
           // _message = 'Received phone auth credential: $phoneAuthCredential';
-          isNewUser(user);
+          isNewUser();
         });
       } catch (e) {
         setState(() {
@@ -276,7 +276,7 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
           _isLoading = true;
           // _message = 'Successfully signed in, uid: ' + user.uid;
           _message = '';
-          isNewUser(user);
+          isNewUser();
         } else {
           _message = 'Sign in failed';
         }
@@ -290,16 +290,8 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
     }
   }
 
-  void isNewUser(FirebaseUser user) async {
-    DocumentReference qs =
-        Firestore.instance.collection("users").document(user.uid);
-    DocumentSnapshot snap = await qs.get();
-
-    if (snap.data == null) {
-      Navigator.pushReplacementNamed(context, '/newuser');
-    } else {
-      // Navigator.pop(context);
-      Navigator.pushReplacementNamed(context, '/');
-    }
+  void isNewUser() {
+    ScopedModel.of<StateModel>(context).isLoading = true;
+    Navigator.pushReplacementNamed(context, '/');
   }
 }

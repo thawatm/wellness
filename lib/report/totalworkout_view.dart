@@ -4,12 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:wellness/widgets/weeklybar_chart.dart';
 
 class TotalWorkoutChartView extends StatelessWidget {
-  final String uid;
   final DateTime startDate;
   final QuerySnapshot snapshot;
 
-  const TotalWorkoutChartView(
-      {Key key, this.uid, this.startDate, this.snapshot})
+  const TotalWorkoutChartView({Key key, this.startDate, this.snapshot})
       : super(key: key);
 
   @override

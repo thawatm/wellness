@@ -1,15 +1,14 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_picker/flutter_picker.dart';
 import 'package:wellness/dashboard/app_theme.dart';
-import 'package:wellness/models/fitkitdata.dart';
 import 'package:wellness/models/state_model.dart';
 import 'package:intl/intl.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class WorkoutDataEntry extends StatefulWidget {
   @override
@@ -18,7 +17,7 @@ class WorkoutDataEntry extends StatefulWidget {
 
 class _WorkoutDataEntryState extends State<WorkoutDataEntry> {
   // final _scaffoldKey = GlobalKey<ScaffoldState>();
-  FirebaseUser currentUser;
+  String uid;
   String collection = 'workout';
 
   Map<String, dynamic> monitorData = {
@@ -28,7 +27,7 @@ class _WorkoutDataEntryState extends State<WorkoutDataEntry> {
   @override
   void initState() {
     super.initState();
-    currentUser = ScopedModel.of<StateModel>(context).currentUser;
+    uid = ScopedModel.of<StateModel>(context).uid;
   }
 
   @override
@@ -63,7 +62,7 @@ class _WorkoutDataEntryState extends State<WorkoutDataEntry> {
             },
           ),
           ListTile(
-              leading: Icon(Icons.local_drink, color: Colors.grey[500]),
+              leading: Icon(FontAwesomeIcons.walking, color: Colors.blue[500]),
               title: Text("เดิน"),
               trailing: Text("${monitorData['steps'] ?? ''} ก้าว",
                   style: TextStyle(color: Colors.grey[500])),
@@ -72,7 +71,7 @@ class _WorkoutDataEntryState extends State<WorkoutDataEntry> {
                     context, 0, 20000, 1000, 'เดิน (ก้าว)', 'steps');
               }),
           ListTile(
-              leading: Icon(Icons.fastfood, color: Colors.grey[500]),
+              leading: Icon(FontAwesomeIcons.running, color: Colors.orange),
               title: Text("วิ่ง"),
               trailing: Text("${monitorData['run'] ?? ''} นาที",
                   style: TextStyle(color: Colors.grey[500])),
@@ -80,7 +79,7 @@ class _WorkoutDataEntryState extends State<WorkoutDataEntry> {
                 _showPickerNumber(context, 0, 500, 20, 'วิ่ง (นาที)', 'run');
               }),
           ListTile(
-              leading: Icon(Icons.brightness_high, color: Colors.grey[500]),
+              leading: Icon(FontAwesomeIcons.biking, color: Colors.green),
               title: Text("ปั่นจักรยาน"),
               trailing: Text("${monitorData['cycling'] ?? ''} นาที",
                   style: TextStyle(color: Colors.grey[500])),
@@ -89,8 +88,8 @@ class _WorkoutDataEntryState extends State<WorkoutDataEntry> {
                     context, 0, 500, 20, 'ปั่นจักรยาน (นาที)', 'cycling');
               }),
           ListTile(
-              leading: Icon(Icons.low_priority, color: Colors.grey[500]),
-              title: Text("ออกกำลังกายแบบอื่นๆ"),
+              leading: Icon(FontAwesomeIcons.dumbbell, color: Colors.purple),
+              title: Text("ออกกำลังกายแบบอื่น"),
               trailing: Text("${monitorData['etc'] ?? ''} นาที",
                   style: TextStyle(color: Colors.grey[500])),
               onTap: () {
@@ -108,19 +107,19 @@ class _WorkoutDataEntryState extends State<WorkoutDataEntry> {
                   style: TextStyle(color: Colors.white, fontSize: 16)),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: RaisedButton(
-              elevation: 1.0,
-              onPressed: () async {
-                FitKitData().revokePermissions();
-              },
-              padding: EdgeInsets.all(12),
-              color: AppTheme.buttonColor,
-              child: Text('Remove Google Fit',
-                  style: TextStyle(color: Colors.white, fontSize: 16)),
-            ),
-          )
+          // Padding(
+          //   padding: const EdgeInsets.all(16.0),
+          //   child: RaisedButton(
+          //     elevation: 1.0,
+          //     onPressed: () async {
+          //       FitKitData().revokePermissions();
+          //     },
+          //     padding: EdgeInsets.all(12),
+          //     color: AppTheme.buttonColor,
+          //     child: Text('Remove Google Fit',
+          //         style: TextStyle(color: Colors.white, fontSize: 16)),
+          //   ),
+          // )
         ],
       ),
     );
@@ -143,20 +142,19 @@ class _WorkoutDataEntryState extends State<WorkoutDataEntry> {
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         int timestamp = monitorData['date'].millisecondsSinceEpoch;
 
-        monitorData['totalWorkout'] = monitorData['run'] ??
-            0 + monitorData['cycling'] ??
-            0 + monitorData['etc'] ??
-            0;
+        monitorData['totalWorkout'] = (monitorData['run'] ?? 0) +
+            (monitorData['cycling'] ?? 0) +
+            (monitorData['etc'] ?? 0);
 
         DocumentReference monitor = Firestore.instance
-            .collection("monitor")
-            .document(currentUser.uid)
+            .collection('wellness_data')
+            .document(uid)
             .collection(collection)
             .document(timestamp.toString());
         Firestore.instance.runTransaction((transaction) async {
           await transaction
               .set(monitor, monitorData)
-              .whenComplete(() => showInSnackBar("Successful"));
+              .whenComplete(() => Navigator.pop(context));
         });
       } else {
         showInSnackBar("No Internet Connection");

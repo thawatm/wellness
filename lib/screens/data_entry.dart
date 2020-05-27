@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_picker/flutter_picker.dart';
@@ -17,7 +16,7 @@ class DataEntryDialog extends StatefulWidget {
 }
 
 class _DataEntryDialogState extends State<DataEntryDialog> {
-  FirebaseUser currentUser;
+  String uid;
   String collection = 'healthdata';
 
   String _pressureText = '';
@@ -29,7 +28,7 @@ class _DataEntryDialogState extends State<DataEntryDialog> {
   @override
   void initState() {
     super.initState();
-    currentUser = ScopedModel.of<StateModel>(context).currentUser;
+    uid = ScopedModel.of<StateModel>(context).uid;
   }
 
   @override
@@ -118,14 +117,14 @@ class _DataEntryDialogState extends State<DataEntryDialog> {
         int timestamp = monitorData['date'].millisecondsSinceEpoch;
 
         DocumentReference monitor = Firestore.instance
-            .collection("monitor")
-            .document(currentUser.uid)
+            .collection('wellness_data')
+            .document(uid)
             .collection(collection)
             .document(timestamp.toString());
         Firestore.instance.runTransaction((transaction) async {
           await transaction
               .set(monitor, monitorData)
-              .whenComplete(() => showInSnackBar("Successful"));
+              .whenComplete(() => Navigator.pop(context));
         });
       } else {
         showInSnackBar("No Internet Connection");
@@ -138,7 +137,7 @@ class _DataEntryDialogState extends State<DataEntryDialog> {
     // int timestamp = monitorData['date'].millisecondsSinceEpoch;
 
     // DocumentReference monitor = Firestore.instance
-    //     .collection("monitor")
+    //     .collection('wellness_data')
     //     .document(currentUser.uid)
     //     .collection(collection)
     //     .document(timestamp.toString());

@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:wellness/dashboard/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:wellness/models/healthdata.dart';
+import 'package:wellness/models/rulebase_ai.dart';
 import 'package:wellness/models/state_model.dart';
-import 'package:wellness/widgets/counter.dart';
 
 class BloodPressureView extends StatelessWidget {
   final AnimationController animationController;
@@ -17,16 +17,15 @@ class BloodPressureView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FirebaseUser currentUser = ScopedModel.of<StateModel>(context).currentUser;
+    String uid = ScopedModel.of<StateModel>(context).uid;
     int bpupper = 0;
     int bplower = 0;
-    int pulse = 0;
-    String recordDate = '';
+    String recordDate = 'ไม่มีข้อมูล';
 
     return StreamBuilder<QuerySnapshot>(
       stream: Firestore.instance
-          .collection('monitor')
-          .document(currentUser.uid)
+          .collection('wellness_data')
+          .document(uid)
           .collection('healthdata')
           .snapshots(),
       builder: (context, snapshot) {
@@ -41,7 +40,6 @@ class BloodPressureView extends StatelessWidget {
             HealthMonitor bloodData = HealthMonitor.fromSnapshot(snapshotData);
             bpupper = bloodData.pressureUpper ?? 0;
             bplower = bloodData.pressureLower ?? 0;
-            pulse = bloodData.hr ?? 0;
             recordDate = DateFormat.yMMMd().format(bloodData.date);
           }
         } catch (e) {}
@@ -55,7 +53,7 @@ class BloodPressureView extends StatelessWidget {
                     0.0, 30 * (1.0 - animation.value), 0.0),
                 child: Padding(
                   padding: const EdgeInsets.only(
-                      left: 24, right: 24, top: 16, bottom: 18),
+                      left: 16, right: 16, top: 16, bottom: 0),
                   child: Container(
                     decoration: BoxDecoration(
                       color: AppTheme.white,
@@ -74,50 +72,35 @@ class BloodPressureView extends StatelessWidget {
                     child: Column(
                       children: <Widget>[
                         Padding(
-                            padding: const EdgeInsets.only(
-                                left: 24, right: 24, top: 16, bottom: 8),
-                            child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Counter(
-                                    color: AppTheme.kRecovercolor,
-                                    number: bpupper,
-                                    title: "ตัวบน",
-                                  ),
-                                  Counter(
-                                    color: AppTheme.kRecovercolor,
-                                    number: bplower,
-                                    title: "ตัวล่าง",
-                                  ),
-                                  Counter(
-                                    color: AppTheme.nearlyDarkBlue,
-                                    number: pulse,
-                                    title: "Pulse",
-                                  ),
-                                ])),
-                        Padding(
                           padding: const EdgeInsets.only(
-                              left: 24, right: 24, top: 8, bottom: 8),
-                          child: Container(
-                            height: 2,
-                            decoration: BoxDecoration(
-                              color: AppTheme.background,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(4.0)),
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 24, right: 24, top: 0, bottom: 16),
+                              left: 16, right: 24, top: 16, bottom: 0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
                               Icon(
+                                FontAwesomeIcons.heartbeat,
+                                color: Colors.pink.withOpacity(0.9),
+                                size: 16,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: Text(
+                                  'ความดันโลหิต',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontFamily: AppTheme.fontName,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 16,
+                                    letterSpacing: 0.0,
+                                    color: AppTheme.nearlyBlack,
+                                  ),
+                                ),
+                              ),
+                              Spacer(),
+                              Icon(
                                 Icons.access_time,
                                 color: AppTheme.grey.withOpacity(0.5),
-                                size: 16,
+                                size: 14,
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(left: 4.0),
@@ -127,11 +110,82 @@ class BloodPressureView extends StatelessWidget {
                                   style: TextStyle(
                                     fontFamily: AppTheme.fontName,
                                     fontWeight: FontWeight.w500,
-                                    fontSize: 14,
+                                    fontSize: 12,
                                     letterSpacing: 0.0,
                                     color: AppTheme.grey.withOpacity(0.5),
                                   ),
                                 ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              top: 16, left: 24, right: 24, bottom: 12),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 4, bottom: 3),
+                                    child: Text(
+                                      bpupper.toString() +
+                                          '/' +
+                                          bplower.toString(),
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontFamily: AppTheme.fontName,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 30,
+                                        color: RuleBaseAI.bloodPressure(
+                                                bpupper, bplower)
+                                            .display
+                                            .color,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 8, bottom: 8),
+                                    child: Text(
+                                      'mmHg',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontFamily: AppTheme.fontName,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 16,
+                                        letterSpacing: -0.2,
+                                        color: AppTheme.kTextLightColor,
+                                      ),
+                                    ),
+                                  ),
+                                  Spacer(),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 0, bottom: 8),
+                                    child: Text(
+                                      RuleBaseAI.bloodPressure(bpupper, bplower)
+                                          .display
+                                          .desc,
+                                      textAlign: TextAlign.end,
+                                      style: TextStyle(
+                                        fontFamily: AppTheme.fontName,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 16,
+                                        letterSpacing: -0.2,
+                                        color: RuleBaseAI.bloodPressure(
+                                                bpupper, bplower)
+                                            .display
+                                            .color,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),

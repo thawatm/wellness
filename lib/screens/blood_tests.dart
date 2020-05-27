@@ -2,7 +2,6 @@ import 'package:charts_flutter/flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wellness/dashboard/app_theme.dart';
 import 'package:wellness/models/healthdata.dart';
 import 'package:wellness/screens/blood_data_entry.dart';
@@ -22,8 +21,8 @@ class BloodTestPage extends StatefulWidget {
 
 class _BloodTestPageState extends State<BloodTestPage> {
   ScrollController _scrollViewController;
-  FirebaseUser currentUser;
-  String collection = 'bloodtests';
+  String uid;
+  String collection = 'healthdata';
 
   List<DocumentSnapshot> healthData;
   List<HealthMonitor> glucoseData;
@@ -49,7 +48,7 @@ class _BloodTestPageState extends State<BloodTestPage> {
   void initState() {
     super.initState();
     _scrollViewController = ScrollController();
-    currentUser = ScopedModel.of<StateModel>(context).currentUser;
+    uid = ScopedModel.of<StateModel>(context).uid;
     DateTime now = DateTime.now();
     today = DateTime(now.year, now.month, now.day);
   }
@@ -109,8 +108,8 @@ class _BloodTestPageState extends State<BloodTestPage> {
           },
           body: StreamBuilder<QuerySnapshot>(
               stream: Firestore.instance
-                  .collection('monitor')
-                  .document(currentUser.uid)
+                  .collection('wellness_data')
+                  .document(uid)
                   .collection(collection)
                   .snapshots(),
               builder: (context, snapshot) {
@@ -200,8 +199,8 @@ class _BloodTestPageState extends State<BloodTestPage> {
                         ? FirstLoad(title: "เพิ่มข้อมูลใหม่\nแตะที่แทบด้านบน")
                         : HistoryList(
                             snapshot: healthData,
-                            currentUser: currentUser,
-                            collection: collection,
+                            uid: uid,
+                            collection: 'bloodtests',
                           ),
                   ],
                 );

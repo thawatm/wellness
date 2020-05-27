@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:charts_flutter/flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:easy_alert/easy_alert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wellness/dashboard/app_theme.dart';
@@ -14,7 +14,6 @@ import 'package:wellness/widgets/first_load.dart';
 import 'package:wellness/widgets/gauge_chart.dart';
 import 'package:wellness/widgets/loading_indicator.dart';
 import 'package:wellness/widgets/social_date.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:intl/intl.dart';
@@ -31,7 +30,7 @@ class DrinkMonitorPage extends StatefulWidget {
 class _DrinkMonitorPageState extends State<DrinkMonitorPage> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   ScrollController _scrollViewController;
-  FirebaseUser currentUser;
+  String uid;
   List<DocumentSnapshot> snapshotData;
 
   List<WaterMonitor> todayData;
@@ -104,7 +103,7 @@ class _DrinkMonitorPageState extends State<DrinkMonitorPage> {
   void initState() {
     super.initState();
     _scrollViewController = ScrollController();
-    currentUser = ScopedModel.of<StateModel>(context).currentUser;
+    uid = ScopedModel.of<StateModel>(context).uid;
     DateTime now = DateTime.now();
     today = DateTime(now.year, now.month, now.day);
   }
@@ -165,8 +164,8 @@ class _DrinkMonitorPageState extends State<DrinkMonitorPage> {
           },
           body: StreamBuilder<QuerySnapshot>(
               stream: Firestore.instance
-                  .collection('monitor')
-                  .document(currentUser.uid)
+                  .collection('wellness_data')
+                  .document(uid)
                   .collection('water')
                   .snapshots(),
               builder: (context, snapshot) {
@@ -291,39 +290,14 @@ class _DrinkMonitorPageState extends State<DrinkMonitorPage> {
         trailing: InkWell(
           child: Icon(Icons.chevron_right, color: Colors.blueAccent),
           onTap: () {
-            // final ConfirmAction action = await confirmDialog(context, record);
-            // if (action.toString() == 'ConfirmAction.DELETE') {
-            //   deleteData(record.documentID);
-            // }
-            Alert(
-              context: context,
-              type: AlertType.warning,
+            Alert.confirm(
+              context,
               title: "ลบข้อมูล",
-              desc: DateFormat('dd/MM/yyyy').format(record.date) +
+              content: DateFormat('dd/MM/yyyy').format(record.date) +
                   "\nเวลาดื่ม: " +
                   DateFormat.Hm().format(record.date),
-              buttons: [
-                DialogButton(
-                  child: Text(
-                    "ยกเลิก",
-                    style: Flutter.TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                  onPressed: () => Navigator.pop(context),
-                  color: Colors.green,
-                ),
-                DialogButton(
-                  child: Text(
-                    "ลบ",
-                    style: Flutter.TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                  onPressed: () {
-                    deleteData(record.documentID);
-                    Navigator.pop(context);
-                  },
-                  color: Colors.red,
-                )
-              ],
-            ).show();
+            ).then((int ret) =>
+                ret == Alert.OK ? deleteData(record.documentID) : null);
           },
         ),
       ),
@@ -355,8 +329,8 @@ class _DrinkMonitorPageState extends State<DrinkMonitorPage> {
 
   deleteData(docId) {
     Firestore.instance
-        .collection('monitor')
-        .document(currentUser.uid)
+        .collection('wellness_data')
+        .document(uid)
         .collection('water')
         .document(docId)
         .delete()
@@ -380,8 +354,8 @@ class _DrinkMonitorPageState extends State<DrinkMonitorPage> {
     int timestamp = monitorData['date'].millisecondsSinceEpoch;
 
     DocumentReference monitor = Firestore.instance
-        .collection("monitor")
-        .document(currentUser.uid)
+        .collection('wellness_data')
+        .document(uid)
         .collection('water')
         .document(timestamp.toString());
     Firestore.instance.runTransaction((transaction) async {

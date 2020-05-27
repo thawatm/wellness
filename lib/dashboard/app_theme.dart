@@ -19,7 +19,7 @@ class AppTheme {
   static const Color deactivatedText = Color(0xFF767676);
   static const Color dismissibleBackground = Color(0xFF364A54);
   static const Color spacer = Color(0xFFF2F2F2);
-  static const String fontName = 'Kanit';
+  static const String fontName = 'Prompt';
 
   static const Color appBarColor1 = Color(0xFF448AFF);
   static const Color appBarColor2 = Color(0xFF2633C5);
@@ -43,7 +43,7 @@ class AppTheme {
     fontWeight: FontWeight.w600,
   );
 
-  static const kSubTextStyle = TextStyle(fontSize: 16, color: kTextLightColor);
+  static const kSubTextStyle = TextStyle(fontSize: 14, color: kTextLightColor);
 
   static const kTitleTextstyle = TextStyle(
     fontSize: 18,

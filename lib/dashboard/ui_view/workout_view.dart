@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:wellness/dashboard/app_theme.dart';
@@ -19,7 +18,7 @@ class WorkoutView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FirebaseUser currentUser = ScopedModel.of<StateModel>(context).currentUser;
+    String uid = ScopedModel.of<StateModel>(context).uid;
     int steps = 0;
     int run = 0;
     double runPercent = 0;
@@ -29,8 +28,8 @@ class WorkoutView extends StatelessWidget {
     double etcPercent = 0;
     return StreamBuilder<QuerySnapshot>(
       stream: Firestore.instance
-          .collection('monitor')
-          .document(currentUser.uid)
+          .collection('wellness_data')
+          .document(uid)
           .collection('workout')
           .snapshots(),
       builder: (context, snapshot) {
@@ -82,7 +81,7 @@ class WorkoutView extends StatelessWidget {
                     0.0, 30 * (1.0 - animation.value), 0.0),
                 child: Padding(
                   padding: const EdgeInsets.only(
-                      left: 24, right: 24, top: 16, bottom: 0),
+                      left: 16, right: 16, top: 16, bottom: 0),
                   child: Container(
                     decoration: BoxDecoration(
                       color: AppTheme.white,

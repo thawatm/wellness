@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserProfile {
-  String firstName;
-  String lastName;
+  String firstname;
+  String lastname;
+  String fullname;
   String phoneNumber;
   String email;
   String uid;
@@ -10,11 +11,10 @@ class UserProfile {
   DateTime birthday;
 
   String sex;
-  String height;
+  int height;
   String bloodGroup;
   String expense;
 
-  String memberId;
   String lineId;
   String citizenId;
   String address;
@@ -41,8 +41,8 @@ class UserProfile {
         assert(map['phoneNumber'] != null),
         assert(map['email'] != null),
         assert(map['uid'] != null),
-        firstName = map['firstName'],
-        lastName = map['lastName'],
+        firstname = map['firstname'],
+        lastname = map['lastname'],
         phoneNumber = map['phoneNumber'],
         email = map['email'],
         uid = map['uid'];
@@ -52,15 +52,17 @@ class UserProfile {
   UserProfile.fromSnapshot(DocumentSnapshot snapshot)
       : reference = snapshot.reference,
         uid = snapshot.data['uid'],
-        firstName = snapshot.data['firstName'],
-        lastName = snapshot.data['lastName'],
+        firstname = snapshot.data['firstname'],
+        lastname = snapshot.data['lastname'],
+        fullname = (snapshot.data['firstname'] ?? '') +
+            ' ' +
+            (snapshot.data['lastname'] ?? ''),
         phoneNumber = snapshot.data['phoneNumber'],
         email = snapshot.data['email'],
         sex = snapshot.data['sex'],
         height = snapshot.data['height'],
         bloodGroup = snapshot.data['bloodGroup'],
         expense = snapshot.data['expense'],
-        memberId = snapshot.data['memberId'],
         lineId = snapshot.data['lineId'],
         citizenId = snapshot.data['citizenId'],
         address = snapshot.data['address'],
@@ -79,5 +81,5 @@ class UserProfile {
   // birthday = snapshot.data['birthday'].toDate();
 
   @override
-  String toString() => "UserProfile<$phoneNumber:$firstName>";
+  String toString() => "UserProfile<$phoneNumber:$firstname>";
 }

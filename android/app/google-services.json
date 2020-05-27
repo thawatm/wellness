@@ -1,43 +1,104 @@
 {
   "project_info": {
-    "project_number": "157445542741",
-    "firebase_url": "https://wellness-296bf.firebaseio.com",
-    "project_id": "wellness-296bf",
-    "storage_bucket": "wellness-296bf.appspot.com"
+    "project_number": "476672427840",
+    "firebase_url": "https://bsp-kiosk.firebaseio.com",
+    "project_id": "bsp-kiosk",
+    "storage_bucket": "bsp-kiosk.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:157445542741:android:ae37573bf4540603a895dc",
+        "mobilesdk_app_id": "1:476672427840:android:789ea8b25345a4d4eadca5",
         "android_client_info": {
-          "package_name": "com.wellnesscenter.welladultclinic"
+          "package_name": "com.amed.egfr"
         }
       },
       "oauth_client": [
         {
-          "client_id": "157445542741-ns2c3t2861kal6k62p08fr8oioq8a6th.apps.googleusercontent.com",
+          "client_id": "476672427840-08o2sdpqqkmact43djlte4dv73l061pp.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.wellnesscenter.welladultclinic",
+            "package_name": "com.amed.egfr",
+            "certificate_hash": "70d03ad2e60e0f6033de424437a2eebf8ffbc6aa"
+          }
+        },
+        {
+          "client_id": "476672427840-cmjje9niecsqps0q4nmlirq2tll4lmfr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.amed.egfr",
             "certificate_hash": "e7c8b8c461ee8c12d2aa8b7590a075b6f0ab7dbc"
           }
         },
         {
-          "client_id": "157445542741-a7vms2di593b8v603pkmcs2k98tmsgdu.apps.googleusercontent.com",
+          "client_id": "476672427840-no2tquao2ll56a3fdqrghf8mhr578l85.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.amed.egfr",
+            "certificate_hash": "3e4e4567a6127c246004c2443ed734b51ad8d8db"
+          }
+        },
+        {
+          "client_id": "476672427840-qqjld5bgp1clh1dtmcisgo23spo53j3e.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDpfe7QoYUmrw0AFaPXa6_ryifIcwhMbfY"
+          "current_key": "AIzaSyCr8tHkzU1sGBxBpggclk_Ce4-jGgcxYRE"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "157445542741-a7vms2di593b8v603pkmcs2k98tmsgdu.apps.googleusercontent.com",
+              "client_id": "476672427840-qqjld5bgp1clh1dtmcisgo23spo53j3e.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "476672427840-vsj00qmto6d5t5vk3hju1fn6ea1k5v9b.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.nstda.egfr",
+                "app_store_id": "1508278199"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:476672427840:android:3a5b357104535206eadca5",
+        "android_client_info": {
+          "package_name": "com.wellnesscenter.welladultclinic"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "476672427840-qqjld5bgp1clh1dtmcisgo23spo53j3e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCr8tHkzU1sGBxBpggclk_Ce4-jGgcxYRE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "476672427840-qqjld5bgp1clh1dtmcisgo23spo53j3e.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "476672427840-vsj00qmto6d5t5vk3hju1fn6ea1k5v9b.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.nstda.egfr",
+                "app_store_id": "1508278199"
+              }
             }
           ]
         }

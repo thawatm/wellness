@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:wellness/dashboard/ui_view/wave_view.dart';
@@ -27,7 +26,7 @@ class _WaterViewState extends State<WaterView> with TickerProviderStateMixin {
   int drink = 0;
   double drinkPercent = 0;
   String lastDrink = 'ท่านยังไม่ได้ดื่มน้ำ';
-  FirebaseUser currentUser;
+  String uid;
   List<DocumentSnapshot> snapshotData;
 
   List<WaterMonitor> todayData;
@@ -38,7 +37,7 @@ class _WaterViewState extends State<WaterView> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    currentUser = ScopedModel.of<StateModel>(context).currentUser;
+    uid = ScopedModel.of<StateModel>(context).uid;
     super.initState();
   }
 
@@ -55,8 +54,8 @@ class _WaterViewState extends State<WaterView> with TickerProviderStateMixin {
                 0.0, 30 * (1.0 - widget.mainScreenAnimation.value), 0.0),
             child: StreamBuilder<QuerySnapshot>(
               stream: Firestore.instance
-                  .collection('monitor')
-                  .document(currentUser.uid)
+                  .collection('wellness_data')
+                  .document(uid)
                   .collection('water')
                   .snapshots(),
               builder: (context, snapshot) {
@@ -78,7 +77,7 @@ class _WaterViewState extends State<WaterView> with TickerProviderStateMixin {
 
                 return Padding(
                   padding: const EdgeInsets.only(
-                      left: 24, right: 24, top: 16, bottom: 18),
+                      left: 16, right: 16, top: 16, bottom: 0),
                   child: Container(
                     decoration: BoxDecoration(
                       color: AppTheme.white,
@@ -114,7 +113,7 @@ class _WaterViewState extends State<WaterView> with TickerProviderStateMixin {
                                       children: <Widget>[
                                         Padding(
                                           padding: const EdgeInsets.only(
-                                              left: 4, bottom: 3),
+                                              left: 4, bottom: 3, top: 0),
                                           child: Text(
                                             '$drink',
                                             textAlign: TextAlign.center,
@@ -145,7 +144,7 @@ class _WaterViewState extends State<WaterView> with TickerProviderStateMixin {
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.only(
-                                          left: 4, top: 2, bottom: 14),
+                                          left: 4, top: 2, bottom: 8),
                                       child: Text(
                                         'จากทั้งหมด 2.4L',
                                         textAlign: TextAlign.center,
@@ -162,7 +161,7 @@ class _WaterViewState extends State<WaterView> with TickerProviderStateMixin {
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(
-                                      left: 4, right: 4, top: 8, bottom: 16),
+                                      left: 4, right: 4, top: 8, bottom: 4),
                                   child: Container(
                                     height: 2,
                                     decoration: BoxDecoration(
@@ -173,7 +172,7 @@ class _WaterViewState extends State<WaterView> with TickerProviderStateMixin {
                                   ),
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.only(top: 16),
+                                  padding: const EdgeInsets.only(top: 8),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -228,7 +227,7 @@ class _WaterViewState extends State<WaterView> with TickerProviderStateMixin {
                                             ),
                                             Flexible(
                                               child: Text(
-                                                'ควรดื่มน้ำอย่างน้อยมันละ 8 แก้ว',
+                                                'ควรดื่มน้ำอย่างน้อยวันละ 8 แก้ว',
                                                 textAlign: TextAlign.start,
                                                 style: TextStyle(
                                                   fontFamily: AppTheme.fontName,
@@ -250,29 +249,32 @@ class _WaterViewState extends State<WaterView> with TickerProviderStateMixin {
                           ),
                           Padding(
                             padding: const EdgeInsets.only(
-                                left: 16, right: 8, top: 16),
-                            child: Container(
-                              width: 60,
-                              height: 160,
-                              decoration: BoxDecoration(
-                                color: HexColor('#E8EDFE'),
-                                borderRadius: const BorderRadius.only(
-                                    topLeft: Radius.circular(80.0),
-                                    bottomLeft: Radius.circular(80.0),
-                                    bottomRight: Radius.circular(80.0),
-                                    topRight: Radius.circular(80.0)),
-                                boxShadow: <BoxShadow>[
-                                  BoxShadow(
-                                      color: AppTheme.grey.withOpacity(0.4),
-                                      offset: const Offset(2, 2),
-                                      blurRadius: 4),
-                                ],
-                              ),
-                              child: WaveView(
-                                percentageValue: drinkPercent,
+                                left: 16, right: 16, top: 0),
+                            child: InkWell(
+                              onTap: _saveData,
+                              child: Container(
+                                width: 60,
+                                height: 160,
+                                decoration: BoxDecoration(
+                                  color: HexColor('#E8EDFE'),
+                                  borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(80.0),
+                                      bottomLeft: Radius.circular(80.0),
+                                      bottomRight: Radius.circular(80.0),
+                                      topRight: Radius.circular(80.0)),
+                                  boxShadow: <BoxShadow>[
+                                    BoxShadow(
+                                        color: AppTheme.grey.withOpacity(0.4),
+                                        offset: const Offset(2, 2),
+                                        blurRadius: 4),
+                                  ],
+                                ),
+                                child: WaveView(
+                                  percentageValue: drinkPercent,
+                                ),
                               ),
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ),
@@ -284,5 +286,25 @@ class _WaterViewState extends State<WaterView> with TickerProviderStateMixin {
         );
       },
     );
+  }
+
+  void _saveData() async {
+    Map<String, dynamic> monitorData = {
+      'date': DateTime.now(),
+    };
+    int timestamp = monitorData['date'].millisecondsSinceEpoch;
+    monitorData['drinkTime'] = DateFormat.Hm().format(monitorData['date']);
+    monitorData['waterVolume'] = 200;
+
+    DocumentReference monitor = Firestore.instance
+        .collection('wellness_data')
+        .document(uid)
+        .collection('water')
+        .document(timestamp.toString());
+    Firestore.instance.runTransaction((transaction) async {
+      await transaction.set(monitor, monitorData);
+
+      monitorData['date'] = monitorData['date'].add(Duration(seconds: 1));
+    });
   }
 }

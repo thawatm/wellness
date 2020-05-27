@@ -1,9 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:easy_alert/easy_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:wellness/models/healthdata.dart';
 import 'package:intl/intl.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 
 enum ConfirmAction { CANCEL, DELETE }
 
@@ -12,14 +11,14 @@ class HistoryList extends StatelessWidget {
       {Key key,
       @required this.snapshot,
       @required this.collection,
-      @required this.currentUser})
+      @required this.uid})
       : assert(snapshot != null),
         assert(collection != null),
-        assert(currentUser != null),
+        assert(uid != null),
         super(key: key);
 
   final List<DocumentSnapshot> snapshot;
-  final FirebaseUser currentUser;
+  final String uid;
   final String collection;
 
   @override
@@ -31,7 +30,15 @@ class HistoryList extends StatelessWidget {
   }
 
   Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
-    final record = HealthMonitor.fromSnapshot(data);
+    // TODO: delete history by collection
+    var record;
+    switch (collection) {
+      case 'pressure':
+        record = HealthMonitor.fromSnapshot(data);
+        break;
+      default:
+        record = HealthMonitor.fromSnapshot(data);
+    }
 
     return Column(
       children: <Widget>[
@@ -39,38 +46,12 @@ class HistoryList extends StatelessWidget {
           title: Text(DateFormat.yMMMEd().format(record.date)),
           subtitle: Text(record.toStringData(collection)),
           onTap: () {
-            // final ConfirmAction action = await confirmDialog(context, record);
-            // if (action.toString() == 'ConfirmAction.DELETE') {
-            //   deleteData(data.documentID);
-            // }
-
-            Alert(
-              context: context,
-              type: AlertType.warning,
+            Alert.confirm(
+              context,
               title: "ลบข้อมูล",
-              desc: DateFormat('dd/MM/yyyy').format(record.date),
-              buttons: [
-                DialogButton(
-                  child: Text(
-                    "ยกเลิก",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                  onPressed: () => Navigator.pop(context),
-                  color: Colors.green,
-                ),
-                DialogButton(
-                  child: Text(
-                    "ลบ",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                  onPressed: () {
-                    deleteData(data.documentID);
-                    Navigator.pop(context);
-                  },
-                  color: Colors.red,
-                )
-              ],
-            ).show();
+              content: DateFormat('dd/MM/yyyy').format(record.date),
+            ).then((int ret) =>
+                ret == Alert.OK ? deleteData(data.documentID) : null);
           },
         ),
         Divider(
@@ -82,9 +63,9 @@ class HistoryList extends StatelessWidget {
 
   deleteData(docId) {
     Firestore.instance
-        .collection('monitor')
-        .document(currentUser.uid)
-        .collection(collection)
+        .collection('wellness_data')
+        .document(uid)
+        .collection('healthdata')
         .document(docId)
         .delete()
         .catchError((e) {

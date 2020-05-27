@@ -2,7 +2,6 @@ import 'package:charts_flutter/flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wellness/dashboard/app_theme.dart';
 import 'package:wellness/models/healthdata.dart';
 import 'package:wellness/screens/weight_data_entry.dart';
@@ -22,8 +21,8 @@ class WeightPage extends StatefulWidget {
 
 class _WeightPageState extends State<WeightPage> {
   ScrollController _scrollViewController;
-  FirebaseUser currentUser;
-  String collection = 'weightfat';
+  String uid;
+  String collection = 'healthdata';
 
   List<DocumentSnapshot> healthData;
   List<HealthMonitor> weightData;
@@ -45,7 +44,7 @@ class _WeightPageState extends State<WeightPage> {
   void initState() {
     super.initState();
     _scrollViewController = ScrollController();
-    currentUser = ScopedModel.of<StateModel>(context).currentUser;
+    uid = ScopedModel.of<StateModel>(context).uid;
     DateTime now = DateTime.now();
     today = DateTime(now.year, now.month, now.day);
   }
@@ -105,8 +104,8 @@ class _WeightPageState extends State<WeightPage> {
           },
           body: StreamBuilder<QuerySnapshot>(
               stream: Firestore.instance
-                  .collection('monitor')
-                  .document(currentUser.uid)
+                  .collection('wellness_data')
+                  .document(uid)
                   .collection(collection)
                   .snapshots(),
               builder: (context, snapshot) {
@@ -134,8 +133,8 @@ class _WeightPageState extends State<WeightPage> {
                         ? FirstLoad(title: "เพิ่มข้อมูลใหม่\nแตะที่แทบด้านบน")
                         : HistoryList(
                             snapshot: healthData,
-                            currentUser: currentUser,
-                            collection: collection,
+                            uid: uid,
+                            collection: 'weight',
                           ),
                   ],
                 );

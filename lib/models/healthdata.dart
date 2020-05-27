@@ -59,11 +59,14 @@ class HealthMonitor {
 
   String toStringData(String collection) {
     switch (collection) {
-      case 'healthdata':
+      case 'pressure':
         return "ความดันบน:${pressureUpper ?? '-'}  ล่าง:${pressureLower ?? '-'} หัวใจ:${hr ?? '-'}";
         break;
-      case 'weightfat':
-        return "น้ำหนัก:${weight ?? '-'}  bodyAge:${bodyAge ?? '-'} ไขมัน แขนขวา:${rightArmFat ?? '-'}" +
+      case 'weight':
+        return "น้ำหนัก:${weight ?? '-'} ";
+        break;
+      case 'fat':
+        return "bodyAge:${bodyAge ?? '-'} ไขมัน แขนขวา:${rightArmFat ?? '-'}" +
             " แขนซ้าย:${leftArmFat ?? '-'} ขาขวา:${rightLegFat ?? '-'}" +
             " ขาซ้าย:${leftLegFat ?? '-'} ลำตัว:${trunkFat ?? '-'} ";
         break;

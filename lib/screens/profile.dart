@@ -4,8 +4,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wellness/dashboard/app_theme.dart';
+import 'package:wellness/group/group_screen.dart';
 import 'package:wellness/models/state_model.dart';
-import 'package:wellness/models/userdata.dart';
 import 'package:wellness/screens/user_profile.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:wellness/widgets/appbar_ui.dart';
@@ -23,9 +23,8 @@ class _ProfilePageState extends State<ProfilePage> {
   double topBarOpacity = 0.0;
 
   final FirebaseStorage storage =
-      FirebaseStorage(storageBucket: 'gs://wellness-296bf.appspot.com');
-  UserProfile profileData;
-  FirebaseUser currentUser;
+      FirebaseStorage(storageBucket: 'gs://bsp-kiosk.appspot.com');
+  String uid;
   ImageProvider profileImage;
   File tempImage;
 
@@ -59,7 +58,7 @@ class _ProfilePageState extends State<ProfilePage> {
       }
     });
     super.initState();
-    currentUser = ScopedModel.of<StateModel>(context).currentUser;
+    uid = ScopedModel.of<StateModel>(context).uid;
   }
 
   @override
@@ -254,6 +253,14 @@ class _ProfilePageState extends State<ProfilePage> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => UserProfilePage(
+                            animationController: widget.animationController,
+                          )));
+              break;
+            case '/group':
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => GroupScreen(
                             animationController: widget.animationController,
                           )));
               break;

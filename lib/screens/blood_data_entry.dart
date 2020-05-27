@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_picker/flutter_picker.dart';
@@ -17,8 +16,8 @@ class BloodDataEntry extends StatefulWidget {
 
 class _BloodDataEntryState extends State<BloodDataEntry> {
   // final _scaffoldKey = GlobalKey<ScaffoldState>();
-  FirebaseUser currentUser;
-  String collection = 'bloodtests';
+  String uid;
+  String collection = 'healthdata';
 
   Map<String, dynamic> monitorData = {
     'date': DateTime.now(),
@@ -27,7 +26,7 @@ class _BloodDataEntryState extends State<BloodDataEntry> {
   @override
   void initState() {
     super.initState();
-    currentUser = ScopedModel.of<StateModel>(context).currentUser;
+    uid = ScopedModel.of<StateModel>(context).uid;
   }
 
   @override
@@ -71,6 +70,14 @@ class _BloodDataEntryState extends State<BloodDataEntry> {
                     context, 0, 400, 100, 'Glucose (mg/dL)', 'glucose');
               }),
           ListTile(
+              leading: Icon(Icons.highlight, color: Colors.grey[500]),
+              title: Text("HbA1c"),
+              trailing: Text("${monitorData['hba1c'] ?? ''} %",
+                  style: TextStyle(color: Colors.grey[500])),
+              onTap: () {
+                _showPickerDouble(context, 0, 100, 10, 'HbA1c (%)', 'hba1c');
+              }),
+          ListTile(
               leading: Icon(Icons.fastfood, color: Colors.grey[500]),
               title: Text("Cholesterol"),
               trailing: Text("${monitorData['cholesterol'] ?? ''} mg/dL",
@@ -94,14 +101,6 @@ class _BloodDataEntryState extends State<BloodDataEntry> {
                   style: TextStyle(color: Colors.grey[500])),
               onTap: () {
                 _showPickerNumber(context, 0, 400, 50, 'LDL (mg/dL)', 'ldl');
-              }),
-          ListTile(
-              leading: Icon(Icons.highlight, color: Colors.grey[500]),
-              title: Text("HbA1c"),
-              trailing: Text("${monitorData['hba1c'] ?? ''} %",
-                  style: TextStyle(color: Colors.grey[500])),
-              onTap: () {
-                _showPickerDouble(context, 0, 100, 10, 'HbA1c (%)', 'hba1c');
               }),
           ListTile(
               leading: Icon(Icons.terrain, color: Colors.grey[500]),
@@ -173,14 +172,14 @@ class _BloodDataEntryState extends State<BloodDataEntry> {
         int timestamp = monitorData['date'].millisecondsSinceEpoch;
 
         DocumentReference monitor = Firestore.instance
-            .collection("monitor")
-            .document(currentUser.uid)
+            .collection('wellness_data')
+            .document(uid)
             .collection(collection)
             .document(timestamp.toString());
         Firestore.instance.runTransaction((transaction) async {
           await transaction
               .set(monitor, monitorData)
-              .whenComplete(() => showInSnackBar("Successful"));
+              .whenComplete(() => Navigator.pop(context));
         });
       } else {
         showInSnackBar("No Internet Connection");

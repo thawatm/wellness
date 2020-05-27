@@ -4,11 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:wellness/widgets/weeklybar_chart.dart';
 
 class FoodChartView extends StatelessWidget {
-  final String uid;
   final DateTime startDate;
   final QuerySnapshot snapshot;
 
-  const FoodChartView({Key key, this.uid, this.startDate, this.snapshot})
+  const FoodChartView({Key key, this.startDate, this.snapshot})
       : super(key: key);
 
   @override
@@ -33,7 +32,7 @@ class FoodChartView extends StatelessWidget {
         child: WeeklyBarChart(
           snapshot: snapshot,
           startDate: startDate,
-          value: 'calories',
+          value: 'serving',
           barColor: Colors.green,
           scale: 2,
           unit: ' ส่วน',

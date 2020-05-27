@@ -7,15 +7,15 @@ class FoodMonitor {
   String uploadPath;
   String menu;
   String dateString;
-  String calories;
-  int totalCalories;
+  String serving;
+  int totalServing;
   String documentID;
   int eatHours;
 
   FoodMonitor(
       {this.date,
       this.dateString,
-      this.totalCalories,
+      this.totalServing,
       this.eatHours,
       this.reference});
 
@@ -29,8 +29,8 @@ class FoodMonitor {
         imageUrl = snapshot.data['imageUrl'],
         uploadPath = snapshot.data['uploadPath'],
         menu = snapshot.data['menu'] ?? '',
-        calories = snapshot.data["calories"] ?? '0',
-        totalCalories = int.parse(snapshot.data["calories"]),
+        serving = snapshot.data["serving"] ?? '0',
+        totalServing = int.parse(snapshot.data["serving"] ?? '0'),
         documentID = snapshot.documentID;
 
   Map getMapData() {
@@ -39,7 +39,7 @@ class FoodMonitor {
       'imageUrl': this.imageUrl,
       'uploadPath': this.uploadPath,
       'menu': this.menu,
-      'calories': this.calories,
+      'serving': this.serving,
     };
     return mapData;
   }

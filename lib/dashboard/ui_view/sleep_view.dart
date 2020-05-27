@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:wellness/dashboard/app_theme.dart';
@@ -16,7 +16,7 @@ class SleepView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FirebaseUser currentUser = ScopedModel.of<StateModel>(context).currentUser;
+    String uid = ScopedModel.of<StateModel>(context).uid;
     int sleepHours = 0;
     String duration = '';
     double sleepPercent = 0;
@@ -30,8 +30,8 @@ class SleepView extends StatelessWidget {
                 0.0, 30 * (1.0 - animation.value), 0.0),
             child: StreamBuilder<QuerySnapshot>(
               stream: Firestore.instance
-                  .collection('monitor')
-                  .document(currentUser.uid)
+                  .collection('wellness_data')
+                  .document(uid)
                   .collection('sleep')
                   .snapshots(),
               builder: (context, snapshot) {
@@ -56,7 +56,7 @@ class SleepView extends StatelessWidget {
 
                 return Padding(
                   padding: const EdgeInsets.only(
-                      left: 24, right: 24, top: 16, bottom: 18),
+                      left: 16, right: 16, top: 16, bottom: 0),
                   child: Container(
                     decoration: BoxDecoration(
                       color: AppTheme.white,
@@ -83,16 +83,31 @@ class SleepView extends StatelessWidget {
                             children: <Widget>[
                               Padding(
                                 padding: const EdgeInsets.only(
-                                    left: 4, bottom: 8, top: 16),
-                                child: Text(
-                                  'ระยะเวลาหลับ',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontFamily: AppTheme.fontName,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 16,
-                                      letterSpacing: -0.1,
-                                      color: AppTheme.darkText),
+                                    left: 4, bottom: 8, top: 0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    Icon(
+                                      FontAwesomeIcons.bed,
+                                      color: Colors.blue.shade700,
+                                      size: 16,
+                                    ),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(left: 12.0),
+                                      child: Text(
+                                        'นอนหลับ',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontFamily: AppTheme.fontName,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 16,
+                                          letterSpacing: -0.1,
+                                          color: AppTheme.nearlyBlack,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                               Row(
@@ -179,7 +194,7 @@ class SleepView extends StatelessWidget {
                                                   .width /
                                               2.8,
                                           animation: true,
-                                          lineHeight: 12.0,
+                                          lineHeight: 8.0,
                                           animationDuration: 2000,
                                           percent: sleepPercent,
                                           linearStrokeCap:
@@ -204,42 +219,7 @@ class SleepView extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.only(
                               left: 24, right: 24, top: 8, bottom: 8),
-                          child: Container(
-                            height: 2,
-                            decoration: BoxDecoration(
-                              color: AppTheme.background,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(4.0)),
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 24, right: 24, top: 0, bottom: 16),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Icon(
-                                Icons.calendar_today,
-                                color: AppTheme.grey.withOpacity(0.5),
-                                size: 16,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 4.0),
-                                child: Text(
-                                  'วันนี้',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontFamily: AppTheme.fontName,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 14,
-                                    letterSpacing: 0.0,
-                                    color: AppTheme.grey.withOpacity(0.5),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                          child: Container(),
                         ),
                       ],
                     ),

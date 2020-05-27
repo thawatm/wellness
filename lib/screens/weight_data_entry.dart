@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_picker/flutter_picker.dart';
@@ -18,8 +17,8 @@ class WeightDataEntry extends StatefulWidget {
 
 class _WeightDataEntryState extends State<WeightDataEntry> {
   // final _scaffoldKey = GlobalKey<ScaffoldState>();
-  FirebaseUser currentUser;
-  String collection = 'weightfat';
+  String uid;
+  String collection = 'healthdata';
   int height = 170;
 
   Map<String, dynamic> monitorData = {
@@ -29,16 +28,8 @@ class _WeightDataEntryState extends State<WeightDataEntry> {
   @override
   void initState() {
     super.initState();
-    currentUser = ScopedModel.of<StateModel>(context).currentUser;
-
-    final DocumentReference ref =
-        Firestore.instance.collection('users').document(currentUser.uid);
-
-    ref.get().then((snapshot) {
-      if (snapshot.data.containsKey('height')) {
-        height = int.parse(snapshot.data['height']);
-      }
-    });
+    uid = ScopedModel.of<StateModel>(context).uid;
+    height = ScopedModel.of<StateModel>(context).userProfile.height;
   }
 
   @override
@@ -91,60 +82,6 @@ class _WeightDataEntryState extends State<WeightDataEntry> {
                 _showPickerDouble(
                     context, 20, 300, 70, 'น้ำหนัก (kg)', 'weight');
               }),
-          // ListTile(
-          //     leading: Icon(Icons.person, color: Colors.grey[500]),
-          //     title: Text("Body Age"),
-          //     trailing: Text("${monitorData['bodyAge'] ?? ''} ปี",
-          //         style: TextStyle(color: Colors.grey[500])),
-          //     onTap: () {
-          //       _showPickerNumber(
-          //           context, 0, 150, 35, 'Body Age (ปี)', 'bodyAge');
-          //     }),
-          // ListTile(
-          //     leading: Icon(Icons.border_right, color: Colors.grey[500]),
-          //     title: Text("ไขมัน แขนขวา"),
-          //     trailing: Text("${monitorData['rightArmFat'] ?? ''} %",
-          //         style: TextStyle(color: Colors.grey[500])),
-          //     onTap: () {
-          //       _showPickerDouble(
-          //           context, 0, 100, 20, '%ไขมัน แขนขวา', 'rightArmFat');
-          //     }),
-          // ListTile(
-          //     leading: Icon(Icons.border_left, color: Colors.grey[500]),
-          //     title: Text("ไขมัน แขนซ้าย"),
-          //     trailing: Text("${monitorData['leftArmFat'] ?? ''} %",
-          //         style: TextStyle(color: Colors.grey[500])),
-          //     onTap: () {
-          //       _showPickerDouble(
-          //           context, 0, 100, 20, '%ไขมัน แขนขวา', 'leftArmFat');
-          //     }),
-          // ListTile(
-          //     leading: Icon(Icons.rotate_right, color: Colors.grey[500]),
-          //     title: Text("ไขมัน ขาขวา"),
-          //     trailing: Text("${monitorData['rightLegFat'] ?? ''} %",
-          //         style: TextStyle(color: Colors.grey[500])),
-          //     onTap: () {
-          //       _showPickerDouble(
-          //           context, 0, 100, 20, '%ไขมัน ขาขวา', 'rightLegFat');
-          //     }),
-          // ListTile(
-          //     leading: Icon(Icons.rotate_left, color: Colors.grey[500]),
-          //     title: Text("ไขมัน ขาซ้าย"),
-          //     trailing: Text("${monitorData['leftLegFat'] ?? ''} %",
-          //         style: TextStyle(color: Colors.grey[500])),
-          //     onTap: () {
-          //       _showPickerDouble(
-          //           context, 0, 100, 20, '%ไขมัน ขาซ้าย', 'leftLegFat');
-          //     }),
-          // ListTile(
-          //     leading: Icon(Icons.border_all, color: Colors.grey[500]),
-          //     title: Text("ไขมัน หน้าท้อง"),
-          //     trailing: Text("${monitorData['trunkFat'] ?? ''} %",
-          //         style: TextStyle(color: Colors.grey[500])),
-          //     onTap: () {
-          //       _showPickerDouble(
-          //           context, 0, 100, 20, '%ไขมัน หน้าท้อง', 'trunkFat');
-          //     }),
           SizedBox(height: 24),
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -180,14 +117,14 @@ class _WeightDataEntryState extends State<WeightDataEntry> {
         int timestamp = monitorData['date'].millisecondsSinceEpoch;
 
         DocumentReference monitor = Firestore.instance
-            .collection("monitor")
-            .document(currentUser.uid)
+            .collection('wellness_data')
+            .document(uid)
             .collection(collection)
             .document(timestamp.toString());
         Firestore.instance.runTransaction((transaction) async {
           await transaction
               .set(monitor, monitorData)
-              .whenComplete(() => showInSnackBar("Successful"));
+              .whenComplete(() => Navigator.pop(context));
         });
       } else {
         showInSnackBar("No Internet Connection");
@@ -200,7 +137,7 @@ class _WeightDataEntryState extends State<WeightDataEntry> {
     // int timestamp = monitorData['date'].millisecondsSinceEpoch;
 
     // DocumentReference monitor = Firestore.instance
-    //     .collection("monitor")
+    //     .collection('wellness_data')
     //     .document(currentUser.uid)
     //     .collection(collection)
     //     .document(timestamp.toString());

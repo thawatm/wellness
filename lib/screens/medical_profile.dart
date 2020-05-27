@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:wellness/dashboard/app_theme.dart';
@@ -15,7 +14,7 @@ class MedicalProfilePage extends StatefulWidget {
 }
 
 class _MedicalProfilePageState extends State<MedicalProfilePage> {
-  FirebaseUser currentUser;
+  String uid;
 
   bool _isDrugAllergy = false;
   bool _isDrugAllergySuspect = false;
@@ -26,10 +25,10 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
   @override
   void initState() {
     super.initState();
-    currentUser = ScopedModel.of<StateModel>(context).currentUser;
+    uid = ScopedModel.of<StateModel>(context).uid;
 
     final DocumentReference ref =
-        Firestore.instance.collection('users').document(currentUser.uid);
+        Firestore.instance.collection('wellness_users').document(uid);
 
     ref.get().then((snapshot) {
       if (snapshot.data.containsKey('isDrugAllergy')) {
@@ -54,8 +53,8 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
         ),
         body: StreamBuilder<DocumentSnapshot>(
             stream: Firestore.instance
-                .collection('users')
-                .document(currentUser.uid)
+                .collection('wellness_users')
+                .document(uid)
                 .snapshots(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) return LinearProgressIndicator();
@@ -135,7 +134,7 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
           onTap: () => showRoundedModalBottomSheet(
               context: context,
               builder: (context) => EditProfile(
-                    currentUser: currentUser,
+                    uid: uid,
                     title: 'ชนิดยาที่แพ้',
                     initialValue: '${profileData.drugAllergy ?? ''}',
                     updateKey: 'drugAllergy',
@@ -153,7 +152,7 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
           onTap: () => showRoundedModalBottomSheet(
               context: context,
               builder: (context) => EditProfile(
-                    currentUser: currentUser,
+                    uid: uid,
                     title: 'โรงพยาบาลที่วินิจฉัยการแพ้',
                     initialValue: '${profileData.diagnoseHospital ?? ''}',
                     updateKey: 'diagnoseHospital',
@@ -171,7 +170,7 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
           onTap: () => showRoundedModalBottomSheet(
               context: context,
               builder: (context) => EditProfile(
-                    currentUser: currentUser,
+                    uid: uid,
                     title: 'อาการที่เกิดจากอาการแพ้',
                     initialValue: '${profileData.allergySymptom ?? ''}',
                     updateKey: 'allergySymptom',
@@ -189,7 +188,7 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
           onTap: () => showRoundedModalBottomSheet(
               context: context,
               builder: (context) => EditProfile(
-                    currentUser: currentUser,
+                    uid: uid,
                     title: 'แพทย์ที่ดูแล',
                     initialValue: '${profileData.doctor ?? ''}',
                     updateKey: 'doctor',
@@ -207,7 +206,7 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
           onTap: () => showRoundedModalBottomSheet(
               context: context,
               builder: (context) => EditProfile(
-                    currentUser: currentUser,
+                    uid: uid,
                     title: 'โรงพยาบาลที่รับการรักษา',
                     initialValue: '${profileData.treatmentHospital ?? ''}',
                     updateKey: 'treatmentHospital',
@@ -254,7 +253,7 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
       onTap: () => showRoundedModalBottomSheet(
           context: context,
           builder: (context) => EditProfile(
-                currentUser: currentUser,
+                uid: uid,
                 title: 'ระบุอาการ',
                 initialValue: '${profileData.suspectSymptom ?? ''}',
                 updateKey: 'suspectSymptom',
@@ -276,7 +275,7 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
         onTap: () => showRoundedModalBottomSheet(
             context: context,
             builder: (context) => EditProfile(
-                  currentUser: currentUser,
+                  uid: uid,
                   title: 'ชนิดอาหาร',
                   initialValue: '${profileData.foodAllergy ?? ''}',
                   updateKey: 'foodAllergy',
@@ -294,7 +293,7 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
         onTap: () => showRoundedModalBottomSheet(
             context: context,
             builder: (context) => EditProfile(
-                  currentUser: currentUser,
+                  uid: uid,
                   title: 'วัตถุดิบ หรือส่วนผสมต่างๆ',
                   initialValue: '${profileData.ingredientAllergy ?? ''}',
                   updateKey: 'ingredientAllergy',
@@ -311,7 +310,7 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
     updateData['isFoodAllergy'] = _isFoodAllergy;
 
     DocumentReference ref =
-        Firestore.instance.collection("users").document(currentUser.uid);
+        Firestore.instance.collection('wellness_users').document(uid);
     Firestore.instance.runTransaction((transaction) async {
       await transaction.update(ref, updateData);
     });

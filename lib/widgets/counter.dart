@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wellness/dashboard/app_theme.dart';
 
 class Counter extends StatelessWidget {
-  final num number;
+  final String number;
   final Color color;
   final String title;
   const Counter({
@@ -14,34 +14,12 @@ class Counter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String display = '-';
-    if (number > 0) display = '$number';
     return Column(
       children: <Widget>[
-        // Container(
-        //   padding: EdgeInsets.all(6),
-        //   height: 25,
-        //   width: 25,
-        //   decoration: BoxDecoration(
-        //     shape: BoxShape.circle,
-        //     color: color.withOpacity(.26),
-        //   ),
-        //   child: Container(
-        //     decoration: BoxDecoration(
-        //       shape: BoxShape.circle,
-        //       color: Colors.transparent,
-        //       border: Border.all(
-        //         color: color,
-        //         width: 2,
-        //       ),
-        //     ),
-        //   ),
-        // ),
-        // SizedBox(height: 10),
         Text(
-          display,
+          number,
           style: TextStyle(
-            fontSize: 32,
+            fontSize: 30,
             fontWeight: FontWeight.w600,
             color: color,
           ),

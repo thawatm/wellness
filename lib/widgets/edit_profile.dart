@@ -1,11 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile(
       {Key key,
-      @required this.currentUser,
+      @required this.uid,
       this.title,
       this.initialValue,
       this.updateKey})
@@ -13,7 +12,7 @@ class EditProfile extends StatefulWidget {
         super(key: key);
   final String title;
   final String initialValue;
-  final FirebaseUser currentUser;
+  final String uid;
   final String updateKey;
 
   @override
@@ -80,7 +79,7 @@ class _EditProfileState extends State<EditProfile> {
     updateData[widget.updateKey] = value;
 
     DocumentReference ref =
-        Firestore.instance.collection("users").document(widget.currentUser.uid);
+        Firestore.instance.collection('wellness_users').document(widget.uid);
     Firestore.instance.runTransaction((transaction) async {
       await transaction.update(ref, updateData);
     });

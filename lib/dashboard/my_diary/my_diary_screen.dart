@@ -1,3 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collection/collection.dart';
+import 'package:intl/intl.dart';
+import 'package:scoped_model/scoped_model.dart';
 import 'package:wellness/dashboard/ui_view/bloodpressure_view.dart';
 import 'package:wellness/dashboard/ui_view/bloodtest_view.dart';
 import 'package:wellness/dashboard/ui_view/body_measurement.dart';
@@ -8,7 +12,8 @@ import 'package:wellness/dashboard/my_diary/meals_list_view.dart';
 import 'package:wellness/dashboard/my_diary/water_view.dart';
 import 'package:flutter/material.dart';
 import 'package:wellness/dashboard/ui_view/workout_view.dart';
-import 'package:wellness/models/userdata.dart';
+import 'package:wellness/models/fitkitdata.dart';
+import 'package:wellness/models/state_model.dart';
 import 'package:wellness/widgets/appbar_ui.dart';
 
 class MyDiaryScreen extends StatefulWidget {
@@ -26,8 +31,7 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
   List<Widget> listViews = <Widget>[];
   final ScrollController scrollController = ScrollController();
   double topBarOpacity = 0.0;
-
-  UserProfile userProfile;
+  String uid;
 
   @override
   void initState() {
@@ -59,23 +63,47 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
       }
     });
     super.initState();
+    uid = ScopedModel.of<StateModel>(context).uid;
+    DateTime start = DateTime.now().subtract(Duration(days: 7));
+    DateTime dateFrom = DateTime(start.year, start.month, start.day);
+    FitKitData(dateFrom: dateFrom).read().then((fitData) {
+      if (fitData != null && fitData.isNotEmpty) {
+        var data = fitData.map((v) {
+          return {
+            'date': DateFormat('yyyyMMdd').format(v.dateFrom),
+            'value': v.value
+          };
+        });
+        groupBy(data, (obj) => obj['date']).forEach((k, v) {
+          DateTime recordDate = DateTime.parse(k);
+          num sum = v.fold(0, (a, b) => a + b['value']);
+          _saveData(recordDate, sum);
+        });
+      }
+    });
+  }
+
+  void _saveData(DateTime recordDate, int stepsCount) async {
+    int timestamp = recordDate.millisecondsSinceEpoch;
+    Map<String, dynamic> monitorData = {
+      'date': recordDate,
+      'steps': stepsCount,
+      'totalWorkout': stepsCount ~/ 400,
+    };
+
+    DocumentReference monitor = Firestore.instance
+        .collection('wellness_data')
+        .document(uid)
+        .collection('workout')
+        .document(timestamp.toString());
+    Firestore.instance.runTransaction((transaction) async {
+      await transaction.set(monitor, monitorData);
+    });
   }
 
   void addAllListData() {
     const int count = 9;
 
-    // listViews.add(
-    //   TitleView(
-    //     titleTxt: 'การออกกำลังกาย',
-    //     subTxt: 'เพิ่ม',
-    //     routeName: '/workout',
-    //     animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-    //         parent: widget.animationController,
-    //         curve:
-    //             Interval((1 / count) * 0, 1.0, curve: Curves.fastOutSlowIn))),
-    //     animationController: widget.animationController,
-    //   ),
-    // );
     listViews.add(
       InkWell(
         onTap: () => Navigator.of(context).pushNamed('/workout'),
@@ -89,18 +117,6 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
         ),
       ),
     );
-    // listViews.add(
-    //   TitleView(
-    //     titleTxt: 'การกินผักผลไม้',
-    //     subTxt: 'เพิ่ม',
-    //     routeName: '/food',
-    //     animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-    //         parent: widget.animationController,
-    //         curve:
-    //             Interval((1 / count) * 2, 1.0, curve: Curves.fastOutSlowIn))),
-    //     animationController: widget.animationController,
-    //   ),
-    // );
 
     listViews.add(
       InkWell(
@@ -116,19 +132,6 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
       ),
     );
 
-    // listViews.add(
-    //   TitleView(
-    //     titleTxt: 'น้ำหนัก',
-    //     subTxt: 'เพิ่ม',
-    //     routeName: '/weight',
-    //     animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-    //         parent: widget.animationController,
-    //         curve:
-    //             Interval((1 / count) * 4, 1.0, curve: Curves.fastOutSlowIn))),
-    //     animationController: widget.animationController,
-    //   ),
-    // );
-
     listViews.add(
       InkWell(
         onTap: () => Navigator.of(context).pushNamed('/weight'),
@@ -142,18 +145,6 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
         ),
       ),
     );
-    // listViews.add(
-    //   TitleView(
-    //     titleTxt: 'ความดันโลหิต',
-    //     subTxt: 'เพิ่ม',
-    //     routeName: '/pressure',
-    //     animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-    //         parent: widget.animationController,
-    //         curve:
-    //             Interval((1 / count) * 4, 1.0, curve: Curves.fastOutSlowIn))),
-    //     animationController: widget.animationController,
-    //   ),
-    // );
 
     listViews.add(
       InkWell(
@@ -168,18 +159,6 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
         ),
       ),
     );
-    // listViews.add(
-    //   TitleView(
-    //     titleTxt: 'ผลตรวจเลือด',
-    //     subTxt: 'เพิ่ม',
-    //     routeName: '/blood',
-    //     animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-    //         parent: widget.animationController,
-    //         curve:
-    //             Interval((1 / count) * 4, 1.0, curve: Curves.fastOutSlowIn))),
-    //     animationController: widget.animationController,
-    //   ),
-    // );
 
     listViews.add(
       InkWell(
@@ -194,18 +173,6 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
         ),
       ),
     );
-    // listViews.add(
-    //   TitleView(
-    //     titleTxt: 'การดื่มน้ำ',
-    //     routeName: '/drink',
-    //     subTxt: 'เพิ่ม',
-    //     animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-    //         parent: widget.animationController,
-    //         curve:
-    //             Interval((1 / count) * 6, 1.0, curve: Curves.fastOutSlowIn))),
-    //     animationController: widget.animationController,
-    //   ),
-    // );
 
     listViews.add(
       InkWell(
@@ -220,18 +187,7 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
         ),
       ),
     );
-    // listViews.add(
-    //   TitleView(
-    //     titleTxt: 'การนอน',
-    //     subTxt: 'เพิ่ม',
-    //     routeName: '/sleep',
-    //     animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-    //         parent: widget.animationController,
-    //         curve:
-    //             Interval((1 / count) * 6, 1.0, curve: Curves.fastOutSlowIn))),
-    //     animationController: widget.animationController,
-    //   ),
-    // );
+
     listViews.add(
       InkWell(
         onTap: () => Navigator.of(context).pushNamed('/sleep'),
@@ -245,18 +201,7 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
         ),
       ),
     );
-    // listViews.add(
-    //   TitleView(
-    //     titleTxt: 'ไขมัน',
-    //     subTxt: 'เพิ่ม',
-    //     routeName: '/fat',
-    //     animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-    //         parent: widget.animationController,
-    //         curve:
-    //             Interval((1 / count) * 6, 1.0, curve: Curves.fastOutSlowIn))),
-    //     animationController: widget.animationController,
-    //   ),
-    // );
+
     listViews.add(
       InkWell(
         onTap: () => Navigator.of(context).pushNamed('/fat'),
@@ -270,27 +215,9 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
         ),
       ),
     );
-    // listViews.add(
-    //   GlassView(
-    //       animation: Tween<double>(begin: 0.0, end: 1.0).animate(
-    //           CurvedAnimation(
-    //               parent: widget.animationController,
-    //               curve: Interval((1 / count) * 8, 1.0,
-    //                   curve: Curves.fastOutSlowIn))),
-    //       animationController: widget.animationController),
-    // );
   }
 
   Future<bool> getData() async {
-    // FirebaseUser currentUser = ScopedModel.of<StateModel>(context).currentUser;
-    // DocumentReference docRef =
-    //     Firestore.instance.collection("users").document(currentUser.uid);
-
-    // await docRef.get().then((v) {
-    //   userProfile = UserProfile.fromSnapshot(v);
-    // }).catchError((e) {
-    //   print(e);
-    // });
     return true;
   }
 

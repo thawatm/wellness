@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:easy_alert/easy_alert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -22,7 +22,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:rounded_modal/rounded_modal.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:image/image.dart' as ImagePackage;
 import 'package:mime_type/mime_type.dart';
@@ -40,8 +39,8 @@ class _FoodMonitorPageState extends State<FoodMonitorPage> {
   File tempImage;
 
   final FirebaseStorage storage =
-      FirebaseStorage(storageBucket: 'gs://wellness-296bf.appspot.com');
-  FirebaseUser currentUser;
+      FirebaseStorage(storageBucket: 'gs://bsp-kiosk.appspot.com');
+  String uid;
   List<DocumentSnapshot> snapshotData;
   List<FoodMonitor> foodData;
 
@@ -60,14 +59,14 @@ class _FoodMonitorPageState extends State<FoodMonitorPage> {
         .map((o) => FoodMonitor(
             date: o.date,
             dateString: o.dateString,
-            totalCalories: int.parse(o.calories)))
+            totalServing: int.parse(o.serving)))
         .toList()
           ..removeWhere((v) => today.difference(v.date).inDays > chartDays);
 
     if (tempData.isNotEmpty) {
       tempData = groupBy(tempData, (obj) => obj.dateString)
           .map((k, v) => MapEntry(k, v.reduce((a, b) {
-                a.totalCalories = a.totalCalories + b.totalCalories;
+                a.totalServing = a.totalServing + b.totalServing;
                 return a;
               })))
           .values
@@ -75,11 +74,11 @@ class _FoodMonitorPageState extends State<FoodMonitorPage> {
 
       return [
         new charts.Series<FoodMonitor, DateTime>(
-          id: 'แคลอรี่',
+          id: 'Serving',
           colorFn: (_, __) => charts.MaterialPalette.cyan.shadeDefault,
           domainFn: (FoodMonitor food, _) =>
               DateTime(food.date.year, food.date.month, food.date.day),
-          measureFn: (FoodMonitor food, _) => food.totalCalories,
+          measureFn: (FoodMonitor food, _) => food.totalServing,
           data: tempData,
         )
       ];
@@ -121,7 +120,7 @@ class _FoodMonitorPageState extends State<FoodMonitorPage> {
   @override
   void initState() {
     super.initState();
-    currentUser = ScopedModel.of<StateModel>(context).currentUser;
+    uid = ScopedModel.of<StateModel>(context).uid;
     DateTime now = DateTime.now();
     today = DateTime(now.year, now.month, now.day);
   }
@@ -139,7 +138,7 @@ class _FoodMonitorPageState extends State<FoodMonitorPage> {
               builder: (context) => FoodContentAddDialog(
                     image: image,
                     storage: storage,
-                    currentUser: currentUser,
+                    uid: uid,
                   )));
     }
   }
@@ -157,7 +156,7 @@ class _FoodMonitorPageState extends State<FoodMonitorPage> {
               builder: (context) => FoodContentAddDialog(
                     image: image,
                     storage: storage,
-                    currentUser: currentUser,
+                    uid: uid,
                   )));
     }
   }
@@ -173,7 +172,7 @@ class _FoodMonitorPageState extends State<FoodMonitorPage> {
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
               SliverAppBar(
-                title: Text("อาหาร"),
+                title: Text("ผักผลไม้"),
                 pinned: true,
                 floating: true,
                 forceElevated: innerBoxIsScrolled,
@@ -191,17 +190,14 @@ class _FoodMonitorPageState extends State<FoodMonitorPage> {
                   tabs: <Tab>[
                     Tab(
                       key: Key('FoodList'),
-                      text: "เมนู",
-                      // icon: Icon(Icons.add),
+                      text: "ผักผลไม้",
                     ),
                     Tab(
                       key: Key('Chart'),
-                      text: "รายงาน",
-                      // icon: Icon(Icons.add),
+                      text: "กราฟ",
                     ),
                   ],
                 ),
-                // actions: _buildMenuActions(context),
               ),
             ];
           },
@@ -226,8 +222,8 @@ class _FoodMonitorPageState extends State<FoodMonitorPage> {
   Widget buildBody() {
     return StreamBuilder<QuerySnapshot>(
         stream: Firestore.instance
-            .collection('monitor')
-            .document(currentUser.uid)
+            .collection('wellness_data')
+            .document(uid)
             .collection('food')
             .snapshots(),
         builder: (context, snapshot) {
@@ -239,10 +235,6 @@ class _FoodMonitorPageState extends State<FoodMonitorPage> {
           foodData = snapshotData
               .map((data) => FoodMonitor.fromSnapshot(data))
               .toList();
-
-          // return snapshotData.isEmpty
-          //     ? FirstLoad(title: "เพิ่มข้อมูลใหม่\nแตะที่ไอคอนมุมขวาล่าง")
-          //     : _buildImagesList(context, foodData);
 
           return TabBarView(
             children: <Widget>[
@@ -262,9 +254,9 @@ class _FoodMonitorPageState extends State<FoodMonitorPage> {
   Widget _buildImagesList(BuildContext context, List<FoodMonitor> foodData) {
     var foodDataMap = groupBy(foodData, (obj) => obj.dateString);
 
-    List<FoodMonitor> totalCalories = foodDataMap
+    List<FoodMonitor> totalServing = foodDataMap
         .map((k, v) => MapEntry(k, v.reduce((a, b) {
-              a.totalCalories = a.totalCalories + b.totalCalories;
+              a.totalServing = a.totalServing + b.totalServing;
               return a;
             })))
         .values
@@ -272,11 +264,11 @@ class _FoodMonitorPageState extends State<FoodMonitorPage> {
 
     return ListView.builder(
         padding: const EdgeInsets.only(top: 20.0),
-        itemCount: totalCalories.length,
+        itemCount: totalServing.length,
         itemBuilder: (BuildContext context, int index) {
-          String key = totalCalories[index].dateString;
+          String key = totalServing[index].dateString;
           return _buildImagesTitleItem(
-              context, foodDataMap[key].toList(), totalCalories[index]);
+              context, foodDataMap[key].toList(), totalServing[index]);
         });
   }
 
@@ -284,7 +276,7 @@ class _FoodMonitorPageState extends State<FoodMonitorPage> {
       BuildContext context, List<FoodMonitor> foodList, FoodMonitor total) {
     Widget title = SectionTitle(
       title: socialDate(total.date),
-      calories: total.totalCalories.toString(),
+      serving: total.totalServing.toString(),
       hours: getEatHours(foodList.first.date, foodList.last.date).toString(),
     );
 
@@ -315,26 +307,12 @@ class _FoodMonitorPageState extends State<FoodMonitorPage> {
                             builder: (context) => FoodContentEditDialog(
                                   food: content,
                                   storage: storage,
-                                  currentUser: currentUser,
+                                  uid: uid,
                                 )))
-                    : Alert(
-                        context: context,
-                        type: AlertType.info,
-                        title: "กรุณารอสักครู่",
-                        desc: "กำลังโหลดข้อมูลรูปภาพ",
-                        buttons: [
-                          DialogButton(
-                            child: Text(
-                              "Close",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 20),
-                            ),
-                            onPressed: () => Navigator.pop(context),
-                            width: 120,
-                            color: Colors.blue,
-                          )
-                        ],
-                      ).show();
+                    : Alert.alert(context,
+                            title: "กรุณารอสักครู่",
+                            content: "กำลังโหลดข้อมูลรูปภาพ")
+                        .then((_) => Navigator.pop(context));
               },
               splashColor:
                   Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
@@ -374,7 +352,7 @@ class _FoodMonitorPageState extends State<FoodMonitorPage> {
       SizedBox(height: 10),
       Container(
         height: 240,
-        child: TimeSeriesBar(caleriesData(), animate: true, unit: 'แคลอรี่'),
+        child: TimeSeriesBar(caleriesData(), animate: true, unit: 'Serving'),
       ),
       SizedBox(height: 30),
       Container(
@@ -389,12 +367,12 @@ class SectionTitle extends StatelessWidget {
   const SectionTitle({
     Key key,
     this.title,
-    this.calories,
+    this.serving,
     this.hours,
   }) : super(key: key);
 
   final String title;
-  final String calories;
+  final String serving;
   final String hours;
 
   @override
@@ -408,8 +386,7 @@ class SectionTitle extends StatelessWidget {
             child: Text(title, style: Theme.of(context).textTheme.headline5),
           ),
         ),
-        Text(' $calories แคลอรี่',
-            style: Theme.of(context).textTheme.subtitle1),
+        Text(' $serving Serving', style: Theme.of(context).textTheme.subtitle1),
         Expanded(
           child: Container(
             alignment: Alignment.centerRight,
@@ -477,7 +454,7 @@ class FoodContent extends StatelessWidget {
                   fit: BoxFit.scaleDown,
                   alignment: Alignment.bottomLeft,
                   child: Text(
-                    "${food.calories} แคลอรี่",
+                    "${food.serving} Serving",
                     style: subtitleStyle,
                   )),
             ),
@@ -511,13 +488,13 @@ class FoodContentEditDialog extends StatefulWidget {
       {Key key,
       @required this.food,
       @required this.storage,
-      @required this.currentUser})
+      @required this.uid})
       : assert(food != null),
         super(key: key);
 
   final FoodMonitor food;
   final FirebaseStorage storage;
-  final FirebaseUser currentUser;
+  final String uid;
 
   @override
   _FoodContentEditDialogState createState() => _FoodContentEditDialogState();
@@ -527,13 +504,13 @@ class _FoodContentEditDialogState extends State<FoodContentEditDialog> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController _textMenuController;
-  TextEditingController _textCalController;
+  TextEditingController _textServController;
 
   @override
   void initState() {
     super.initState();
     _textMenuController = TextEditingController(text: widget.food.menu);
-    _textCalController = TextEditingController(text: widget.food.calories);
+    _textServController = TextEditingController(text: widget.food.serving);
   }
 
   bool _autovalidate = false;
@@ -633,16 +610,16 @@ class _FoodContentEditDialogState extends State<FoodContentEditDialog> {
                 leading:
                     Icon(Icons.format_list_numbered, color: Colors.grey[500]),
                 title: TextFormField(
-                    controller: _textCalController,
+                    controller: _textServController,
                     validator: _validateInput,
                     keyboardType: TextInputType.number,
                     inputFormatters: <TextInputFormatter>[
                       WhitelistingTextInputFormatter.digitsOnly,
                     ],
                     onSaved: (value) {
-                      widget.food.calories = value;
+                      widget.food.serving = value;
                     }),
-                trailing: Text('Cal'),
+                trailing: Text('Serving'),
               ),
               SizedBox(height: 36),
               Padding(
@@ -661,40 +638,11 @@ class _FoodContentEditDialogState extends State<FoodContentEditDialog> {
                 child: RaisedButton(
                   elevation: 1.0,
                   onPressed: () {
-                    // final ConfirmAction action = await confirmDialog(context);
-                    // if (action.toString() == 'ConfirmAction.DELETE') {
-                    // _deleteData();
-
-                    // }
-                    // Navigator.pop(context);
-                    Alert(
-                      context: context,
-                      type: AlertType.warning,
+                    Alert.confirm(
+                      context,
                       title: "ยืนยัน",
-                      desc: "ต้องการลบข้อมูล?",
-                      buttons: [
-                        DialogButton(
-                          child: Text(
-                            "ยกเลิก",
-                            style: TextStyle(color: Colors.white, fontSize: 16),
-                          ),
-                          onPressed: () => Navigator.pop(context),
-                          color: Colors.green,
-                        ),
-                        DialogButton(
-                          child: Text(
-                            "ลบ",
-                            style: TextStyle(color: Colors.white, fontSize: 16),
-                          ),
-                          onPressed: () {
-                            _deleteData();
-                            Navigator.pop(context);
-                            Navigator.pop(context);
-                          },
-                          color: Colors.red,
-                        )
-                      ],
-                    ).show();
+                      content: "ต้องการลบข้อมูล?",
+                    ).then((int ret) => ret == Alert.OK ? _deleteData() : null);
                   },
                   padding: EdgeInsets.all(12),
                   color: Colors.redAccent,
@@ -712,14 +660,15 @@ class _FoodContentEditDialogState extends State<FoodContentEditDialog> {
   _deleteData() {
     widget.storage.ref().child(widget.food.uploadPath).delete();
     Firestore.instance
-        .collection('monitor')
-        .document(widget.currentUser.uid)
+        .collection('wellness_data')
+        .document(widget.uid)
         .collection('food')
         .document(widget.food.documentID)
         .delete()
         .catchError((e) {
       print(e);
     });
+    Navigator.pop(context);
   }
 
   void _saveData() {
@@ -727,8 +676,8 @@ class _FoodContentEditDialogState extends State<FoodContentEditDialog> {
 
     if (timestamp.toString() != widget.food.documentID) {
       Firestore.instance
-          .collection('monitor')
-          .document(widget.currentUser.uid)
+          .collection('wellness_data')
+          .document(widget.uid)
           .collection('food')
           .document(widget.food.documentID)
           .delete()
@@ -738,8 +687,8 @@ class _FoodContentEditDialogState extends State<FoodContentEditDialog> {
     }
 
     DocumentReference monitor = Firestore.instance
-        .collection("monitor")
-        .document(widget.currentUser.uid)
+        .collection('wellness_data')
+        .document(widget.uid)
         .collection('food')
         .document(timestamp.toString());
     Firestore.instance.runTransaction((transaction) async {
@@ -779,13 +728,13 @@ class FoodContentAddDialog extends StatefulWidget {
   const FoodContentAddDialog(
       {Key key,
       @required this.storage,
-      @required this.currentUser,
+      @required this.uid,
       @required this.image})
       : assert(image != null),
         super(key: key);
 
   final FirebaseStorage storage;
-  final FirebaseUser currentUser;
+  final String uid;
   final File image;
 
   @override
@@ -795,12 +744,13 @@ class FoodContentAddDialog extends StatefulWidget {
 class _FoodContentAddDialogState extends State<FoodContentAddDialog> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  TextEditingController _textMenuController;
-  TextEditingController _textCalController;
+  TextEditingController _textMenuController =
+      TextEditingController(text: 'ผักผลไม้');
+  TextEditingController _textServController;
   Map<String, dynamic> monitorData = {
     'date': DateTime.now(),
     'menu': '',
-    'calories': ''
+    'serving': ''
   };
 
   bool _autovalidate = false;
@@ -869,8 +819,8 @@ class _FoodContentAddDialogState extends State<FoodContentAddDialog> {
                 leading: Icon(Icons.restaurant, color: Colors.grey[500]),
                 title: TextFormField(
                     decoration: InputDecoration(
-                      hintText: 'ชื่อเมนู',
-                    ),
+                        // hintText: 'ชื่อเมนู',
+                        ),
                     controller: _textMenuController,
                     validator: _validateInput,
                     onSaved: (value) {
@@ -884,18 +834,18 @@ class _FoodContentAddDialogState extends State<FoodContentAddDialog> {
                     Icon(Icons.format_list_numbered, color: Colors.grey[500]),
                 title: TextFormField(
                     decoration: InputDecoration(
-                      hintText: 'ปริมาณแคลลอรี่',
+                      hintText: 'ปริมาณผักผลไม้',
                     ),
-                    controller: _textCalController,
+                    controller: _textServController,
                     validator: _validateInput,
                     keyboardType: TextInputType.number,
                     inputFormatters: <TextInputFormatter>[
                       WhitelistingTextInputFormatter.digitsOnly,
                     ],
                     onSaved: (value) {
-                      monitorData['calories'] = value;
+                      monitorData['serving'] = value;
                     }),
-                trailing: Text('Cal'),
+                trailing: Text('Serving'),
               ),
               SizedBox(height: 24),
               Padding(
@@ -929,19 +879,16 @@ class _FoodContentAddDialogState extends State<FoodContentAddDialog> {
     }
 
     DocumentReference monitor = Firestore.instance
-        .collection("monitor")
-        .document(widget.currentUser.uid)
+        .collection('wellness_data')
+        .document(widget.uid)
         .collection('food')
         .document(timestamp.toString());
     Firestore.instance.runTransaction((transaction) async {
       await transaction.set(monitor, monitorData);
     });
 
-    final uploadPath = '/food_images/' +
-        widget.currentUser.uid +
-        '/' +
-        timestamp.toString() +
-        '.jpg';
+    final uploadPath =
+        '/food_images/' + widget.uid + '/' + timestamp.toString() + '.jpg';
     final StorageReference ref = widget.storage.ref().child(uploadPath);
     final StorageUploadTask uploadTask = ref.putFile(imageFile);
 
