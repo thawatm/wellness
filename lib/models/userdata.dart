@@ -32,6 +32,7 @@ class UserProfile {
   String ingredientAllergy;
 
   String pictureUrl;
+  bool smoke = false;
 
   final DocumentReference reference;
 
@@ -77,6 +78,7 @@ class UserProfile {
         allergySymptom = snapshot.data['allergySymptom'],
         foodAllergy = snapshot.data['foodAllergy'],
         ingredientAllergy = snapshot.data['ingredientAllergy'],
+        smoke = snapshot.data['smoke'],
         pictureUrl = snapshot.data['pictureUrl'];
   // birthday = snapshot.data['birthday'].toDate();
 

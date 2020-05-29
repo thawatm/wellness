@@ -274,7 +274,7 @@ class _SleepMonitorPageState extends State<SleepMonitorPage> {
                 record.endTime +
                 ')'),
             trailing: InkWell(
-              child: Icon(Icons.chevron_right, color: Colors.purple),
+              child: Icon(Icons.delete, color: Colors.purple.withOpacity(0.6)),
               onTap: () {
                 Alert.confirm(
                   context,

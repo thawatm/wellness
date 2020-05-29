@@ -288,7 +288,7 @@ class _DrinkMonitorPageState extends State<DrinkMonitorPage> {
         title: Text(record.drinkTime,
             style: Flutter.TextStyle(color: Colors.black54)),
         trailing: InkWell(
-          child: Icon(Icons.chevron_right, color: Colors.blueAccent),
+          child: Icon(Icons.delete, color: Colors.blueAccent.withOpacity(0.6)),
           onTap: () {
             Alert.confirm(
               context,

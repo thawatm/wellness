@@ -6,7 +6,9 @@ import 'package:wellness/dashboard/ui_view/glass_view.dart';
 import 'package:wellness/dashboard/ui_view/title_view.dart';
 import 'package:wellness/dashboard/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:wellness/models/rulebase_ai.dart';
 import 'package:wellness/models/state_model.dart';
+import 'package:wellness/models/userdata.dart';
 import 'package:wellness/report/card_simple7.dart';
 import 'package:wellness/report/food_trend.dart';
 import 'package:wellness/report/food_view.dart';
@@ -20,11 +22,13 @@ import 'package:wellness/report/workout_trend.dart';
 import 'package:wellness/widgets/appbar_ui.dart';
 
 class ReportScreen extends StatefulWidget {
-  const ReportScreen({Key key, this.animationController, this.uid})
+  const ReportScreen(
+      {Key key, this.animationController, this.uid, this.isPop: false})
       : super(key: key);
 
   final AnimationController animationController;
   final String uid;
+  final bool isPop;
   @override
   _ReportScreenState createState() => _ReportScreenState();
 }
@@ -38,15 +42,23 @@ class _ReportScreenState extends State<ReportScreen>
   double topBarOpacity = 0.0;
 
   String uid;
-  String totalWorkout = '-';
-  String avgServing = '-';
-  String bmi = '-';
-  String pressure = '-';
-  String cholesterol = '-';
-  String ldl = '-';
-  String glucose = '-';
-  String hba1c = '-';
+  num totalWorkout;
+  num avgServing;
+  num bmi;
+  num bpupper;
+  num bplower;
+  num cholesterol;
+  num ldl;
+  num glucose;
+  num hba1c;
   DateTime startDate = DateTime.now();
+  List<RuleBaseAI> ruleBase;
+  String suggestText;
+  bool isFromGroup = false;
+  bool smoke = false;
+
+  UserProfile userProfile;
+
   Future<bool> initData; //changed
 
   QuerySnapshot healthSn;
@@ -85,28 +97,39 @@ class _ReportScreenState extends State<ReportScreen>
       }
     });
     uid = ScopedModel.of<StateModel>(context).uid;
+    userProfile = ScopedModel.of<StateModel>(context).userProfile;
+    smoke = ScopedModel.of<StateModel>(context).userProfile.smoke;
+    if (widget.uid != null && widget.uid != uid) {
+      isFromGroup = true;
+      uid = widget.uid;
+    }
     initData = getData();
     super.initState();
   }
 
   void addAllListData() {
+    if (userProfile.firstname.length > 12)
+      listViews.add(
+        SizedBox(height: 14),
+      );
     listViews.add(
-      GlassView(
-        text:
-            "สุขภาพของท่านอยู่ในเกณฑ์ที่ดี การออกกำลังกายมากกว่าอาทิตย์ที่ผ่านมา ควรเพิ่มการกินผักและผลไม้ให้มากขึ้น",
-      ),
+      GlassView(text: suggestText),
     );
 
     listViews.add(Simple7Card(
-      workout: totalWorkout,
-      food: avgServing,
-      bmi: bmi,
-      pressure: pressure,
-      cholesterol: cholesterol,
-      ldl: ldl,
-      glucose: glucose,
-      hba1c: hba1c,
-    ));
+        workout: totalWorkout,
+        food: avgServing,
+        bmi: bmi,
+        bpupper: bpupper,
+        bplower: bplower,
+        cholesterol: cholesterol,
+        ldl: ldl,
+        glucose: glucose,
+        hba1c: hba1c,
+        healthSnapshot: healthSn,
+        foodSnapshot: foodSn,
+        workoutSnapshot: workoutSn,
+        smoke: smoke));
 
     listViews.add(
       TitleView(
@@ -194,6 +217,15 @@ class _ReportScreenState extends State<ReportScreen>
     await docRef.collection('sleep').getDocuments().then((snapshot) {
       sleepSn = snapshot;
     });
+
+    if (isFromGroup)
+      await Firestore.instance
+          .document('wellness_users/$uid')
+          .get()
+          .then((doc) {
+        if (doc.data['smoke'] != null) smoke = doc.data['smoke'];
+        userProfile = UserProfile.fromSnapshot(doc);
+      });
     buildSimple7Data(startDate);
     return true;
   }
@@ -201,56 +233,85 @@ class _ReportScreenState extends State<ReportScreen>
   void buildSimple7Data(DateTime startDate) {
     DateTime s = DateTime.now();
     if (startDate != null) s = startDate;
+    DateTime endDate = s.add(Duration(days: 7));
     // DateTime lastweek = s.subtract(Duration(days: 7));
     List<DocumentSnapshot> workoutSnapshot =
         getWeeklyData(workoutSn, 'date', 'totalWorkout', s);
-    totalWorkout = getSum(workoutSnapshot, 'totalWorkout').toString();
+    totalWorkout = getSum(workoutSnapshot, 'totalWorkout');
     List<DocumentSnapshot> foodSnapshot =
         getWeeklyData(foodSn, 'date', 'serving', s);
-    avgServing = (getSum(foodSnapshot, 'serving') / 7).toStringAsFixed(1);
-    pressure = getLastPressureData(healthSn);
-    bmi = getLastData(healthSn, 'bmi', decimal: 1);
-    cholesterol = getLastData(healthSn, 'cholesterol');
-    ldl = getLastData(healthSn, 'ldl');
-    glucose = getLastData(healthSn, 'glucose');
-    hba1c = getLastData(healthSn, 'hba1c', decimal: 1, unit: '%');
+    avgServing = (getSum(foodSnapshot, 'serving') / 7);
+
+    bmi = getLastData(healthSn, 'bmi', endDate);
+    cholesterol = getLastData(healthSn, 'cholesterol', endDate);
+    ldl = getLastData(healthSn, 'ldl', endDate);
+    glucose = getLastData(healthSn, 'glucose', endDate);
+    hba1c = getLastData(healthSn, 'hba1c', endDate);
+
+    var pressure = getLastPressureData(healthSn, endDate);
+    bpupper = pressure['bpupper'];
+    bplower = pressure['bplower'];
+
+    ruleBase = [];
+    ruleBase.add(RuleBaseAI.workout(totalWorkout));
+    ruleBase.add(RuleBaseAI.food(avgServing));
+    ruleBase.add(RuleBaseAI.bloodPressure(bpupper, bplower));
+    ruleBase.add(RuleBaseAI.bmi(bmi));
+    ruleBase.add(RuleBaseAI.cholesterol(cholesterol));
+    ruleBase.add(RuleBaseAI.ldl(ldl));
+    ruleBase.add(RuleBaseAI.glucose(glucose));
+    ruleBase.add(RuleBaseAI.hba1c(hba1c));
+    ruleBase.add(RuleBaseAI.smoke(smoke));
+
+    suggestText = RuleBaseAI().getWeeklRules(ruleBase);
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppTheme.background,
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Stack(
-          children: <Widget>[
-            getMainListViewUI(),
-            AppBarUI(
-              animationController: widget.animationController,
-              topBarAnimation: topBarAnimation,
-              topBarOpacity: topBarOpacity,
-              title: 'รายงาน',
-              // calendar: _buildWeeklyCalendar(),
-              isPop: true,
-            ),
-            SizedBox(
-              height: MediaQuery.of(context).padding.bottom,
-            )
-          ],
-        ),
-      ),
-    );
+        color: AppTheme.background,
+        child: Scaffold(
+            backgroundColor: Colors.transparent,
+            body: FutureBuilder<bool>(
+                future: initData,
+                builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                  if (!snapshot.hasData) {
+                    return LinearProgressIndicator();
+                  } else {
+                    return Stack(
+                      children: <Widget>[
+                        getMainListViewUI(),
+                        AppBarUI(
+                          animationController: widget.animationController,
+                          topBarAnimation: topBarAnimation,
+                          topBarOpacity: topBarOpacity,
+                          title: userProfile.firstname,
+                          calendar: _buildWeeklyCalendar(),
+                          isPop: widget.isPop,
+                          letterSpacing: -0.2,
+                          isMenu: (widget.uid == null),
+                        ),
+                        SizedBox(
+                          height: MediaQuery.of(context).padding.bottom,
+                        )
+                      ],
+                    );
+                  }
+                })));
   }
 
   Widget _buildWeeklyCalendar() {
     return Row(
       children: <Widget>[
         InkWell(
-            child: Text('< ',
-                style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.nearlyBlack)),
+            child: SizedBox(
+              width: 24,
+              child: Icon(
+                Icons.arrow_back_ios,
+                size: 18,
+                color: AppTheme.nearlyBlack,
+              ),
+            ),
             onTap: () {
               setState(() {
                 startDate = startDate.subtract(Duration(days: 7));
@@ -260,14 +321,20 @@ class _ReportScreenState extends State<ReportScreen>
             }),
         InkWell(
           child: Text(getWeekDayList(startDate),
-              style: TextStyle(fontSize: 20, color: AppTheme.nearlyBlack)),
+              style: TextStyle(
+                  fontSize: 16,
+                  color: AppTheme.nearlyBlack,
+                  letterSpacing: -1.2)),
         ),
         InkWell(
-            child: Text(' >',
-                style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.nearlyBlack)),
+            child: SizedBox(
+              width: 24,
+              child: Icon(
+                Icons.arrow_forward_ios,
+                size: 18,
+                color: AppTheme.nearlyBlack,
+              ),
+            ),
             onTap: () {
               setState(() {
                 startDate = startDate.add(Duration(days: 7));
@@ -280,29 +347,20 @@ class _ReportScreenState extends State<ReportScreen>
   }
 
   Widget getMainListViewUI() {
-    return FutureBuilder<bool>(
-      future: initData,
-      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-        if (!snapshot.hasData) {
-          return LinearProgressIndicator();
-        } else {
-          if (listViews.isEmpty) addAllListData();
-          return ListView.builder(
-            controller: scrollController,
-            padding: EdgeInsets.only(
-              top: AppBar().preferredSize.height +
-                  MediaQuery.of(context).padding.top +
-                  24,
-              bottom: 62 + MediaQuery.of(context).padding.bottom,
-            ),
-            itemCount: listViews.length,
-            scrollDirection: Axis.vertical,
-            itemBuilder: (BuildContext context, int index) {
-              widget.animationController.forward();
-              return listViews[index];
-            },
-          );
-        }
+    if (listViews.isEmpty) addAllListData();
+    return ListView.builder(
+      controller: scrollController,
+      padding: EdgeInsets.only(
+        top: AppBar().preferredSize.height +
+            MediaQuery.of(context).padding.top +
+            24,
+        bottom: 62 + MediaQuery.of(context).padding.bottom,
+      ),
+      itemCount: listViews.length,
+      scrollDirection: Axis.vertical,
+      itemBuilder: (BuildContext context, int index) {
+        widget.animationController.forward();
+        return listViews[index];
       },
     );
   }
@@ -356,35 +414,38 @@ class _ReportScreenState extends State<ReportScreen>
     return 0;
   }
 
-  String getLastData(QuerySnapshot snapshot, String key,
-      {int decimal: 0, String unit: ''}) {
+  num getLastData(QuerySnapshot snapshot, String key, DateTime endDate) {
     try {
-      DocumentSnapshot s4 =
-          snapshot.documents.where((v) => v[key] != null).last;
+      DocumentSnapshot s4 = snapshot.documents
+          .where((v) => v[key] != null && v['date'].toDate().isBefore(endDate))
+          .last;
       if (s4 != null) {
-        return s4.data[key].toStringAsFixed(0);
+        return s4.data[key];
       }
     } catch (e) {
       print(e);
     }
-    return '-';
+    return 0;
   }
 
-  String getLastPressureData(QuerySnapshot snapshot) {
+  Map getLastPressureData(QuerySnapshot snapshot, DateTime endDate) {
     try {
       DocumentSnapshot s = snapshot.documents
-          .where(
-              (v) => v['pressureUpper'] != null && v['pressureLower'] != null)
+          .where((v) =>
+              v['pressureUpper'] != null &&
+              v['pressureLower'] != null &&
+              v['date'].toDate().isBefore(endDate))
           .last;
       if (s != null) {
-        return s.data['pressureUpper'].toStringAsFixed(0) +
-            '/' +
-            s.data['pressureLower'].toStringAsFixed(0);
+        return {
+          'bpupper': s.data['pressureUpper'],
+          'bplower': s.data['pressureLower']
+        };
       }
     } catch (e) {
       print(e);
     }
-    return '-';
+    return {'bpupper': 0, 'bplower': 0};
   }
 
   String getWeekDayList(DateTime startDate) {

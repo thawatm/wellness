@@ -81,7 +81,7 @@ class WorkoutView extends StatelessWidget {
                     0.0, 30 * (1.0 - animation.value), 0.0),
                 child: Padding(
                   padding: const EdgeInsets.only(
-                      left: 16, right: 16, top: 16, bottom: 0),
+                      left: 16, right: 16, top: 8, bottom: 0),
                   child: Container(
                     decoration: BoxDecoration(
                       color: AppTheme.white,
@@ -147,10 +147,6 @@ class WorkoutView extends StatelessWidget {
                                                       AppTheme.nearlyDarkBlue,
                                                 ),
                                               ),
-                                              // FaIcon(FontAwesomeIcons.walking,
-                                              //     size: 16,
-                                              //     color: AppTheme.grey
-                                              //         .withOpacity(0.5)),
                                               Text(
                                                 '10,000 steps',
                                                 textAlign: TextAlign.center,
@@ -176,8 +172,8 @@ class WorkoutView extends StatelessWidget {
                                                 HexColor("#8A98E8"),
                                                 HexColor("#8A98E8")
                                               ],
-                                              angle: 6000 / 10000 * 360 +
-                                                  (360 - 6000 / 10000 * 360) *
+                                              angle: steps / 10000 * 360 +
+                                                  (360 - steps / 10000 * 360) *
                                                       (1.0 - animation.value)),
                                           child: SizedBox(
                                             width: 158,
@@ -194,7 +190,7 @@ class WorkoutView extends StatelessWidget {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(
-                              left: 24, right: 24, top: 8, bottom: 8),
+                              left: 24, right: 24, top: 8, bottom: 4),
                           child: Container(
                             height: 2,
                             decoration: BoxDecoration(
@@ -206,7 +202,7 @@ class WorkoutView extends StatelessWidget {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(
-                              left: 24, right: 24, top: 8, bottom: 16),
+                              left: 24, right: 24, top: 4, bottom: 16),
                           child: Row(
                             children: <Widget>[
                               Expanded(
@@ -220,7 +216,7 @@ class WorkoutView extends StatelessWidget {
                                       style: TextStyle(
                                         fontFamily: AppTheme.fontName,
                                         fontWeight: FontWeight.w500,
-                                        fontSize: 16,
+                                        fontSize: 14,
                                         letterSpacing: -0.2,
                                         color: AppTheme.darkText,
                                       ),
@@ -291,7 +287,7 @@ class WorkoutView extends StatelessWidget {
                                           style: TextStyle(
                                             fontFamily: AppTheme.fontName,
                                             fontWeight: FontWeight.w500,
-                                            fontSize: 16,
+                                            fontSize: 14,
                                             letterSpacing: -0.2,
                                             color: AppTheme.darkText,
                                           ),
@@ -369,7 +365,7 @@ class WorkoutView extends StatelessWidget {
                                           style: TextStyle(
                                             fontFamily: AppTheme.fontName,
                                             fontWeight: FontWeight.w500,
-                                            fontSize: 16,
+                                            fontSize: 14,
                                             letterSpacing: -0.2,
                                             color: AppTheme.darkText,
                                           ),

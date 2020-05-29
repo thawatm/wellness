@@ -288,23 +288,24 @@ class _WaterViewState extends State<WaterView> with TickerProviderStateMixin {
     );
   }
 
-  void _saveData() async {
-    Map<String, dynamic> monitorData = {
-      'date': DateTime.now(),
-    };
-    int timestamp = monitorData['date'].millisecondsSinceEpoch;
-    monitorData['drinkTime'] = DateFormat.Hm().format(monitorData['date']);
-    monitorData['waterVolume'] = 200;
-
-    DocumentReference monitor = Firestore.instance
-        .collection('wellness_data')
-        .document(uid)
-        .collection('water')
-        .document(timestamp.toString());
-    Firestore.instance.runTransaction((transaction) async {
-      await transaction.set(monitor, monitorData);
-
-      monitorData['date'] = monitorData['date'].add(Duration(seconds: 1));
-    });
+  void _saveData() {
+    try {
+      Map<String, dynamic> monitorData = {
+        'date': DateTime.now(),
+      };
+      int timestamp = monitorData['date'].millisecondsSinceEpoch;
+      monitorData['drinkTime'] = DateFormat.Hm().format(monitorData['date']);
+      monitorData['waterVolume'] = 200;
+      Firestore.instance
+          .collection('wellness_data')
+          .document(uid)
+          .collection('water')
+          .document(timestamp.toString())
+          .setData(monitorData)
+          .then((value) => monitorData['date'] =
+              monitorData['date'].add(Duration(seconds: 1)));
+    } catch (e) {
+      print(e);
+    }
   }
 }

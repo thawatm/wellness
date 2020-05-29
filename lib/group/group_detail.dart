@@ -4,8 +4,11 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
+import 'package:scoped_model/scoped_model.dart';
 import 'package:wellness/dashboard/app_theme.dart';
 import 'package:wellness/dashboard/ui_view/title_view.dart';
+import 'package:wellness/group/group_edit.dart';
+import 'package:wellness/models/state_model.dart';
 import 'package:wellness/models/userdata.dart';
 import 'package:wellness/report/report_screen.dart';
 
@@ -19,6 +22,7 @@ class GroupDetailPage extends StatefulWidget {
   final AnimationController animationController;
   final bool isAdmin;
   final String groupId;
+
   @override
   _GroupDetailPageState createState() => _GroupDetailPageState();
 }
@@ -26,9 +30,28 @@ class GroupDetailPage extends StatefulWidget {
 class _GroupDetailPageState extends State<GroupDetailPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   ImageProvider profileImage = AssetImage('assets/images/user.png');
+  Future<bool> initData; //changed
+  String groupName;
+  String owner;
+  bool isOwner = false;
   @override
   void initState() {
     super.initState();
+    initData = getData();
+  }
+
+  Future<bool> getData() async {
+    String uid = ScopedModel.of<StateModel>(context).uid;
+    return await Firestore.instance
+        .collection('wellness_groups')
+        .document(widget.groupId)
+        .get()
+        .then((g) {
+      groupName = g.data['name'];
+      owner = g.data['owner'];
+      if (uid == owner) isOwner = true;
+      return true;
+    });
   }
 
   void showInSnackBar(String value) {
@@ -39,16 +62,21 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      drawerDragStartBehavior: DragStartBehavior.down,
-      key: _scaffoldKey,
-      appBar: GradientAppBar(
-        title: Text('รายละเอียดกลุ่ม'),
-        gradient: LinearGradient(
-            colors: [AppTheme.appBarColor1, AppTheme.appBarColor2]),
-      ),
-      body: _buildBody(),
-    );
+    return FutureBuilder(
+        future: initData,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) return SizedBox();
+          return Scaffold(
+            drawerDragStartBehavior: DragStartBehavior.down,
+            key: _scaffoldKey,
+            appBar: GradientAppBar(
+              title: Text('รายละเอียดกลุ่ม'),
+              gradient: LinearGradient(
+                  colors: [AppTheme.appBarColor1, AppTheme.appBarColor2]),
+            ),
+            body: _buildBody(),
+          );
+        });
   }
 
   Widget _buildBody() {
@@ -82,7 +110,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                               //),
                               child: Icon(Icons.delete)),
                       onTap: () {
-                        if (widget.isAdmin) {
+                        if (widget.isAdmin || isOwner) {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -90,6 +118,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                                         uid: userSn.data.uid,
                                         animationController:
                                             widget.animationController,
+                                        isPop: true,
                                       )));
                         }
                       },
@@ -117,51 +146,50 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
 
   Widget _buildHeader() {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Container(
-          decoration: BoxDecoration(
-            color: AppTheme.white,
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(8.0),
-                bottomLeft: Radius.circular(8.0),
-                bottomRight: Radius.circular(8.0),
-                topRight: Radius.circular(8.0)),
-            boxShadow: <BoxShadow>[
-              BoxShadow(
-                  color: AppTheme.grey.withOpacity(0.2),
-                  offset: Offset(1.1, 1.1),
-                  blurRadius: 10.0),
-            ],
-          ),
-          child: StreamBuilder<DocumentSnapshot>(
-              stream: Firestore.instance
-                  .collection('wellness_groups')
-                  .document(widget.groupId)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) return SizedBox();
-                return Column(
-                  children: <Widget>[
-                    ListTile(
-                        leading: Icon(FontAwesomeIcons.userFriends,
-                            color: Colors.teal),
-                        title: Text('ชื่อกลุ่ม'),
-                        trailing: Text(snapshot.data['name'])),
-                    ListTile(
-                      leading:
-                          Icon(FontAwesomeIcons.userNurse, color: Colors.teal),
-                      title: Text('ผู้ดูแล'),
-                      trailing: FutureBuilder<UserProfile>(
-                          future: _getProfileName(snapshot.data['owner']),
-                          builder: (context, AsyncSnapshot<UserProfile> sn) {
-                            if (!sn.hasData) return SizedBox();
-                            return Text(sn.data.fullname);
-                          }),
-                    ),
-                  ],
-                );
-              })),
-    );
+        padding: const EdgeInsets.all(16.0),
+        child: Container(
+            decoration: BoxDecoration(
+              color: AppTheme.white,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(8.0),
+                  bottomLeft: Radius.circular(8.0),
+                  bottomRight: Radius.circular(8.0),
+                  topRight: Radius.circular(8.0)),
+              boxShadow: <BoxShadow>[
+                BoxShadow(
+                    color: AppTheme.grey.withOpacity(0.2),
+                    offset: Offset(1.1, 1.1),
+                    blurRadius: 10.0),
+              ],
+            ),
+            child: Column(
+              children: <Widget>[
+                ListTile(
+                    onTap: () {
+                      if (widget.isAdmin)
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  GroupEditPage(groupId: widget.groupId)),
+                        );
+                    },
+                    leading:
+                        Icon(FontAwesomeIcons.userFriends, color: Colors.teal),
+                    title: Text('ชื่อกลุ่ม'),
+                    trailing: Text(groupName)),
+                ListTile(
+                  leading: Icon(FontAwesomeIcons.userNurse, color: Colors.teal),
+                  title: Text('ผู้ดูแล'),
+                  trailing: FutureBuilder<UserProfile>(
+                      future: _getProfileName(owner),
+                      builder: (context, AsyncSnapshot<UserProfile> sn) {
+                        if (!sn.hasData) return SizedBox();
+                        return Text(sn.data.fullname);
+                      }),
+                ),
+              ],
+            )));
   }
 
   Widget _buildMemberList(var listViews) {

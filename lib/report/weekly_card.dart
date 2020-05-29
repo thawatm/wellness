@@ -33,6 +33,7 @@ class WeeklyCard extends StatelessWidget {
           Icon(
             icon,
             color: iconColor,
+            size: 16,
           ),
           SizedBox(width: 5),
           Text(

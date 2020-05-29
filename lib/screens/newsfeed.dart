@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'dart:convert';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wellness/dashboard/app_theme.dart';
 import 'package:wellness/models/news.dart';
@@ -13,7 +13,7 @@ import 'package:wellness/widgets/appbar_ui.dart';
 Future<News> loadData() async {
   // add facebook graph link
   String url =
-      'https://graph.facebook.com/v5.0/me?fields=posts%7Bmessage%2Cpermalink_url%2Cfull_picture%2Ccreated_time%7D&access_token=EAAUgHKSUGGIBAGQNlKU8g8ZAbZBRy9AVM55PZClHXNdb8q4edT8IISZCMJhto4wEbWZA8DeknucmwKls91aOvyxxkcfjZCp2fgJeDsqbCgW3YceGyF4BDWwF1yCPTIzduwEHM4H3FjnuJRBn8UZCPLqNb1AOaG0LvOJhIFjDhEE7k0oXCvbGPUDnCJre3sotC4ZD';
+      'https://graph.facebook.com/v6.0/me?fields=published_posts%7Bmessage%2Cpermalink_url%2Cfull_picture%2Ccreated_time%7D&access_token=EAAUgHKSUGGIBAKNQQxnNXgFrz0Lkep7fVeYlIgHS0omujhZC0OFYzS2VAwBdXxEZBGOpoZBtQ15ZATrgeLh9sRu6hVyODAw0i6FDupcerPmz3Lm986xwfwmmAbxhdZCkH0VudKMZAfRspS7oaZC5JINsQxIZAIuJEeSzLcYZAeWC03cCRRx4afAOrgiCT2xm1NXwZD';
   File file = await DefaultCacheManager().getSingleFile(url);
   if (file != null) {
     Map jsonString = jsonDecode(file.readAsStringSync());
@@ -43,7 +43,6 @@ class _NewsPageState extends State<NewsPage> {
         CurvedAnimation(
             parent: widget.animationController,
             curve: Interval(0, 0.5, curve: Curves.fastOutSlowIn)));
-    newsList = loadData();
 
     scrollController.addListener(() {
       if (scrollController.offset >= 24) {
@@ -68,6 +67,7 @@ class _NewsPageState extends State<NewsPage> {
       }
     });
     super.initState();
+    newsList = loadData();
   }
 
   @override
@@ -76,8 +76,7 @@ class _NewsPageState extends State<NewsPage> {
       color: AppTheme.background,
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        body: SafeArea(
-            child: Stack(children: [
+        body: Stack(children: [
           _buildBody(context),
           AppBarUI(
             animationController: widget.animationController,
@@ -88,7 +87,7 @@ class _NewsPageState extends State<NewsPage> {
           SizedBox(
             height: MediaQuery.of(context).padding.bottom,
           )
-        ])),
+        ]),
       ),
     );
   }
@@ -109,9 +108,16 @@ class _NewsPageState extends State<NewsPage> {
 
   Widget _buildList(BuildContext context, News news) {
     return ListView.builder(
+      controller: scrollController,
+      padding: EdgeInsets.only(
+        top: AppBar().preferredSize.height +
+            MediaQuery.of(context).padding.top +
+            24,
+        bottom: 62 + MediaQuery.of(context).padding.bottom,
+      ),
       itemCount: news.posts.data.length,
       itemBuilder: (context, i) {
-        return GestureDetector(
+        return InkWell(
           onTap: () async {
             //  add facebook link
             final url = news.posts.data[i].permalinkUrl;
@@ -122,8 +128,8 @@ class _NewsPageState extends State<NewsPage> {
             }
           },
           child: Card(
-            margin: EdgeInsets.fromLTRB(0, 8, 0, 8),
-            elevation: 1,
+            margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            elevation: 2,
             child: Column(
               children: <Widget>[
                 news.posts.data[i].fullPicture != null
@@ -134,30 +140,57 @@ class _NewsPageState extends State<NewsPage> {
                             // alignment: Alignment(0, 0),
                             fit: BoxFit.cover,
                             //  add image URL
-                            image: CachedNetworkImageProvider(
-                                news.posts.data[i].fullPicture),
+                            image: NetworkImage(news.posts.data[i].fullPicture),
                           ),
                         ),
                       )
                     : SizedBox(),
+                news.posts.data[i].message == null
+                    ? SizedBox()
+                    : Padding(
+                        padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
+                        //  add message
+                        child: Text(
+                          news.posts.data[i].message,
+                          style: TextStyle(
+                              fontSize: 16, color: Colors.grey.shade800),
+                        )),
                 Padding(
-                  padding: EdgeInsets.all(16.0),
-                  //  add message
-                  child: Text(
-                    news.posts.data[i].message,
-                    style: TextStyle(fontSize: 16, color: Colors.grey.shade800),
+                  padding: const EdgeInsets.fromLTRB(16, 16, 8, 16),
+                  child: Row(
+                    children: <Widget>[
+                      Icon(
+                        Icons.access_time,
+                        color: AppTheme.grey.withOpacity(0.6),
+                        size: 16,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 5.0),
+                        child: Text(
+                          _convertDate(news.posts.data[i].createdTime),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: AppTheme.fontName,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 14,
+                            letterSpacing: 0.0,
+                            color: AppTheme.grey.withOpacity(0.6),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                // Padding(
-                //   padding: EdgeInsets.all(16.0),
-                //   //  add message
-                //   child: Text(news.posts.data[i].createdTime),
-                // ),
+                )
               ],
             ),
           ),
         );
       },
     );
+  }
+
+  String _convertDate(String src) {
+    DateTime date = DateTime.parse(src);
+    return DateFormat.yMMMd().format(date);
   }
 }

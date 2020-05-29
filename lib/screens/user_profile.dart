@@ -90,6 +90,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
             topBarOpacity: topBarOpacity,
             title: 'ผู้ใช้งาน',
             isPop: true,
+            isMenu: false,
           ),
           SizedBox(
             height: MediaQuery.of(context).padding.bottom,

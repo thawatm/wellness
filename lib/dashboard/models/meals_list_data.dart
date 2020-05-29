@@ -1,6 +1,6 @@
 class MealsListData {
   MealsListData({
-    this.imagePath = '',
+    this.imagePath,
     this.titleTxt = '',
     this.startColor = '',
     this.endColor = '',

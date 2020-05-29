@@ -28,9 +28,11 @@ class HealthMonitor {
   double uricAcid;
 
   final DocumentReference reference;
+  final DocumentSnapshot snapshot;
 
   HealthMonitor.fromSnapshot(DocumentSnapshot snapshot)
       : reference = snapshot.reference,
+        snapshot = snapshot,
         date = snapshot.data['date'].toDate(),
         dateString =
             DateFormat('dd/MM/yyyy').format(snapshot.data['date'].toDate()),
@@ -78,5 +80,13 @@ class HealthMonitor {
       default:
         return '';
     }
+  }
+
+  String toString() {
+    String temp = '';
+    snapshot.data.forEach((key, value) {
+      if (key != 'date') temp = temp + "$key:$value ";
+    });
+    return temp;
   }
 }

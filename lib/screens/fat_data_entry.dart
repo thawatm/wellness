@@ -74,7 +74,7 @@ class _FatDataEntryState extends State<FatDataEntry> {
               leading: Icon(Icons.assignment_ind, color: Colors.grey[500]),
               title: Text('Visceral Fat'),
               // title: bmiBarCart(),
-              trailing: Text("${monitorData['Visceral Fat'] ?? ''} %",
+              trailing: Text("${monitorData['visceralFat'] ?? ''} %",
                   style: TextStyle(color: Colors.grey[500])),
               onTap: () {
                 _showPickerDouble(

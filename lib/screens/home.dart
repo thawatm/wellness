@@ -8,11 +8,11 @@ import 'package:flutter/material.dart';
 
 import 'package:wellness/dashboard/app_theme.dart';
 import 'package:wellness/dashboard/my_diary/my_diary_screen.dart';
+import 'package:wellness/group/group_screen.dart';
 
 import 'package:wellness/report/report_screen.dart';
 
 import 'package:wellness/screens/newsfeed.dart';
-import 'package:wellness/screens/profile.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -33,8 +33,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _pageOptions = [
       MyDiaryScreen(animationController: animationController),
       ReportScreen(animationController: animationController),
+      GroupScreen(animationController: animationController),
       NewsPage(animationController: animationController),
-      ProfilePage(animationController: animationController),
     ];
 
     super.initState();
@@ -93,8 +93,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   text: 'Weekly',
                 ),
                 GButton(
-                  icon: Icons.rss_feed,
-                  text: 'News',
+                  icon: Icons.group,
+                  text: 'Group',
                   iconActiveColor: Colors.pink,
                   iconColor: Colors.grey.shade600,
                   textColor: Colors.pink,
@@ -102,8 +102,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   iconSize: 24,
                 ),
                 GButton(
-                  icon: Icons.settings,
-                  text: 'Setting',
+                  icon: Icons.rss_feed,
+                  text: 'News',
                   iconActiveColor: Colors.blueAccent,
                   iconColor: Colors.grey.shade600,
                   textColor: Colors.blueAccent,

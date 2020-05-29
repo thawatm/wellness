@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wellness/dashboard/app_theme.dart';
+import 'package:wellness/screens/profile.dart';
 
 class AppBarUI extends StatelessWidget {
   final AnimationController animationController;
@@ -9,13 +10,17 @@ class AppBarUI extends StatelessWidget {
   final String title;
   final bool isPop;
   final Widget calendar;
+  final bool isMenu;
+  final double letterSpacing;
   AppBarUI(
       {@required this.animationController,
       @required this.topBarAnimation,
       @required this.topBarOpacity,
       @required this.title,
       this.isPop: false,
-      this.calendar});
+      this.calendar,
+      this.isMenu: true,
+      this.letterSpacing: 1.2});
   @override
   Widget build(BuildContext context) {
     SystemUiOverlayStyle _currentStyle = SystemUiOverlayStyle.dark;
@@ -54,8 +59,8 @@ class AppBarUI extends StatelessWidget {
                         ),
                         Padding(
                           padding: EdgeInsets.only(
-                              left: 16,
-                              right: 16,
+                              left: 12,
+                              right: 12,
                               top: 16 - 8.0 * topBarOpacity,
                               bottom: 12 - 8.0 * topBarOpacity),
                           child: Row(
@@ -69,24 +74,35 @@ class AppBarUI extends StatelessWidget {
                                         color: AppTheme.darkerText,
                                       ),
                                     )
-                                  : Text(''),
+                                  : SizedBox(),
                               Expanded(
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: calendar ??
-                                      Text(
-                                        title,
-                                        textAlign: TextAlign.left,
-                                        style: TextStyle(
-                                          fontFamily: AppTheme.fontName,
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 22 + 6 - 6 * topBarOpacity,
-                                          letterSpacing: 1.2,
-                                          color: AppTheme.darkerText,
-                                        ),
-                                      ),
+                                  child: Text(
+                                    title,
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(
+                                      fontFamily: AppTheme.fontName,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 22 + 4 - 4 * topBarOpacity,
+                                      letterSpacing: letterSpacing,
+                                      color: AppTheme.darkerText,
+                                    ),
+                                  ),
                                 ),
                               ),
+                              calendar ?? SizedBox(),
+                              !isMenu
+                                  ? SizedBox()
+                                  : InkWell(
+                                      onTap: () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => ProfilePage(
+                                                    animationController:
+                                                        animationController)),
+                                          ),
+                                      child: Icon(Icons.menu))
                             ],
                           ),
                         )

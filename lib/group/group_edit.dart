@@ -8,13 +8,14 @@ import 'package:wellness/models/state_model.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-class GroupJoinPage extends StatefulWidget {
-  const GroupJoinPage({Key key}) : super(key: key);
+class GroupEditPage extends StatefulWidget {
+  const GroupEditPage({Key key, this.groupId}) : super(key: key);
+  final String groupId;
   @override
-  _GroupJoinPageState createState() => _GroupJoinPageState();
+  _GroupEditPageState createState() => _GroupEditPageState();
 }
 
-class _GroupJoinPageState extends State<GroupJoinPage> {
+class _GroupEditPageState extends State<GroupEditPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
 
@@ -28,41 +29,31 @@ class _GroupJoinPageState extends State<GroupJoinPage> {
     super.initState();
   }
 
-  void _handleSubmitted() {
+  void _handleSubmitted() async {
     if (_fbKey.currentState.saveAndValidate()) {
-      var formData = _fbKey.currentState.value;
-      Map updateData = Map<String, dynamic>();
-
-      updateData['member'] = true;
-      String groupId = formData['groupId'];
-
       setState(() {
         _isLoading = true;
       });
+
+      var groupData = _fbKey.currentState.value;
+
+      String groupId = widget.groupId;
       Firestore.instance
           .document('wellness_groups/$groupId')
-          .get()
-          .then((onValue) {
-        if (onValue.exists) {
-          Firestore.instance
-              .document('wellness_groups/$groupId/members/$uid')
-              .setData(updateData);
+          .updateData(groupData);
 
-          Firestore.instance
-              .document('wellness_users/$uid/groups/$groupId')
-              .setData(updateData);
-
-          Navigator.pop(context);
-        } else {
-          showInSnackBar("ไม่พบกลุ่มที่ต้องการ");
-        }
-      });
-
+      showInSnackBar("Successful");
+      ScopedModel.of<StateModel>(context).isLoading = true;
       setState(() {
         _isLoading = false;
       });
+
+      Navigator.pop(context);
+      Navigator.pop(context);
     } else {
-      showInSnackBar("validation failed");
+      // print(_fbKey.currentState.value);
+
+      print("validation failed");
     }
   }
 
@@ -78,7 +69,7 @@ class _GroupJoinPageState extends State<GroupJoinPage> {
       drawerDragStartBehavior: DragStartBehavior.down,
       key: _scaffoldKey,
       appBar: GradientAppBar(
-        title: Text('เข้ากลุ่ม'),
+        title: Text('แก้ไขกลุ่ม'),
         gradient: LinearGradient(
             colors: [AppTheme.appBarColor1, AppTheme.appBarColor2]),
       ),
@@ -105,18 +96,16 @@ class _GroupJoinPageState extends State<GroupJoinPage> {
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 8.0),
                   child: FormBuilderTextField(
                     maxLines: 1,
-                    maxLength: 4,
-                    attribute: 'groupId',
+                    attribute: 'name',
                     decoration: InputDecoration(
-                      labelText: 'เลขกลุ่ม',
+                      labelText: 'ชื่อกลุ่ม',
                       contentPadding: EdgeInsets.only(top: 10.0, bottom: 4),
                     ),
                     style: TextStyle(fontSize: 18),
-                    keyboardType: TextInputType.number,
                     // onChanged: _onChanged,
                     validators: [
-                      FormBuilderValidators.required(errorText: 'ใส่เลขกลุ่ม'),
-                      FormBuilderValidators.numeric(),
+                      FormBuilderValidators.required(errorText: 'ใส่ชื่อกลุ่ม'),
+                      FormBuilderValidators.max(50),
                     ],
                   ),
                 ),

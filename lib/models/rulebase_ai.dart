@@ -6,6 +6,8 @@ class RuleBaseAI {
   int neglect = 0;
   int heaven = 0;
 
+  RuleBaseAI();
+
   RuleBaseAI.bmi(num bmi) {
     if (bmi > 18.5 && bmi < 25) {
       display.desc = 'ปกติ';

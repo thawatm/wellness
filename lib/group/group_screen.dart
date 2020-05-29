@@ -98,7 +98,7 @@ class _GroupScreenState extends State<GroupScreen> {
             topBarAnimation: topBarAnimation,
             topBarOpacity: topBarOpacity,
             title: 'กลุ่ม',
-            isPop: true,
+            // isPop: true,
           ),
           SizedBox(
             height: MediaQuery.of(context).padding.bottom,

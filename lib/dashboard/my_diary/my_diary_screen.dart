@@ -83,22 +83,23 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
     });
   }
 
-  void _saveData(DateTime recordDate, int stepsCount) async {
+  void _saveData(DateTime recordDate, int stepsCount) {
     int timestamp = recordDate.millisecondsSinceEpoch;
     Map<String, dynamic> monitorData = {
       'date': recordDate,
       'steps': stepsCount,
       'totalWorkout': stepsCount ~/ 400,
     };
-
-    DocumentReference monitor = Firestore.instance
-        .collection('wellness_data')
-        .document(uid)
-        .collection('workout')
-        .document(timestamp.toString());
-    Firestore.instance.runTransaction((transaction) async {
-      await transaction.set(monitor, monitorData);
-    });
+    try {
+      Firestore.instance
+          .collection('wellness_data')
+          .document(uid)
+          .collection('workout')
+          .document(timestamp.toString())
+          .setData(monitorData);
+    } catch (e) {
+      print(e);
+    }
   }
 
   void addAllListData() {

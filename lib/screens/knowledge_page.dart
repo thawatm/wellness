@@ -2,23 +2,21 @@ import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:wellness/dashboard/app_theme.dart';
 import 'package:wellness/models/state_model.dart';
-import 'package:wellness/screens/knowledge_page.dart';
-import 'package:wellness/screens/user_profile.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:wellness/widgets/appbar_ui.dart';
 
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key key, this.animationController}) : super(key: key);
+class KnowledgePage extends StatefulWidget {
+  const KnowledgePage({Key key, this.animationController}) : super(key: key);
   final AnimationController animationController;
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  _KnowledgePageState createState() => _KnowledgePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _KnowledgePageState extends State<KnowledgePage> {
   Animation<double> topBarAnimation;
   final ScrollController scrollController = ScrollController();
   double topBarOpacity = 0.0;
@@ -86,7 +84,7 @@ class _ProfilePageState extends State<ProfilePage> {
             animationController: widget.animationController,
             topBarAnimation: topBarAnimation,
             topBarOpacity: topBarOpacity,
-            title: 'การตั้งค่า',
+            title: 'ความรู้',
             isPop: true,
             isMenu: false,
           ),
@@ -127,29 +125,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Column(
                     children: <Widget>[
                       buildNotificationItem(
-                          icon: Icons.person,
-                          title: 'ข้อมูลส่วนตัว',
-                          subtitle: 'รายละเอียดส่วนตัว',
-                          routeName: '/user',
-                          startColor: Color(0xFFFA7D82),
-                          endColor: Color(0xFFFFB295)),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 24, right: 24, top: 8, bottom: 8),
-                        child: Container(
-                          height: 2,
-                          decoration: BoxDecoration(
-                            color: AppTheme.background,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(4.0)),
-                          ),
-                        ),
-                      ),
-                      buildNotificationItem(
-                          icon: FontAwesomeIcons.book,
-                          title: 'ความรู้',
-                          subtitle: 'คู่มือการดำเนินศูนย์สุขภาพดีวัยทำงาน',
-                          routeName: '/knowledge',
+                          icon: FontAwesomeIcons.filePdf,
+                          title: 'เล่ม 1',
+                          subtitle: 'คู่มือการดำเนินศูนย์สุขภาพดีวัยทำงาน 1',
+                          url: 'http://18.141.44.152/wellness/wellness1.pdf',
                           startColor: Color(0xFF738AE6),
                           endColor: Color(0xFF5C5EDD)),
                       Padding(
@@ -165,31 +144,12 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                       buildNotificationItem(
-                          icon: Icons.email,
-                          title: 'ติดต่อเรา',
-                          subtitle: 'ผู้พัฒนาโปรแกรม',
-                          routeName: '/contact',
-                          startColor: Color(0xFFFE95B6),
-                          endColor: Color(0xFFFF5287)),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 24, right: 24, top: 8, bottom: 8),
-                        child: Container(
-                          height: 2,
-                          decoration: BoxDecoration(
-                            color: AppTheme.background,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(4.0)),
-                          ),
-                        ),
-                      ),
-                      buildNotificationItem(
-                          icon: Icons.exit_to_app,
-                          title: 'ออกจากระบบ',
-                          subtitle: '',
-                          routeName: '/logout',
-                          startColor: Color(0xFF6F72CA),
-                          endColor: Color(0xFF1E1466)),
+                          icon: FontAwesomeIcons.filePdf,
+                          title: 'เล่ม 2',
+                          subtitle: 'คู่มือการดำเนินศูนย์สุขภาพดีวัยทำงาน 2',
+                          url: 'http://18.141.44.152/wellness/wellness2.pdf',
+                          startColor: Color(0xFF738AE6),
+                          endColor: Color(0xFF5C5EDD)),
                     ],
                   ),
                 ),
@@ -205,7 +165,7 @@ class _ProfilePageState extends State<ProfilePage> {
       {IconData icon,
       String title,
       String subtitle,
-      String routeName,
+      String url,
       Color startColor,
       Color endColor}) {
     return Padding(
@@ -243,38 +203,14 @@ class _ProfilePageState extends State<ProfilePage> {
             fontSize: 14,
           ),
         ),
-        onTap: () {
-          // Navigator.pushNamed(context, routeName);
-          switch (routeName) {
-            case '/user':
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => UserProfilePage(
-                            animationController: widget.animationController,
-                          )));
-              break;
-            case '/knowledge':
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => KnowledgePage(
-                            animationController: widget.animationController,
-                          )));
-              break;
-            case '/logout':
-              _signOut();
-              break;
-            default:
-              Navigator.pushNamed(context, routeName);
+        onTap: () async {
+          if (await canLaunch(url)) {
+            await launch(url);
+          } else {
+            throw 'Could not launch $url';
           }
         },
       ),
     );
-  }
-
-  void _signOut() async {
-    await FirebaseAuth.instance.signOut();
-    Navigator.pushReplacementNamed(context, '/');
   }
 }

@@ -136,6 +136,7 @@ class MealsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AssetImage blankImage = AssetImage('assets/images/blank.png');
     return AnimatedBuilder(
       animation: animationController,
       builder: (BuildContext context, Widget child) {
@@ -154,11 +155,12 @@ class MealsView extends StatelessWidget {
                     child: Container(
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          // alignment: Alignment(0, 0),
-                          fit: BoxFit.cover,
-                          //  add image URL
-                          image: NetworkImage(mealsListData.imagePath),
-                        ),
+                            // alignment: Alignment(0, 0),
+                            fit: BoxFit.cover,
+                            //  add image URL
+                            image: mealsListData.imagePath == null
+                                ? blankImage
+                                : NetworkImage(mealsListData.imagePath)),
                         boxShadow: <BoxShadow>[
                           BoxShadow(
                               color: HexColor(mealsListData.endColor)

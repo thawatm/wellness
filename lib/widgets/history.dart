@@ -30,7 +30,6 @@ class HistoryList extends StatelessWidget {
   }
 
   Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
-    // TODO: delete history by collection
     var record;
     switch (collection) {
       case 'pressure':
@@ -44,7 +43,7 @@ class HistoryList extends StatelessWidget {
       children: <Widget>[
         ListTile(
           title: Text(DateFormat.yMMMEd().format(record.date)),
-          subtitle: Text(record.toStringData(collection)),
+          subtitle: Text(record.toString()),
           onTap: () {
             Alert.confirm(
               context,
