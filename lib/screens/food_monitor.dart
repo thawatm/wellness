@@ -26,8 +26,6 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:image/image.dart' as ImagePackage;
 import 'package:mime_type/mime_type.dart';
 
-enum ConfirmAction { CANCEL, DELETE }
-
 class FoodMonitorPage extends StatefulWidget {
   @override
   _FoodMonitorPageState createState() => _FoodMonitorPageState();
@@ -277,7 +275,7 @@ class _FoodMonitorPageState extends State<FoodMonitorPage> {
     Widget title = SectionTitle(
       title: socialDate(total.date),
       serving: total.totalServing.toString(),
-      hours: getEatHours(foodList.first.date, foodList.last.date).toString(),
+      // hours: getEatHours(foodList.first.date, foodList.last.date).toString(),
     );
 
     return Column(
@@ -387,14 +385,14 @@ class SectionTitle extends StatelessWidget {
           ),
         ),
         Text(' $serving Serving', style: Theme.of(context).textTheme.subtitle1),
-        Expanded(
-          child: Container(
-            alignment: Alignment.centerRight,
-            padding: EdgeInsets.only(right: 12),
-            child: Text('$hours ชั่วโมง',
-                style: Theme.of(context).textTheme.subtitle1),
-          ),
-        )
+        // Expanded(
+        //   child: Container(
+        //     alignment: Alignment.centerRight,
+        //     padding: EdgeInsets.only(right: 12),
+        //     child: Text('$hours ชั่วโมง',
+        //         style: Theme.of(context).textTheme.subtitle1),
+        //   ),
+        // )
 
         // style: TextStyle(color: Colors.green, fontSize: 16))
       ],
@@ -417,6 +415,7 @@ class FoodContent extends StatelessWidget {
         theme.textTheme.headline6.copyWith(color: Colors.white);
     TextStyle subtitleStyle =
         theme.textTheme.subtitle2.copyWith(color: Colors.white);
+    AssetImage blankImage = AssetImage('assets/images/blank.png');
 
     final List<Widget> children = <Widget>[
       // Photo and title.
@@ -427,8 +426,8 @@ class FoodContent extends StatelessWidget {
             Positioned.fill(
               child: Ink.image(
                 image: food.imageUrl != null
-                    ? CachedNetworkImageProvider(food.imageUrl)
-                    : FileImage(tempImage),
+                    ? (CachedNetworkImageProvider(food.imageUrl) ?? blankImage)
+                    : blankImage,
                 fit: BoxFit.cover,
                 child: Container(),
               ),
@@ -686,41 +685,14 @@ class _FoodContentEditDialogState extends State<FoodContentEditDialog> {
       });
     }
 
-    DocumentReference monitor = Firestore.instance
+    if (widget.food.menu == '') widget.food.menu = 'ผักผลไม้';
+
+    Firestore.instance
         .collection('wellness_data')
         .document(widget.uid)
         .collection('food')
-        .document(timestamp.toString());
-    Firestore.instance.runTransaction((transaction) async {
-      await transaction.set(monitor, widget.food.getMapData());
-    });
-  }
-
-  Future<ConfirmAction> confirmDialog(BuildContext context) async {
-    return showDialog<ConfirmAction>(
-      context: context,
-      barrierDismissible: false, // user must tap button for close dialog!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("ยืนยัน"),
-          content: Text("ลบข้อมูล"),
-          actions: <Widget>[
-            FlatButton(
-              child: const Text('CANCEL'),
-              onPressed: () {
-                Navigator.of(context).pop(ConfirmAction.CANCEL);
-              },
-            ),
-            FlatButton(
-              child: const Text('DELETE'),
-              onPressed: () {
-                Navigator.of(context).pop(ConfirmAction.DELETE);
-              },
-            )
-          ],
-        );
-      },
-    );
+        .document(timestamp.toString())
+        .setData(widget.food.getMapData());
   }
 }
 
@@ -744,9 +716,8 @@ class FoodContentAddDialog extends StatefulWidget {
 class _FoodContentAddDialogState extends State<FoodContentAddDialog> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  TextEditingController _textMenuController =
-      TextEditingController(text: 'ผักผลไม้');
-  TextEditingController _textServController;
+  TextEditingController _textMenuController = TextEditingController(text: '');
+  TextEditingController _textServController = TextEditingController(text: '1');
   Map<String, dynamic> monitorData = {
     'date': DateTime.now(),
     'menu': '',
@@ -763,7 +734,7 @@ class _FoodContentAddDialogState extends State<FoodContentAddDialog> {
         final FormState form = _formKey.currentState;
         if (!form.validate()) {
           _autovalidate = true; // Start validating on every change.
-          showInSnackBar('No Data');
+          Alert.toast(context, "ไม่มีข้อมูล");
         } else {
           form.save();
           _saveData();
@@ -771,7 +742,7 @@ class _FoodContentAddDialogState extends State<FoodContentAddDialog> {
         }
       }
     } on SocketException catch (_) {
-      showInSnackBar("No Internet Connection");
+      Alert.toast(context, "No Internet Connection");
       return;
     }
   }
@@ -779,12 +750,6 @@ class _FoodContentAddDialogState extends State<FoodContentAddDialog> {
   String _validateInput(String value) {
     if (value.isEmpty) return 'This field is required.';
     return null;
-  }
-
-  void showInSnackBar(String value) {
-    _scaffoldKey.currentState.showSnackBar(SnackBar(
-      content: Text(value),
-    ));
   }
 
   @override
@@ -819,10 +784,10 @@ class _FoodContentAddDialogState extends State<FoodContentAddDialog> {
                 leading: Icon(Icons.restaurant, color: Colors.grey[500]),
                 title: TextFormField(
                     decoration: InputDecoration(
-                        // hintText: 'ชื่อเมนู',
-                        ),
+                      hintText: 'ชื่อเมนู',
+                    ),
                     controller: _textMenuController,
-                    validator: _validateInput,
+                    // validator: _validateInput,
                     onSaved: (value) {
                       monitorData['menu'] = value;
                     }),
@@ -865,43 +830,44 @@ class _FoodContentAddDialogState extends State<FoodContentAddDialog> {
   }
 
   void _saveData() {
-    int timestamp = monitorData['date'].millisecondsSinceEpoch;
-    File imageFile = widget.image;
+    try {
+      int timestamp = monitorData['date'].millisecondsSinceEpoch;
+      File imageFile = widget.image;
 
-    String mimeType = mime(widget.image.uri.path);
+      String mimeType = mime(widget.image.uri.path);
 
-    if (mimeType == 'image/jpeg') {
-      imageFile = resizeJpg(widget.image);
-    }
+      if (mimeType == 'image/jpeg') {
+        imageFile = resizeJpg(widget.image);
+      }
 
-    if (mimeType == 'image/png') {
-      imageFile = pngToJpg(widget.image);
-    }
+      if (mimeType == 'image/png') {
+        imageFile = pngToJpg(widget.image);
+      }
 
-    DocumentReference monitor = Firestore.instance
-        .collection('wellness_data')
-        .document(widget.uid)
-        .collection('food')
-        .document(timestamp.toString());
-    Firestore.instance.runTransaction((transaction) async {
-      await transaction.set(monitor, monitorData);
-    });
+      final uploadPath =
+          '/food_images/' + widget.uid + '/' + timestamp.toString() + '.jpg';
+      final StorageReference ref = widget.storage.ref().child(uploadPath);
+      final StorageUploadTask uploadTask = ref.putFile(imageFile);
 
-    final uploadPath =
-        '/food_images/' + widget.uid + '/' + timestamp.toString() + '.jpg';
-    final StorageReference ref = widget.storage.ref().child(uploadPath);
-    final StorageUploadTask uploadTask = ref.putFile(imageFile);
+      uploadTask.onComplete
+          .then((snapshot) => snapshot.ref.getDownloadURL())
+          .then((url) {
+        monitorData['imageUrl'] = url;
+        monitorData['uploadPath'] = uploadPath;
 
-    uploadTask.onComplete
-        .then((snapshot) => snapshot.ref.getDownloadURL())
-        .then((url) {
-      monitorData['imageUrl'] = url;
-      monitorData['uploadPath'] = uploadPath;
+        if (monitorData['menu'] == '') monitorData['menu'] = 'ผักผลไม้';
 
-      Firestore.instance.runTransaction((transaction) async {
-        await transaction.set(monitor, monitorData);
+        Firestore.instance
+            .collection('wellness_data')
+            .document(widget.uid)
+            .collection('food')
+            .document(timestamp.toString())
+            .setData(monitorData);
       });
-    });
+    } catch (e) {
+      print(e);
+      Alert.toast(context, 'อัพโหลดรูปภาพไม่ได้');
+    }
   }
 
   File pngToJpg(File pngFile) {

@@ -160,7 +160,8 @@ class MealsView extends StatelessWidget {
                             //  add image URL
                             image: mealsListData.imagePath == null
                                 ? blankImage
-                                : NetworkImage(mealsListData.imagePath)),
+                                : (NetworkImage(mealsListData.imagePath)) ??
+                                    blankImage),
                         boxShadow: <BoxShadow>[
                           BoxShadow(
                               color: HexColor(mealsListData.endColor)

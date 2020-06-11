@@ -77,7 +77,7 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
         groupBy(data, (obj) => obj['date']).forEach((k, v) {
           DateTime recordDate = DateTime.parse(k);
           num sum = v.fold(0, (a, b) => a + b['value']);
-          _saveData(recordDate, sum);
+          _saveData(recordDate, sum.toInt());
         });
       }
     });
@@ -85,6 +85,7 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
 
   void _saveData(DateTime recordDate, int stepsCount) {
     int timestamp = recordDate.millisecondsSinceEpoch;
+
     Map<String, dynamic> monitorData = {
       'date': recordDate,
       'steps': stepsCount,
