@@ -6,8 +6,9 @@ import 'package:collection/collection.dart';
 import 'package:easy_alert/easy_alert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+// import 'package:flutter/services.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:flutter_picker/flutter_picker.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:wellness/dashboard/app_theme.dart';
 import 'package:wellness/models/fooddata.dart';
@@ -504,13 +505,11 @@ class _FoodContentEditDialogState extends State<FoodContentEditDialog> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController _textMenuController;
-  TextEditingController _textServController;
 
   @override
   void initState() {
     super.initState();
     _textMenuController = TextEditingController(text: widget.food.menu);
-    _textServController = TextEditingController(text: widget.food.serving);
   }
 
   bool _autovalidate = false;
@@ -606,20 +605,26 @@ class _FoodContentEditDialogState extends State<FoodContentEditDialog> {
                     }),
                 trailing: Text('   '),
               ),
-              ListTile(
-                leading:
-                    Icon(Icons.format_list_numbered, color: Colors.grey[500]),
-                title: TextFormField(
-                    controller: _textServController,
-                    validator: _validateInput,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: <TextInputFormatter>[
-                      WhitelistingTextInputFormatter.digitsOnly,
+              InkWell(
+                child: ListTile(
+                  leading:
+                      Icon(Icons.format_list_numbered, color: Colors.grey[500]),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Chip(
+                        label:
+                            Text((widget.food.serving ?? '') + '  Serving(s)'),
+                        labelStyle:
+                            TextStyle(color: Colors.black54, fontSize: 16),
+                      ),
                     ],
-                    onSaved: (value) {
-                      widget.food.serving = value;
-                    }),
-                trailing: Text('Serving(s)'),
+                  ),
+                ),
+                onTap: () {
+                  _showPickerNumber(
+                      context, 0, 20, 1, 'Serving(s)', widget.food);
+                },
               ),
               SizedBox(height: 36),
               Padding(
@@ -695,6 +700,27 @@ class _FoodContentEditDialogState extends State<FoodContentEditDialog> {
         .document(timestamp.toString())
         .setData(widget.food.getMapData());
   }
+
+  void _showPickerNumber(BuildContext context, int begin, int end,
+      int initValue, String title, FoodMonitor food) {
+    Picker(
+        adapter: NumberPickerAdapter(
+          data: [
+            NumberPickerColumn(begin: begin, end: end, initValue: initValue),
+          ],
+        ),
+        hideHeader: true,
+        textStyle: TextStyle(color: Colors.blue, fontSize: 20.0),
+        confirmText: 'OK',
+        cancelText: 'CANCEL',
+        itemExtent: 40.0,
+        title: Text(title),
+        onConfirm: (Picker picker, List value) {
+          setState(() {
+            food.serving = picker.getSelectedValues()[0].toString();
+          });
+        }).showDialog(context);
+  }
 }
 
 class FoodContentAddDialog extends StatefulWidget {
@@ -718,11 +744,10 @@ class _FoodContentAddDialogState extends State<FoodContentAddDialog> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController _textMenuController = TextEditingController(text: '');
-  TextEditingController _textServController = TextEditingController(text: '1');
   Map<String, dynamic> monitorData = {
     'date': DateTime.now(),
     'menu': '',
-    'serving': ''
+    'serving': '1'
   };
 
   bool _autovalidate = false;
@@ -748,10 +773,10 @@ class _FoodContentAddDialogState extends State<FoodContentAddDialog> {
     }
   }
 
-  String _validateInput(String value) {
-    if (value.isEmpty) return 'This field is required.';
-    return null;
-  }
+  // String _validateInput(String value) {
+  //   if (value.isEmpty) return 'This field is required.';
+  //   return null;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -795,23 +820,24 @@ class _FoodContentAddDialogState extends State<FoodContentAddDialog> {
                 trailing: Text('   '),
               ),
               SizedBox(height: 16),
-              ListTile(
-                leading:
-                    Icon(Icons.format_list_numbered, color: Colors.grey[500]),
-                title: TextFormField(
-                    decoration: InputDecoration(
-                      hintText: 'ปริมาณผักผลไม้',
-                    ),
-                    controller: _textServController,
-                    validator: _validateInput,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: <TextInputFormatter>[
-                      WhitelistingTextInputFormatter.digitsOnly,
+              InkWell(
+                child: ListTile(
+                  leading:
+                      Icon(Icons.format_list_numbered, color: Colors.grey[500]),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Chip(
+                        label: Text(monitorData['serving'] + '  Serving(s)'),
+                        labelStyle:
+                            TextStyle(color: Colors.black54, fontSize: 16),
+                      ),
                     ],
-                    onSaved: (value) {
-                      monitorData['serving'] = value;
-                    }),
-                trailing: Text('Serving(s)'),
+                  ),
+                ),
+                onTap: () {
+                  _showPickerNumber(context, 0, 20, 1, 'Serving(s)');
+                },
               ),
               SizedBox(height: 24),
               Padding(
@@ -890,5 +916,26 @@ class _FoodContentAddDialogState extends State<FoodContentAddDialog> {
     jpgFile.writeAsBytesSync(ImagePackage.encodeJpg(jpgImage, quality: 80));
 
     return jpgFile;
+  }
+
+  void _showPickerNumber(
+      BuildContext context, int begin, int end, int initValue, String title) {
+    Picker(
+        adapter: NumberPickerAdapter(
+          data: [
+            NumberPickerColumn(begin: begin, end: end, initValue: initValue),
+          ],
+        ),
+        hideHeader: true,
+        textStyle: TextStyle(color: Colors.blue, fontSize: 20.0),
+        confirmText: 'OK',
+        cancelText: 'CANCEL',
+        itemExtent: 40.0,
+        title: Text(title),
+        onConfirm: (Picker picker, List value) {
+          setState(() {
+            monitorData['serving'] = picker.getSelectedValues()[0].toString();
+          });
+        }).showDialog(context);
   }
 }
