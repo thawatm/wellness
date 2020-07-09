@@ -258,7 +258,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   }
 
   void inputOption(String key, String title, dynamic value) async {
-    if (isLinkKiosk && key != 'height')
+    if (isLinkKiosk && !(key == 'height' || key == 'smoke'))
       return _buildDialog(context, 'แจ้งเตือน',
           'ไม่สามารถแก้ไขได้เนื่องจากท่านได้เชื่อมต่อข้อมูลกับระบบ NSTDA Kiosk');
     switch (key) {
