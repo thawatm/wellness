@@ -234,13 +234,24 @@ class _ReportScreenState extends State<ReportScreen>
     DateTime s = DateTime.now();
     if (startDate != null) s = startDate;
     DateTime endDate = s.add(Duration(days: 7));
-    // DateTime lastweek = s.subtract(Duration(days: 7));
+
     List<DocumentSnapshot> workoutSnapshot =
         getWeeklyData(workoutSn, 'date', 'totalWorkout', s);
     totalWorkout = getSum(workoutSnapshot, 'totalWorkout');
+
     List<DocumentSnapshot> foodSnapshot =
         getWeeklyData(foodSn, 'date', 'serving', s);
     avgServing = (getSum(foodSnapshot, 'serving') / 7);
+
+    // Lastweek Data
+    List<DocumentSnapshot> workoutSnapshotLW =
+        getLastWeekData(workoutSn, 'date', 'totalWorkout', s);
+    num totalWorkoutLW = getSum(workoutSnapshotLW, 'totalWorkout');
+
+    List<DocumentSnapshot> foodSnapshotLW =
+        getLastWeekData(foodSn, 'date', 'serving', s);
+    num avgServingLW = (getSum(foodSnapshotLW, 'serving') / 7);
+    // End
 
     bmi = getLastData(healthSn, 'bmi', endDate);
     cholesterol = getLastData(healthSn, 'cholesterol', endDate);
@@ -253,8 +264,8 @@ class _ReportScreenState extends State<ReportScreen>
     bplower = pressure['bplower'];
 
     ruleBase = [];
-    ruleBase.add(RuleBaseAI.workout(totalWorkout));
-    ruleBase.add(RuleBaseAI.food(avgServing));
+    ruleBase.add(RuleBaseAI.workout(totalWorkout, lastweek: totalWorkoutLW));
+    ruleBase.add(RuleBaseAI.food(avgServing, lastweek: avgServingLW));
     ruleBase.add(RuleBaseAI.bloodPressure(bpupper, bplower));
     ruleBase.add(RuleBaseAI.bmi(bmi));
     ruleBase.add(RuleBaseAI.cholesterol(cholesterol));
@@ -381,6 +392,13 @@ class _ReportScreenState extends State<ReportScreen>
       print(e);
     }
     return null;
+  }
+
+  List<DocumentSnapshot> getLastWeekData(
+      QuerySnapshot snapshot, String date, String value, DateTime startDate) {
+    DateTime lastweek = startDate.subtract(Duration(days: 7));
+    DateTime sDate = Jiffy(lastweek).startOf(Units.WEEK);
+    return getWeeklyData(snapshot, date, value, sDate);
   }
 
   num getSumByDay(

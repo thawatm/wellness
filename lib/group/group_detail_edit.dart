@@ -8,13 +8,14 @@ import 'package:wellness/models/state_model.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-class GroupAddPage extends StatefulWidget {
-  const GroupAddPage({Key key}) : super(key: key);
+class GroupDetailEditPage extends StatefulWidget {
+  const GroupDetailEditPage({Key key, this.groupId}) : super(key: key);
+  final String groupId;
   @override
-  _GroupAddPageState createState() => _GroupAddPageState();
+  _GroupDetailEditPageState createState() => _GroupDetailEditPageState();
 }
 
-class _GroupAddPageState extends State<GroupAddPage> {
+class _GroupDetailEditPageState extends State<GroupDetailEditPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
 
@@ -34,24 +35,12 @@ class _GroupAddPageState extends State<GroupAddPage> {
         _isLoading = true;
       });
 
-      String groupId = '1000';
-
       var groupData = _fbKey.currentState.value;
-      groupData['owner'] = uid;
 
-      await Firestore.instance
-          .collection('wellness_groups')
-          .getDocuments()
-          .then((docs) {
-        groupId = docs.documents?.last?.documentID;
-        if (groupId != null) {
-          groupId = (int.parse(groupId) + 1).toString();
-        }
-      }).catchError((e) {});
-
+      String groupId = widget.groupId;
       Firestore.instance
           .document('wellness_groups/$groupId')
-          .setData(groupData);
+          .updateData(groupData);
 
       showInSnackBar("Successful");
       ScopedModel.of<StateModel>(context).isLoading = true;
@@ -59,6 +48,7 @@ class _GroupAddPageState extends State<GroupAddPage> {
         _isLoading = false;
       });
 
+      Navigator.pop(context);
       Navigator.pop(context);
     } else {
       // print(_fbKey.currentState.value);
@@ -79,7 +69,7 @@ class _GroupAddPageState extends State<GroupAddPage> {
       drawerDragStartBehavior: DragStartBehavior.down,
       key: _scaffoldKey,
       appBar: GradientAppBar(
-        title: Text('สร้างกลุ่มใหม่'),
+        title: Text('แก้ไขกลุ่ม'),
         gradient: LinearGradient(
             colors: [AppTheme.appBarColor1, AppTheme.appBarColor2]),
       ),
@@ -105,35 +95,11 @@ class _GroupAddPageState extends State<GroupAddPage> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 8.0),
                   child: FormBuilderTextField(
-                    maxLines: 1,
-                    attribute: 'name',
-                    decoration: InputDecoration(
-                      labelText: 'ชื่อกลุ่ม',
-                      contentPadding: EdgeInsets.only(top: 10.0, bottom: 4),
-                    ),
-                    style: TextStyle(fontSize: 18),
-                    // onChanged: _onChanged,
-                    validators: [
-                      FormBuilderValidators.required(errorText: 'ใส่ชื่อกลุ่ม'),
-                      FormBuilderValidators.max(50),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                  child: FormBuilderTextField(
                     maxLines: 2,
                     attribute: 'desc',
                     decoration: InputDecoration(
                       labelText: 'รายละเอียดกลุ่ม',
                       contentPadding: EdgeInsets.only(top: 10.0, bottom: 4),
-                      // focusedBorder: OutlineInputBorder(
-                      //   borderSide: BorderSide(color: Colors.grey, width: 1.0),
-                      // ),
-                      // enabledBorder: OutlineInputBorder(
-                      //   borderSide: BorderSide(color: Colors.grey, width: 1.0),
-                      // ),
                     ),
                     style: TextStyle(fontSize: 18),
                     // onChanged: _onChanged,

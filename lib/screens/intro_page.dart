@@ -49,7 +49,10 @@ class IntroPage extends StatelessWidget {
             title: "Life’s Simple 7",
             body:
                 "“ทุกคนมีสุขภาพดีได้ด้วยตัวชี้วัด 7 อย่าง”\n\nสมาคมโรคหัวใจสหรัฐอเมริกา ได้กำหนดนิยามของสุขภาพหัวใจและหลอดเลือดที่ดี โดยกำหนดเป็นตัวชี้วัดง่าย ๆ รวม 7 อย่าง เพื่อให้ผู้คนสามารถมีสุขภาพดีได้ผ่านการปรับเปลี่ยนพฤติกรรมและวิถีชีวิตที่เหมาะสม",
-            image: _buildImage(img3),
+            image: Align(
+              child: Image.asset(img3, height: 280.0),
+              alignment: Alignment.bottomCenter,
+            ),
           ),
           PageViewModel(
             title: "การปรับเปลี่ยนพฤติกรรมและติดตามผล",

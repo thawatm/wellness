@@ -25,6 +25,13 @@ class ContactPage extends StatelessWidget {
             ),
             Divider(height: 2.0),
             ListTile(
+              leading: Icon(Icons.sim_card),
+              title: Text('ศูนย์เทคโนโลยีสิ่งอำนวยความสะดวกและเครื่องมือแพทย์',
+                  style: TextStyle(fontSize: 16)),
+              onTap: () => _launchURL('https://www.facebook.com/A.MED.nstda/'),
+            ),
+            Divider(height: 2.0),
+            ListTile(
               leading: Icon(Icons.link),
               title: Text(
                 'DrSant บทความสุขภาพ',
@@ -38,6 +45,21 @@ class ContactPage extends StatelessWidget {
             SizedBox(
               height: 50,
             ),
+            InkWell(
+              child: Container(
+                padding: EdgeInsets.only(top: 30),
+                height: 100,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                    image: DecorationImage(
+                      image: AssetImage('assets/images/logo1.png'),
+                      fit: BoxFit.fitHeight,
+                    )),
+              ),
+              onTap: () => _launchURL(
+                  'https://www.facebook.com/pages/category/Health-Beauty/%E0%B8%A8%E0%B8%B9%E0%B8%99%E0%B8%A2%E0%B9%8C%E0%B8%AA%E0%B8%B8%E0%B8%82%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%94%E0%B8%B5%E0%B8%A7%E0%B8%B1%E0%B8%A2%E0%B8%97%E0%B8%B3%E0%B8%87%E0%B8%B2%E0%B8%99-%E0%B8%AA%E0%B8%B3%E0%B8%99%E0%B8%B1%E0%B8%81%E0%B8%9A%E0%B8%A3%E0%B8%B4%E0%B8%AB%E0%B8%B2%E0%B8%A3%E0%B8%A2%E0%B8%B8%E0%B8%97%E0%B8%98%E0%B8%A8%E0%B8%B2%E0%B8%AA%E0%B8%95%E0%B8%A3%E0%B9%8C%E0%B8%AA%E0%B8%B8%E0%B8%82%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%94%E0%B8%B5%E0%B8%A7%E0%B8%B4%E0%B8%96%E0%B8%B5%E0%B8%8A%E0%B8%B5%E0%B8%A7%E0%B8%B4%E0%B8%95%E0%B9%84%E0%B8%97%E0%B8%A2-112373673575949/'),
+            ),
+            SizedBox(height: 30),
             InkWell(
               child: Container(
                 padding: EdgeInsets.all(8),
@@ -63,21 +85,6 @@ class ContactPage extends StatelessWidget {
                     )),
               ),
               onTap: () => _launchURL('https://www.wellnesswecare.com/'),
-            ),
-            SizedBox(height: 30),
-            InkWell(
-              child: Container(
-                padding: EdgeInsets.only(top: 30),
-                height: 100,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                    image: DecorationImage(
-                      image: AssetImage('assets/images/logo1.png'),
-                      fit: BoxFit.fitHeight,
-                    )),
-              ),
-              onTap: () => _launchURL(
-                  'https://www.facebook.com/pages/category/Health-Beauty/%E0%B8%A8%E0%B8%B9%E0%B8%99%E0%B8%A2%E0%B9%8C%E0%B8%AA%E0%B8%B8%E0%B8%82%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%94%E0%B8%B5%E0%B8%A7%E0%B8%B1%E0%B8%A2%E0%B8%97%E0%B8%B3%E0%B8%87%E0%B8%B2%E0%B8%99-%E0%B8%AA%E0%B8%B3%E0%B8%99%E0%B8%B1%E0%B8%81%E0%B8%9A%E0%B8%A3%E0%B8%B4%E0%B8%AB%E0%B8%B2%E0%B8%A3%E0%B8%A2%E0%B8%B8%E0%B8%97%E0%B8%98%E0%B8%A8%E0%B8%B2%E0%B8%AA%E0%B8%95%E0%B8%A3%E0%B9%8C%E0%B8%AA%E0%B8%B8%E0%B8%82%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%94%E0%B8%B5%E0%B8%A7%E0%B8%B4%E0%B8%96%E0%B8%B5%E0%B8%8A%E0%B8%B5%E0%B8%A7%E0%B8%B4%E0%B8%95%E0%B9%84%E0%B8%97%E0%B8%A2-112373673575949/'),
             ),
           ],
         ),

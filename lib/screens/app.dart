@@ -37,7 +37,7 @@ class WellnessApp extends StatelessWidget {
       ),
       child: MaterialApp(
         title: 'Wellness Center',
-        debugShowCheckedModeBanner: false,
+        // debugShowCheckedModeBanner: false,
         theme: ThemeData(
           fontFamily: 'Prompt',
           primarySwatch: Colors.blue,

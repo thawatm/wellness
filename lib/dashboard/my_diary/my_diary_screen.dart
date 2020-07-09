@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:wellness/dashboard/ui_view/workout_view.dart';
 import 'package:wellness/models/fitkitdata.dart';
 import 'package:wellness/models/state_model.dart';
+import 'package:wellness/models/userdata.dart';
 import 'package:wellness/widgets/appbar_ui.dart';
 
 class MyDiaryScreen extends StatefulWidget {
@@ -32,6 +33,7 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
   final ScrollController scrollController = ScrollController();
   double topBarOpacity = 0.0;
   String uid;
+  UserProfile userProfile;
 
   @override
   void initState() {
@@ -64,6 +66,75 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
     });
     super.initState();
     uid = ScopedModel.of<StateModel>(context).uid;
+    userProfile = ScopedModel.of<StateModel>(context).userProfile;
+
+    getFitData();
+
+    if (userProfile.citizenId is String && userProfile.citizenId.length == 13) {
+      getKioskData();
+    }
+  }
+
+  void getKioskData() {
+    try {
+      Firestore.instance
+          .collection("data")
+          .where('citizenId', isEqualTo: userProfile.citizenId)
+          .getDocuments()
+          .then((snapshot) {
+        if (snapshot != null) {
+          snapshot.documents.forEach((doc) {
+            _saveKioskData(doc);
+          });
+        }
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void _saveKioskData(DocumentSnapshot document) {
+    String dateString = document.documentID;
+    if (dateString.length >= 14) {
+      String temp =
+          dateString.substring(0, 8) + 'T' + dateString.substring(8, 14);
+      DateTime date = DateTime.parse(temp);
+      int timestamp = date.millisecondsSinceEpoch;
+
+      num bpupper = document.data["bpupper"];
+      num bplower = document.data["bplower"];
+      num pulse = document.data["pulse"];
+
+      num height = document.data["height"];
+      num weight = document.data["weight"];
+      num bmi = weight * 100 * 100 / (height * height);
+
+      Map<String, dynamic> kioskData = {
+        'date': date,
+        'pressureUpper': bpupper,
+        'pressureLower': bplower,
+        'hr': pulse,
+        'weight': weight,
+        'bmi': num.parse(bmi.toStringAsFixed(2))
+      };
+      kioskData.forEach((key, value) {
+        if (value is num && value < 0) kioskData[key] = null;
+      });
+
+      try {
+        Firestore.instance
+            .collection('wellness_data')
+            .document(uid)
+            .collection('healthdata')
+            .document(timestamp.toString())
+            .setData(kioskData);
+      } catch (e) {
+        print(e);
+      }
+    }
+  }
+
+  void getFitData() {
     DateTime start = DateTime.now().subtract(Duration(days: 7));
     DateTime dateFrom = DateTime(start.year, start.month, start.day);
     FitKitData(dateFrom: dateFrom).read().then((fitData) {
@@ -77,13 +148,13 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
         groupBy(data, (obj) => obj['date']).forEach((k, v) {
           DateTime recordDate = DateTime.parse(k);
           num sum = v.fold(0, (a, b) => a + b['value']);
-          _saveData(recordDate, sum.toInt());
+          _saveFitData(recordDate, sum.toInt());
         });
       }
     });
   }
 
-  void _saveData(DateTime recordDate, int stepsCount) {
+  void _saveFitData(DateTime recordDate, int stepsCount) {
     int timestamp = recordDate.millisecondsSinceEpoch;
 
     Map<String, dynamic> monitorData = {

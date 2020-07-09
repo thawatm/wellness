@@ -228,13 +228,13 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 children: <Widget>[
                   Text("เชื่อมต่อเพื่อดูข้อมูลจากระบบ NSTDA Kiosk",
                       style: TextStyle(color: Colors.black54)),
-                  InkResponse(
-                    child: Text('(ดูข้อมูลเพิ่มเติม)',
-                        style: TextStyle(color: Colors.blue)),
-                    onTap: () {
-                      Navigator.pushNamed(context, '/kioskinfo');
-                    },
-                  )
+                  // InkResponse(
+                  //   child: Text('(ดูข้อมูลเพิ่มเติม)',
+                  //       style: TextStyle(color: Colors.blue)),
+                  //   onTap: () {
+                  //     Navigator.pushNamed(context, '/kioskinfo');
+                  //   },
+                  // )
                 ],
               ))
             : ListTile(

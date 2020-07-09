@@ -7,6 +7,7 @@ import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:wellness/dashboard/app_theme.dart';
 import 'package:wellness/dashboard/ui_view/title_view.dart';
+import 'package:wellness/group/group_detail_edit.dart';
 import 'package:wellness/group/group_edit.dart';
 import 'package:wellness/models/state_model.dart';
 import 'package:wellness/models/userdata.dart';
@@ -32,6 +33,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
   ImageProvider profileImage = AssetImage('assets/images/user.png');
   Future<bool> initData; //changed
   String groupName;
+  String groupDesc;
   String owner;
   bool isOwner = false;
   @override
@@ -48,6 +50,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
         .get()
         .then((g) {
       groupName = g.data['name'];
+      groupDesc = g.data['desc'];
       owner = g.data['owner'];
       if (uid == owner) isOwner = true;
       return true;
@@ -177,17 +180,31 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                     leading:
                         Icon(FontAwesomeIcons.userFriends, color: Colors.teal),
                     title: Text('ชื่อกลุ่ม'),
-                    trailing: Text(groupName)),
+                    subtitle: Text(groupName)),
                 ListTile(
                   leading: Icon(FontAwesomeIcons.userNurse, color: Colors.teal),
                   title: Text('ผู้ดูแล'),
-                  trailing: FutureBuilder<UserProfile>(
+                  subtitle: FutureBuilder<UserProfile>(
                       future: _getProfileName(owner),
                       builder: (context, AsyncSnapshot<UserProfile> sn) {
                         if (!sn.hasData) return SizedBox();
                         return Text(sn.data.fullname);
                       }),
                 ),
+                ListTile(
+                    onTap: () {
+                      if (widget.isAdmin)
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  GroupDetailEditPage(groupId: widget.groupId)),
+                        );
+                    },
+                    leading:
+                        Icon(FontAwesomeIcons.infoCircle, color: Colors.teal),
+                    title: Text('รายละเอียด'),
+                    subtitle: Text(groupDesc ?? '')),
               ],
             )));
   }

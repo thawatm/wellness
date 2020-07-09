@@ -384,7 +384,8 @@ class SectionTitle extends StatelessWidget {
             child: Text(title, style: Theme.of(context).textTheme.headline5),
           ),
         ),
-        Text(' $serving Serving', style: Theme.of(context).textTheme.subtitle1),
+        Text(' $serving Serving(s)',
+            style: Theme.of(context).textTheme.subtitle1),
         // Expanded(
         //   child: Container(
         //     alignment: Alignment.centerRight,
@@ -453,7 +454,7 @@ class FoodContent extends StatelessWidget {
                   fit: BoxFit.scaleDown,
                   alignment: Alignment.bottomLeft,
                   child: Text(
-                    "${food.serving} Serving",
+                    "${food.serving} Serving(s)",
                     style: subtitleStyle,
                   )),
             ),
@@ -618,7 +619,7 @@ class _FoodContentEditDialogState extends State<FoodContentEditDialog> {
                     onSaved: (value) {
                       widget.food.serving = value;
                     }),
-                trailing: Text('Serving'),
+                trailing: Text('Serving(s)'),
               ),
               SizedBox(height: 36),
               Padding(
@@ -810,7 +811,7 @@ class _FoodContentAddDialogState extends State<FoodContentAddDialog> {
                     onSaved: (value) {
                       monitorData['serving'] = value;
                     }),
-                trailing: Text('Serving'),
+                trailing: Text('Serving(s)'),
               ),
               SizedBox(height: 24),
               Padding(

@@ -372,7 +372,7 @@ class FoodContent extends StatelessWidget {
                   fit: BoxFit.scaleDown,
                   alignment: Alignment.bottomLeft,
                   child: Text(
-                    "${food.serving} Serving",
+                    "${food.serving} Serving(s)",
                     style: subtitleStyle,
                   )),
             ),
