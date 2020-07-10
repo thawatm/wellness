@@ -1,3 +1,4 @@
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:wellness/dashboard/app_theme.dart';
 import 'package:flutter/material.dart';
 
@@ -56,8 +57,8 @@ class TitleView extends StatelessWidget {
                             height: 38,
                             width: 26,
                             child: Icon(
-                              Icons.more_vert,
-                              color: AppTheme.darkText,
+                              FontAwesomeIcons.chartLine,
+                              color: AppTheme.darkText.withOpacity(0.5),
                               size: 18,
                             ),
                           ),

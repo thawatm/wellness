@@ -58,6 +58,7 @@ class _HealthTrendChartState extends State<HealthTrendChart> {
       healthData = widget.snapshot.documents
         ..sort((a, b) =>
             b.data['date'].toDate().compareTo(a.data['date'].toDate()));
+
       // PRESSURE DATA
       pressureData = healthData
           .map((data) => HealthMonitor.fromSnapshot(data))
@@ -127,6 +128,7 @@ class _HealthTrendChartState extends State<HealthTrendChart> {
             onValueChanged: (int newValue) {
               setState(() {
                 chartDays = newValue;
+                initData();
               });
             },
             groupValue: chartDays,
