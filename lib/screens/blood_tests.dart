@@ -372,8 +372,7 @@ class _BloodTestPageState extends State<BloodTestPage> {
         new Series<HealthMonitor, DateTime>(
           id: 'Glucose',
           colorFn: (_, __) => MaterialPalette.purple.shadeDefault,
-          domainFn: (HealthMonitor health, _) =>
-              DateTime(health.date.year, health.date.month, health.date.day),
+          domainFn: (HealthMonitor health, _) => health.date,
           measureFn: (HealthMonitor health, _) => health.glucose,
           data: glucoseData,
         )..setAttribute(rendererIdKey, 'customArea')
@@ -390,8 +389,7 @@ class _BloodTestPageState extends State<BloodTestPage> {
         new Series<HealthMonitor, DateTime>(
           id: 'cholesterol',
           colorFn: (_, __) => MaterialPalette.green.shadeDefault,
-          domainFn: (HealthMonitor health, _) =>
-              DateTime(health.date.year, health.date.month, health.date.day),
+          domainFn: (HealthMonitor health, _) => health.date,
           measureFn: (HealthMonitor health, _) => health.cholesterol,
           data: cholesterolData,
         )..setAttribute(rendererIdKey, 'customArea')
@@ -408,8 +406,7 @@ class _BloodTestPageState extends State<BloodTestPage> {
         new Series<HealthMonitor, DateTime>(
           id: 'HDL',
           colorFn: (_, __) => MaterialPalette.blue.shadeDefault,
-          domainFn: (HealthMonitor health, _) =>
-              DateTime(health.date.year, health.date.month, health.date.day),
+          domainFn: (HealthMonitor health, _) => health.date,
           measureFn: (HealthMonitor health, _) => health.hdl,
           data: hdlData,
         )..setAttribute(rendererIdKey, 'customArea')
@@ -426,8 +423,7 @@ class _BloodTestPageState extends State<BloodTestPage> {
         new Series<HealthMonitor, DateTime>(
           id: 'LDL',
           colorFn: (_, __) => MaterialPalette.deepOrange.shadeDefault,
-          domainFn: (HealthMonitor health, _) =>
-              DateTime(health.date.year, health.date.month, health.date.day),
+          domainFn: (HealthMonitor health, _) => health.date,
           measureFn: (HealthMonitor health, _) => health.ldl,
           data: ldlData,
         )..setAttribute(rendererIdKey, 'customArea')
@@ -444,8 +440,7 @@ class _BloodTestPageState extends State<BloodTestPage> {
         new Series<HealthMonitor, DateTime>(
           id: 'HbA1c',
           colorFn: (_, __) => MaterialPalette.pink.shadeDefault,
-          domainFn: (HealthMonitor health, _) =>
-              DateTime(health.date.year, health.date.month, health.date.day),
+          domainFn: (HealthMonitor health, _) => health.date,
           measureFn: (HealthMonitor health, _) => health.hba1c,
           data: hba1cData,
         )..setAttribute(rendererIdKey, 'customArea')
@@ -462,8 +457,7 @@ class _BloodTestPageState extends State<BloodTestPage> {
         new Series<HealthMonitor, DateTime>(
           id: 'Triglycerides',
           colorFn: (_, __) => MaterialPalette.blue.shadeDefault,
-          domainFn: (HealthMonitor health, _) =>
-              DateTime(health.date.year, health.date.month, health.date.day),
+          domainFn: (HealthMonitor health, _) => health.date,
           measureFn: (HealthMonitor health, _) => health.triglycerides,
           data: triglyceridesData,
         )..setAttribute(rendererIdKey, 'customArea')
@@ -480,8 +474,7 @@ class _BloodTestPageState extends State<BloodTestPage> {
         new Series<HealthMonitor, DateTime>(
           id: 'creatinine',
           colorFn: (_, __) => MaterialPalette.cyan.shadeDefault,
-          domainFn: (HealthMonitor health, _) =>
-              DateTime(health.date.year, health.date.month, health.date.day),
+          domainFn: (HealthMonitor health, _) => health.date,
           measureFn: (HealthMonitor health, _) => health.creatinine,
           data: creatinineData,
         )..setAttribute(rendererIdKey, 'customArea')
@@ -498,8 +491,7 @@ class _BloodTestPageState extends State<BloodTestPage> {
         new Series<HealthMonitor, DateTime>(
           id: 'eGFR',
           colorFn: (_, __) => MaterialPalette.indigo.shadeDefault,
-          domainFn: (HealthMonitor health, _) =>
-              DateTime(health.date.year, health.date.month, health.date.day),
+          domainFn: (HealthMonitor health, _) => health.date,
           measureFn: (HealthMonitor health, _) => health.eGFR,
           data: eGFRData,
         )..setAttribute(rendererIdKey, 'customArea')
@@ -515,8 +507,7 @@ class _BloodTestPageState extends State<BloodTestPage> {
         new Series<HealthMonitor, DateTime>(
           id: 'uricAcid',
           colorFn: (_, __) => MaterialPalette.pink.shadeDefault,
-          domainFn: (HealthMonitor health, _) =>
-              DateTime(health.date.year, health.date.month, health.date.day),
+          domainFn: (HealthMonitor health, _) => health.date,
           measureFn: (HealthMonitor health, _) => health.uricAcid,
           data: uricAcidData,
         )..setAttribute(rendererIdKey, 'customArea')

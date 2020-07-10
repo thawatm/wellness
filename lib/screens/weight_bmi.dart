@@ -65,7 +65,7 @@ class _WeightPageState extends State<WeightPage> {
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
               SliverAppBar(
-                title: Text("น้ำหนัก ไขมัน"),
+                title: Text("น้ำหนัก"),
                 pinned: true,
                 floating: true,
                 forceElevated: innerBoxIsScrolled,
@@ -202,8 +202,7 @@ class _WeightPageState extends State<WeightPage> {
         new Series<HealthMonitor, DateTime>(
           id: 'น้ำหนัก',
           colorFn: (_, __) => MaterialPalette.green.shadeDefault,
-          domainFn: (HealthMonitor health, _) =>
-              DateTime(health.date.year, health.date.month, health.date.day),
+          domainFn: (HealthMonitor health, _) => health.date,
           measureFn: (HealthMonitor health, _) => health.weight,
           data: weightData,
         )..setAttribute(rendererIdKey, 'customArea')
@@ -221,8 +220,7 @@ class _WeightPageState extends State<WeightPage> {
         new Series<HealthMonitor, DateTime>(
           id: 'bmi',
           colorFn: (_, __) => MaterialPalette.red.shadeDefault,
-          domainFn: (HealthMonitor health, _) =>
-              DateTime(health.date.year, health.date.month, health.date.day),
+          domainFn: (HealthMonitor health, _) => health.date,
           measureFn: (HealthMonitor health, _) => health.bmi,
           data: bmiData,
         )..setAttribute(rendererIdKey, 'customArea')

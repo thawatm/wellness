@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_package_manager/flutter_package_manager.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:wellness/dashboard/app_theme.dart';
 import 'package:wellness/dashboard/my_diary/my_diary_screen.dart';
@@ -43,10 +44,22 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           .then((value) {
         if (value == null)
           Alert.alert(context,
-              title: "แจ้งเตือน",
-              content:
-                  "ท่านต้องติดตั้ง Google Fit และเปิดเข้าไป Setup ใช้งานครั้งแรก พร้อมทั้งเปิดการ Track Activities");
+                  title: "แจ้งเตือน",
+                  content:
+                      "ท่านต้องติดตั้ง Google Fit และเปิดเข้าไป Setup ใช้งานครั้งแรก พร้อมทั้งเปิดการ Track Activities")
+              .then((e) {
+            _launchURL(
+                'https://play.google.com/store/apps/details?id=com.google.android.apps.fitness');
+          });
       });
+    }
+  }
+
+  _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
     }
   }
 

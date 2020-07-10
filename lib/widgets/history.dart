@@ -61,10 +61,12 @@ class HistoryList extends StatelessWidget {
   }
 
   deleteData(docId) {
+    String col = collection;
+    if (collection != 'workout') col = 'healthdata';
     Firestore.instance
         .collection('wellness_data')
         .document(uid)
-        .collection('healthdata')
+        .collection(col)
         .document(docId)
         .delete()
         .catchError((e) {

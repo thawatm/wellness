@@ -67,7 +67,7 @@ class _FatPageState extends State<FatPage> {
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
               SliverAppBar(
-                title: Text("น้ำหนัก ไขมัน"),
+                title: Text("ไขมัน"),
                 pinned: true,
                 floating: true,
                 forceElevated: innerBoxIsScrolled,
@@ -277,8 +277,7 @@ class _FatPageState extends State<FatPage> {
         new Series<HealthMonitor, DateTime>(
           id: 'Body Fat',
           colorFn: (_, __) => MaterialPalette.green.shadeDefault,
-          domainFn: (HealthMonitor health, _) =>
-              DateTime(health.date.year, health.date.month, health.date.day),
+          domainFn: (HealthMonitor health, _) => health.date,
           measureFn: (HealthMonitor health, _) => health.bodyFat,
           data: bodyFatData,
         )..setAttribute(rendererIdKey, 'customArea')
@@ -297,8 +296,7 @@ class _FatPageState extends State<FatPage> {
         new Series<HealthMonitor, DateTime>(
           id: 'Visceral Fat',
           colorFn: (_, __) => MaterialPalette.red.shadeDefault,
-          domainFn: (HealthMonitor health, _) =>
-              DateTime(health.date.year, health.date.month, health.date.day),
+          domainFn: (HealthMonitor health, _) => health.date,
           measureFn: (HealthMonitor health, _) => health.visceralFat,
           data: vData,
         )..setAttribute(rendererIdKey, 'customArea')
@@ -315,8 +313,7 @@ class _FatPageState extends State<FatPage> {
         new Series<HealthMonitor, DateTime>(
           id: 'bodyAge',
           colorFn: (_, __) => MaterialPalette.purple.shadeDefault,
-          domainFn: (HealthMonitor health, _) =>
-              DateTime(health.date.year, health.date.month, health.date.day),
+          domainFn: (HealthMonitor health, _) => health.date,
           measureFn: (HealthMonitor health, _) => health.bodyAge,
           data: bodyAgeData,
         )..setAttribute(rendererIdKey, 'customArea')

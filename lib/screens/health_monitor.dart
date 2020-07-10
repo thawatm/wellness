@@ -214,16 +214,14 @@ class _HealthMonitorPageState extends State<HealthMonitorPage> {
         new Series<HealthMonitor, DateTime>(
           id: 'บน',
           colorFn: (_, __) => MaterialPalette.blue.shadeDefault,
-          domainFn: (HealthMonitor health, _) =>
-              DateTime(health.date.year, health.date.month, health.date.day),
+          domainFn: (HealthMonitor health, _) => health.date,
           measureFn: (HealthMonitor health, _) => health.pressureUpper,
           data: pressureData,
         )..setAttribute(rendererIdKey, 'customPoint'),
         new Series<HealthMonitor, DateTime>(
           id: 'ล่าง',
           colorFn: (_, __) => MaterialPalette.red.shadeDefault,
-          domainFn: (HealthMonitor health, _) =>
-              DateTime(health.date.year, health.date.month, health.date.day),
+          domainFn: (HealthMonitor health, _) => health.date,
           measureFn: (HealthMonitor health, _) => health.pressureLower,
           data: pressureData,
         )..setAttribute(rendererIdKey, 'customArea'),
@@ -240,8 +238,7 @@ class _HealthMonitorPageState extends State<HealthMonitorPage> {
         new Series<HealthMonitor, DateTime>(
           id: 'หัวใจ',
           colorFn: (_, __) => MaterialPalette.green.shadeDefault,
-          domainFn: (HealthMonitor health, _) =>
-              DateTime(health.date.year, health.date.month, health.date.day),
+          domainFn: (HealthMonitor health, _) => health.date,
           measureFn: (HealthMonitor health, _) => health.hr,
           data: hrData,
         )..setAttribute(rendererIdKey, 'customArea')

@@ -96,6 +96,11 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
   void _saveKioskData(DocumentSnapshot document) {
     String dateString = document.documentID;
     if (dateString.length >= 14) {
+      int yStr = int.parse(dateString.substring(0, 4));
+      if (yStr > 2500 && yStr < 2600) {
+        yStr = yStr - 543;
+        dateString = yStr.toString() + dateString.substring(4);
+      }
       String temp =
           dateString.substring(0, 8) + 'T' + dateString.substring(8, 14);
       DateTime date = DateTime.parse(temp);

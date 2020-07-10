@@ -247,16 +247,14 @@ class _HealthTrendChartState extends State<HealthTrendChart> {
         new Series<HealthMonitor, DateTime>(
           id: 'บน',
           colorFn: (_, __) => MaterialPalette.blue.shadeDefault,
-          domainFn: (HealthMonitor health, _) =>
-              DateTime(health.date.year, health.date.month, health.date.day),
+          domainFn: (HealthMonitor health, _) => health.date,
           measureFn: (HealthMonitor health, _) => health.pressureUpper,
           data: pressureData,
         )..setAttribute(rendererIdKey, 'customPoint'),
         new Series<HealthMonitor, DateTime>(
           id: 'ล่าง',
           colorFn: (_, __) => MaterialPalette.red.shadeDefault,
-          domainFn: (HealthMonitor health, _) =>
-              DateTime(health.date.year, health.date.month, health.date.day),
+          domainFn: (HealthMonitor health, _) => health.date,
           measureFn: (HealthMonitor health, _) => health.pressureLower,
           data: pressureData,
         )..setAttribute(rendererIdKey, 'customArea'),
@@ -273,8 +271,7 @@ class _HealthTrendChartState extends State<HealthTrendChart> {
         new Series<HealthMonitor, DateTime>(
           id: 'น้ำหนัก',
           colorFn: (_, __) => MaterialPalette.green.shadeDefault,
-          domainFn: (HealthMonitor health, _) =>
-              DateTime(health.date.year, health.date.month, health.date.day),
+          domainFn: (HealthMonitor health, _) => health.date,
           measureFn: (HealthMonitor health, _) => health.weight,
           data: weightData,
         )..setAttribute(rendererIdKey, 'customArea')
@@ -292,8 +289,7 @@ class _HealthTrendChartState extends State<HealthTrendChart> {
         new Series<HealthMonitor, DateTime>(
           id: 'bmi',
           colorFn: (_, __) => MaterialPalette.red.shadeDefault,
-          domainFn: (HealthMonitor health, _) =>
-              DateTime(health.date.year, health.date.month, health.date.day),
+          domainFn: (HealthMonitor health, _) => health.date,
           measureFn: (HealthMonitor health, _) => health.bmi,
           data: bmiData,
         )..setAttribute(rendererIdKey, 'customArea')
@@ -310,8 +306,7 @@ class _HealthTrendChartState extends State<HealthTrendChart> {
         new Series<HealthMonitor, DateTime>(
           id: 'Glucose',
           colorFn: (_, __) => MaterialPalette.purple.shadeDefault,
-          domainFn: (HealthMonitor health, _) =>
-              DateTime(health.date.year, health.date.month, health.date.day),
+          domainFn: (HealthMonitor health, _) => health.date,
           measureFn: (HealthMonitor health, _) => health.glucose,
           data: glucoseData,
         )..setAttribute(rendererIdKey, 'customArea')
@@ -328,8 +323,7 @@ class _HealthTrendChartState extends State<HealthTrendChart> {
         new Series<HealthMonitor, DateTime>(
           id: 'cholesterol',
           colorFn: (_, __) => MaterialPalette.green.shadeDefault,
-          domainFn: (HealthMonitor health, _) =>
-              DateTime(health.date.year, health.date.month, health.date.day),
+          domainFn: (HealthMonitor health, _) => health.date,
           measureFn: (HealthMonitor health, _) => health.cholesterol,
           data: cholesterolData,
         )..setAttribute(rendererIdKey, 'customArea')
@@ -346,8 +340,7 @@ class _HealthTrendChartState extends State<HealthTrendChart> {
         new Series<HealthMonitor, DateTime>(
           id: 'LDL',
           colorFn: (_, __) => MaterialPalette.deepOrange.shadeDefault,
-          domainFn: (HealthMonitor health, _) =>
-              DateTime(health.date.year, health.date.month, health.date.day),
+          domainFn: (HealthMonitor health, _) => health.date,
           measureFn: (HealthMonitor health, _) => health.ldl,
           data: ldlData,
         )..setAttribute(rendererIdKey, 'customArea')
@@ -364,8 +357,7 @@ class _HealthTrendChartState extends State<HealthTrendChart> {
         new Series<HealthMonitor, DateTime>(
           id: 'HbA1c',
           colorFn: (_, __) => MaterialPalette.pink.shadeDefault,
-          domainFn: (HealthMonitor health, _) =>
-              DateTime(health.date.year, health.date.month, health.date.day),
+          domainFn: (HealthMonitor health, _) => health.date,
           measureFn: (HealthMonitor health, _) => health.hba1c,
           data: hba1cData,
         )..setAttribute(rendererIdKey, 'customArea')
