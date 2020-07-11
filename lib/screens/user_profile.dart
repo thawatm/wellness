@@ -461,7 +461,30 @@ class _UserProfilePageState extends State<UserProfilePage> {
     Firestore.instance.runTransaction((transaction) {
       transaction.update(ref, updateData).then((_) => _buildDialog(
           context, 'ยกเลิก', 'ยกเลิกการเชื่อมต่อกับ NSTDA Kiosk สำเร็จ'));
+      deleteKioskData();
       return;
+    });
+  }
+
+  deleteKioskData() {
+    Firestore.instance
+        .collection('wellness_data')
+        .document(uid)
+        .collection('healthdata')
+        .getDocuments()
+        .then((value) {
+      value.documents.forEach((doc) {
+        if (doc['kioskDocumentId'] != null) {
+          Firestore.instance
+              .collection('wellness_data')
+              .document(uid)
+              .collection('healthdata')
+              .document(doc.documentID)
+              .delete();
+        }
+      });
+    }).catchError((e) {
+      print(e);
     });
   }
 

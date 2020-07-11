@@ -23,6 +23,7 @@ class _DataEntryDialogState extends State<DataEntryDialog> {
 
   Map<String, dynamic> monitorData = {
     'date': DateTime.now(),
+    'category': 'pressure'
   };
 
   @override

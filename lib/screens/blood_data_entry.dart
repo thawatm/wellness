@@ -21,6 +21,7 @@ class _BloodDataEntryState extends State<BloodDataEntry> {
 
   Map<String, dynamic> monitorData = {
     'date': DateTime.now(),
+    'category': 'bloodtests'
   };
 
   @override

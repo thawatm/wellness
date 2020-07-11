@@ -4,10 +4,13 @@ import 'package:intl/intl.dart';
 class HealthMonitor {
   DateTime date;
   String dateString;
+  String kioskDocumentId;
+  String category;
   int pressureUpper;
   int pressureLower;
   int hr;
   double weight;
+  num height;
   double bmi;
   double rightArmFat;
   double leftArmFat;
@@ -34,12 +37,15 @@ class HealthMonitor {
       : reference = snapshot.reference,
         snapshot = snapshot,
         date = snapshot.data['date'].toDate(),
+        kioskDocumentId = snapshot.data['kioskDocumentId'],
+        category = snapshot.data['category'],
         dateString =
             DateFormat('dd/MM/yyyy').format(snapshot.data['date'].toDate()),
         pressureUpper = snapshot.data["pressureUpper"],
         pressureLower = snapshot.data["pressureLower"],
         hr = snapshot.data["hr"],
         weight = snapshot.data["weight"],
+        height = snapshot.data["height"],
         bmi = snapshot.data["bmi"],
         rightArmFat = snapshot.data["rightArmFat"],
         leftArmFat = snapshot.data["leftArmFat"],
@@ -85,7 +91,14 @@ class HealthMonitor {
   String toString() {
     String temp = '';
     snapshot.data.forEach((key, value) {
-      if (key != 'date') temp = temp + "$key:$value ";
+      if (key == 'kioskLocation') key = 'Kiosk';
+
+      if (key != 'date' &&
+          value != null &&
+          key != 'kioskDocumentId' &&
+          key != 'category') {
+        temp = temp + "$key:$value ";
+      }
     });
     return temp;
   }

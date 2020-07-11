@@ -11,7 +11,8 @@ class HistoryList extends StatelessWidget {
       {Key key,
       @required this.snapshot,
       @required this.collection,
-      @required this.uid})
+      @required this.uid,
+      this.kioskDocumentId})
       : assert(snapshot != null),
         assert(collection != null),
         assert(uid != null),
@@ -20,37 +21,51 @@ class HistoryList extends StatelessWidget {
   final List<DocumentSnapshot> snapshot;
   final String uid;
   final String collection;
+  final String kioskDocumentId;
 
   @override
   Widget build(BuildContext context) {
     return ListView(
       padding: const EdgeInsets.only(top: 20.0),
-      children: snapshot.map((data) => _buildListItem(context, data)).toList(),
+      children: snapshot.map((data) {
+        if (data['category'] == collection) {
+          return _buildListItem(context, data);
+        } else if (collection == 'weight' ||
+            collection == 'pressure' ||
+            collection == 'workout') {
+          return _buildListItem(context, data);
+        } else {
+          return SizedBox();
+        }
+      }).toList(),
     );
   }
 
   Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
-    var record;
-    switch (collection) {
-      case 'pressure':
-        record = HealthMonitor.fromSnapshot(data);
-        break;
-      default:
-        record = HealthMonitor.fromSnapshot(data);
+    var record = HealthMonitor.fromSnapshot(data);
+    Text subtitle = Text(record.toString());
+
+    if (data['kioskDocumentId'] != null) {
+      subtitle = Text(
+        record.toString(),
+        style: TextStyle(color: Colors.teal),
+      );
     }
 
     return Column(
       children: <Widget>[
         ListTile(
-          title: Text(DateFormat.yMMMEd().format(record.date)),
-          subtitle: Text(record.toString()),
+          title: Text(DateFormat.yMMMEd().format(record.date),
+              style: TextStyle(color: Colors.black87)),
+          subtitle: subtitle,
           onTap: () {
             Alert.confirm(
               context,
               title: "ลบข้อมูล",
               content: DateFormat('dd/MM/yyyy').format(record.date),
-            ).then((int ret) =>
-                ret == Alert.OK ? deleteData(data.documentID) : null);
+            ).then((int ret) => ret == Alert.OK
+                ? deleteData(data.documentID, data['kioskDocumentId'])
+                : null);
           },
         ),
         Divider(
@@ -60,7 +75,7 @@ class HistoryList extends StatelessWidget {
     );
   }
 
-  deleteData(docId) {
+  deleteData(docId, kioskDocumentId) {
     String col = collection;
     if (collection != 'workout') col = 'healthdata';
     Firestore.instance
@@ -72,6 +87,16 @@ class HistoryList extends StatelessWidget {
         .catchError((e) {
       print(e);
     });
+
+    if (kioskDocumentId != null) {
+      Firestore.instance
+          .collection('data')
+          .document(kioskDocumentId)
+          .delete()
+          .catchError((e) {
+        print(e);
+      });
+    }
   }
 
   Future<ConfirmAction> confirmDialog(

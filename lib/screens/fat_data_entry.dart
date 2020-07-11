@@ -23,6 +23,7 @@ class _FatDataEntryState extends State<FatDataEntry> {
 
   Map<String, dynamic> monitorData = {
     'date': DateTime.now(),
+    'category': 'fat'
   };
 
   @override

@@ -23,6 +23,7 @@ class _WeightDataEntryState extends State<WeightDataEntry> {
 
   Map<String, dynamic> monitorData = {
     'date': DateTime.now(),
+    'category': 'weight'
   };
 
   @override

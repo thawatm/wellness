@@ -117,15 +117,15 @@ class _HealthMonitorPageState extends State<HealthMonitorPage> {
                   healthData = snapshot.data.documents
                     ..sort((a, b) => b.data['date']
                         .toDate()
-                        .compareTo(a.data['date'].toDate()));
+                        .compareTo(a.data['date'].toDate()))
+                    ..removeWhere((v) => v['pressureUpper'] == null)
+                    ..removeWhere((v) => v['pressureLower'] == null);
                   // PRESSURE DATA
                   pressureData = healthData
                       .map((data) => HealthMonitor.fromSnapshot(data))
                       .toList()
                         ..removeWhere(
-                            (v) => today.difference(v.date).inDays > chartDays)
-                        ..removeWhere((v) => v.pressureUpper == null)
-                        ..removeWhere((v) => v.pressureLower == null);
+                            (v) => today.difference(v.date).inDays > chartDays);
 
                   // HR DATA
                   hrData = healthData

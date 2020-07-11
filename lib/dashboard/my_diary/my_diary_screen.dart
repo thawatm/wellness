@@ -114,13 +114,18 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
       num weight = document.data["weight"];
       num bmi = weight * 100 * 100 / (height * height);
 
+      String kioskLocation = document.data["location"];
+
       Map<String, dynamic> kioskData = {
         'date': date,
         'pressureUpper': bpupper,
         'pressureLower': bplower,
         'hr': pulse,
         'weight': weight,
-        'bmi': num.parse(bmi.toStringAsFixed(2))
+        'height': height,
+        'bmi': num.parse(bmi.toStringAsFixed(2)),
+        'kioskDocumentId': document.documentID,
+        'kioskLocation': kioskLocation
       };
       kioskData.forEach((key, value) {
         if (value is num && value < 0) kioskData[key] = null;

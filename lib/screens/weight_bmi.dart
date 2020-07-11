@@ -113,15 +113,15 @@ class _WeightPageState extends State<WeightPage> {
                 healthData = snapshot.data.documents
                   ..sort((a, b) => b.data['date']
                       .toDate()
-                      .compareTo(a.data['date'].toDate()));
+                      .compareTo(a.data['date'].toDate()))
+                  ..removeWhere((v) => v['weight'] == null);
 
                 // Weight DATA
                 weightData = healthData
                     .map((data) => HealthMonitor.fromSnapshot(data))
                     .toList()
                       ..removeWhere(
-                          (v) => today.difference(v.date).inDays > chartDays)
-                      ..removeWhere((v) => v.weight == null);
+                          (v) => today.difference(v.date).inDays > chartDays);
 
                 return TabBarView(
                   children: <Widget>[
