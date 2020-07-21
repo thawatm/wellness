@@ -25,7 +25,7 @@ class IntroPage extends StatelessWidget {
       body: IntroductionScreen(
         pages: [
           PageViewModel(
-            title: "โปรแกรมสุขภาพดีวัยทำงาน",
+            title: "โปรแกรมไทยสุข",
             body:
                 "โดยศูนย์วิจัยเทคโนโลยีสิ่งอำนวยความสะดวกและเครื่องมือแพทย์ ร่วมกับเครือข่ายศูนย์สุขภาพดีวัยทำงาน และเวลเนส วีแคร์ เซ็นเตอร์ โดย นพ.สันต์ ใจยอดศิลป์",
             image: Column(
