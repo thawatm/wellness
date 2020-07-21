@@ -69,7 +69,7 @@ class _FatDataEntryState extends State<FatDataEntry> {
                   style: TextStyle(color: Colors.grey[500])),
               onTap: () {
                 _showPickerDouble(
-                    context, 0, 100, 20, 'Body Fat (%)', 'bodyFat');
+                    context, 0, 999, 20, 'Body Fat (%)', 'bodyFat');
               }),
           ListTile(
               leading: Icon(Icons.assignment_ind, color: Colors.grey[500]),
@@ -79,7 +79,7 @@ class _FatDataEntryState extends State<FatDataEntry> {
                   style: TextStyle(color: Colors.grey[500])),
               onTap: () {
                 _showPickerDouble(
-                    context, 0, 100, 10, 'visceralFat (%)', 'visceralFat');
+                    context, 0, 999, 10, 'visceralFat (%)', 'visceralFat');
               }),
           ListTile(
               leading: Icon(Icons.person, color: Colors.grey[500]),
@@ -88,7 +88,7 @@ class _FatDataEntryState extends State<FatDataEntry> {
                   style: TextStyle(color: Colors.grey[500])),
               onTap: () {
                 _showPickerNumber(
-                    context, 0, 150, 35, 'Body Age (ปี)', 'bodyAge');
+                    context, 0, 999, 35, 'Body Age (ปี)', 'bodyAge');
               }),
           ListTile(
               leading: Icon(Icons.border_right, color: Colors.grey[500]),
@@ -97,7 +97,7 @@ class _FatDataEntryState extends State<FatDataEntry> {
                   style: TextStyle(color: Colors.grey[500])),
               onTap: () {
                 _showPickerDouble(
-                    context, 0, 100, 20, '%ไขมัน แขนขวา', 'rightArmFat');
+                    context, 0, 999, 20, '%ไขมัน แขนขวา', 'rightArmFat');
               }),
           ListTile(
               leading: Icon(Icons.border_left, color: Colors.grey[500]),
@@ -106,7 +106,7 @@ class _FatDataEntryState extends State<FatDataEntry> {
                   style: TextStyle(color: Colors.grey[500])),
               onTap: () {
                 _showPickerDouble(
-                    context, 0, 100, 20, '%ไขมัน แขนขวา', 'leftArmFat');
+                    context, 0, 999, 20, '%ไขมัน แขนขวา', 'leftArmFat');
               }),
           ListTile(
               leading: Icon(Icons.rotate_right, color: Colors.grey[500]),
@@ -115,7 +115,7 @@ class _FatDataEntryState extends State<FatDataEntry> {
                   style: TextStyle(color: Colors.grey[500])),
               onTap: () {
                 _showPickerDouble(
-                    context, 0, 100, 20, '%ไขมัน ขาขวา', 'rightLegFat');
+                    context, 0, 999, 20, '%ไขมัน ขาขวา', 'rightLegFat');
               }),
           ListTile(
               leading: Icon(Icons.rotate_left, color: Colors.grey[500]),
@@ -124,7 +124,7 @@ class _FatDataEntryState extends State<FatDataEntry> {
                   style: TextStyle(color: Colors.grey[500])),
               onTap: () {
                 _showPickerDouble(
-                    context, 0, 100, 20, '%ไขมัน ขาซ้าย', 'leftLegFat');
+                    context, 0, 999, 20, '%ไขมัน ขาซ้าย', 'leftLegFat');
               }),
           ListTile(
               leading: Icon(Icons.border_all, color: Colors.grey[500]),
@@ -133,7 +133,7 @@ class _FatDataEntryState extends State<FatDataEntry> {
                   style: TextStyle(color: Colors.grey[500])),
               onTap: () {
                 _showPickerDouble(
-                    context, 0, 100, 20, '%ไขมัน หน้าท้อง', 'trunkFat');
+                    context, 0, 999, 20, '%ไขมัน หน้าท้อง', 'trunkFat');
               }),
           SizedBox(height: 24),
           Padding(
@@ -186,20 +186,6 @@ class _FatDataEntryState extends State<FatDataEntry> {
       showInSnackBar("No Internet Connection");
       return;
     }
-
-    // int timestamp = monitorData['date'].millisecondsSinceEpoch;
-
-    // DocumentReference monitor = Firestore.instance
-    //     .collection('wellness_data')
-    //     .document(currentUser.uid)
-    //     .collection(collection)
-    //     .document(timestamp.toString());
-    // Firestore.instance.runTransaction((transaction) async {
-    //   await transaction.set(monitor, monitorData);
-    // });
-    // // print(monitorData.keys);
-    // // print(monitorData.values);
-    // showInSnackBar("Successful");
   }
 
   _showPickerNumber(BuildContext context, int begin, int end, int initValue,
@@ -254,67 +240,7 @@ class _FatDataEntryState extends State<FatDataEntry> {
           setState(() {
             monitorData[updateKey] = picker.getSelectedValues()[0] +
                 picker.getSelectedValues()[1] / 10;
-
-            if (updateKey == 'weight')
-              monitorData['bmi'] = bmiCal(monitorData['weight']);
           });
         }).showDialog(context);
-  }
-
-  double bmiCal(weight) {
-    if (height == null) return 0;
-    double bmi = weight * 10000 / (height * height);
-    return double.parse(bmi.toStringAsFixed(2));
-  }
-
-  Widget bmiBarCart() {
-    double barWidth = MediaQuery.of(context).size.width / 4 - 30;
-    double pos = 80;
-
-    return Container(
-      height: 65,
-      child: Stack(
-        alignment: Alignment.bottomLeft,
-        children: <Widget>[
-          // Icon(Icons.arrow_drop_down, size: 40, color: Colors.red),
-          Positioned(
-            left: pos,
-            top: 0,
-            child: Column(
-              children: <Widget>[
-                Text(
-                  "${height != null ? (monitorData['bmi'] ?? '') : 'ต้องระบุส่วนสูงที่โปรไฟล์'}",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 12, color: Colors.red),
-                ),
-                Icon(Icons.location_on, size: 24, color: Colors.red)
-              ],
-            ),
-          ),
-          Row(children: <Widget>[
-            Container(
-              height: 15,
-              width: barWidth,
-              color: Colors.blue,
-            ),
-            Container(
-              height: 15,
-              width: barWidth,
-              color: Colors.green,
-            ),
-            Container(
-              height: 15,
-              width: barWidth,
-              color: Colors.orange,
-            ),
-            Container(
-              height: 15,
-              width: barWidth,
-              color: Colors.red,
-            ),
-          ])
-        ],
-      ),
-    );
   }
 }
