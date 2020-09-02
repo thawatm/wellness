@@ -4,11 +4,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_picker/flutter_picker.dart';
+import 'package:rounded_modal/rounded_modal.dart';
 import 'package:wellness/dashboard/app_theme.dart';
 import 'package:wellness/models/state_model.dart';
 import 'package:intl/intl.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:wellness/widgets/edit_dialog.dart';
 
 class WorkoutDataEntry extends StatefulWidget {
   @override
@@ -67,8 +69,14 @@ class _WorkoutDataEntryState extends State<WorkoutDataEntry> {
               trailing: Text("${monitorData['steps'] ?? ''} ก้าว",
                   style: TextStyle(color: Colors.grey[500])),
               onTap: () {
-                _showPickerNumber(
-                    context, 0, 20000, 1000, 'เดิน (ก้าว)', 'steps');
+                showRoundedModalBottomSheet(
+                    context: context,
+                    builder: (context) => EditDialog(
+                          title: 'จำนวนก้าวเดิน',
+                          initialValue: '',
+                          textInputType: TextInputType.number,
+                          onSave: _saveStepData,
+                        ));
               }),
           ListTile(
               leading: Icon(FontAwesomeIcons.running, color: Colors.orange),
@@ -107,19 +115,12 @@ class _WorkoutDataEntryState extends State<WorkoutDataEntry> {
                   style: TextStyle(color: Colors.white, fontSize: 16)),
             ),
           ),
-          // Padding(
-          //   padding: const EdgeInsets.all(16.0),
-          //   child: RaisedButton(
-          //     elevation: 1.0,
-          //     onPressed: () async {
-          //       FitKitData().revokePermissions();
-          //     },
-          //     padding: EdgeInsets.all(12),
-          //     color: AppTheme.buttonColor,
-          //     child: Text('Remove Google Fit',
-          //         style: TextStyle(color: Colors.white, fontSize: 16)),
-          //   ),
-          // )
+          Padding(
+            padding: EdgeInsets.all(16),
+            child: Text(
+                '*การออกกำลังกายแบบต่อเนื่อง (Aerobic exercise) นับเฉพาะช่วงที่ได้ออกแรงถึงระดับหนักพอควร คือ หัวใจเต้นเร็วขึ้น หายใจเร็วขึ้น หรือหอบเหนื่อยจนร้องเพลงไม่ได้แต่ยังพูดได้ เช่น เดินเร็ว, jogging, ว่ายน้ำ, ปั่นจักรยาน',
+                style: TextStyle(color: Colors.red.withOpacity(0.8))),
+          )
         ],
       ),
     );
@@ -129,6 +130,12 @@ class _WorkoutDataEntryState extends State<WorkoutDataEntry> {
     Scaffold.of(context).showSnackBar(SnackBar(
       content: Text(value),
     ));
+  }
+
+  void _saveStepData(String steps) {
+    setState(() {
+      monitorData['steps'] = int.tryParse(steps);
+    });
   }
 
   void _saveData() async {
@@ -141,6 +148,9 @@ class _WorkoutDataEntryState extends State<WorkoutDataEntry> {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         int timestamp = monitorData['date'].millisecondsSinceEpoch;
+
+        // if (monitorData['steps'] != null)
+        //   monitorData['steps'] = monitorData['steps'] * 400;
 
         monitorData['totalWorkout'] = (monitorData['run'] ?? 0) +
             (monitorData['cycling'] ?? 0) +

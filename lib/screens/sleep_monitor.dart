@@ -1,16 +1,17 @@
-import 'dart:io';
+// import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_alert/easy_alert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flutter_picker/flutter_picker.dart';
-import 'package:flutter/src/material/dialog.dart' as Dialog;
+// import 'package:flutter_picker/flutter_picker.dart';
+// import 'package:flutter/src/material/dialog.dart' as Dialog;
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:wellness/dashboard/app_theme.dart';
 import 'package:wellness/models/sleepdata.dart';
 import 'package:wellness/models/state_model.dart';
+import 'package:wellness/screens/sleep_data_entry.dart';
 import 'package:wellness/widgets/bar_chart.dart';
 import 'package:wellness/widgets/first_load.dart';
 import 'package:wellness/widgets/loading_indicator.dart';
@@ -112,7 +113,11 @@ class _SleepMonitorPageState extends State<SleepMonitorPage> {
       floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.blueAccent,
           onPressed: () {
-            showPickerDateRange(context);
+            // showPickerDateRange(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => SleepDataEntry()),
+            );
           },
           tooltip: 'Pick Time',
           child: Icon(Icons.add_alarm)),
@@ -149,106 +154,106 @@ class _SleepMonitorPageState extends State<SleepMonitorPage> {
     ]);
   }
 
-  showPickerDateRange(BuildContext context) {
-    Picker dd = new Picker(
-        hideHeader: true,
-        adapter: new DateTimePickerAdapter(type: PickerDateTimeType.kDMY),
-        textStyle: TextStyle(color: Colors.blue, fontSize: 18.0),
-        onConfirm: (Picker picker, List value) {
-          // print((picker.adapter as DateTimePickerAdapter).value);
-          selectedDate = (picker.adapter as DateTimePickerAdapter).value;
-        });
-    Picker ps = new Picker(
-        hideHeader: true,
-        adapter: new DateTimePickerAdapter(type: PickerDateTimeType.kHM),
-        delimiter: [
-          PickerDelimiter(
-              child: Container(
-            // width: 30.0,
-            alignment: Alignment.center,
-            child: Text(
-              ':',
-              style: TextStyle(color: Colors.blue, fontSize: 24.0),
-            ),
-          ))
-        ],
-        textStyle: TextStyle(color: Colors.blue, fontSize: 18.0),
-        onConfirm: (Picker picker, List value) {
-          // print((picker.adapter as DateTimePickerAdapter).value);
-          startTime = (picker.adapter as DateTimePickerAdapter).value;
-        });
+  // showPickerDateRange(BuildContext context) {
+  //   Picker dd = new Picker(
+  //       hideHeader: true,
+  //       adapter: new DateTimePickerAdapter(type: PickerDateTimeType.kDMY),
+  //       textStyle: TextStyle(color: Colors.blue, fontSize: 18.0),
+  //       onConfirm: (Picker picker, List value) {
+  //         // print((picker.adapter as DateTimePickerAdapter).value);
+  //         selectedDate = (picker.adapter as DateTimePickerAdapter).value;
+  //       });
+  //   Picker ps = new Picker(
+  //       hideHeader: true,
+  //       adapter: new DateTimePickerAdapter(type: PickerDateTimeType.kHM),
+  //       delimiter: [
+  //         PickerDelimiter(
+  //             child: Container(
+  //           // width: 30.0,
+  //           alignment: Alignment.center,
+  //           child: Text(
+  //             ':',
+  //             style: TextStyle(color: Colors.blue, fontSize: 24.0),
+  //           ),
+  //         ))
+  //       ],
+  //       textStyle: TextStyle(color: Colors.blue, fontSize: 18.0),
+  //       onConfirm: (Picker picker, List value) {
+  //         // print((picker.adapter as DateTimePickerAdapter).value);
+  //         startTime = (picker.adapter as DateTimePickerAdapter).value;
+  //       });
 
-    Picker pe = new Picker(
-        hideHeader: true,
-        adapter: new DateTimePickerAdapter(type: PickerDateTimeType.kHM),
-        delimiter: [
-          PickerDelimiter(
-              child: Container(
-            // width: 30.0,
-            alignment: Alignment.center,
-            child: Text(
-              ':',
-              style: TextStyle(color: Colors.blue, fontSize: 24.0),
-            ),
-          ))
-        ],
-        textStyle: TextStyle(color: Colors.blue, fontSize: 18.0),
-        onConfirm: (Picker picker, List value) {
-          // print((picker.adapter as DateTimePickerAdapter).value);
-          endTime = (picker.adapter as DateTimePickerAdapter).value;
-        });
+  //   Picker pe = new Picker(
+  //       hideHeader: true,
+  //       adapter: new DateTimePickerAdapter(type: PickerDateTimeType.kHM),
+  //       delimiter: [
+  //         PickerDelimiter(
+  //             child: Container(
+  //           // width: 30.0,
+  //           alignment: Alignment.center,
+  //           child: Text(
+  //             ':',
+  //             style: TextStyle(color: Colors.blue, fontSize: 24.0),
+  //           ),
+  //         ))
+  //       ],
+  //       textStyle: TextStyle(color: Colors.blue, fontSize: 18.0),
+  //       onConfirm: (Picker picker, List value) {
+  //         // print((picker.adapter as DateTimePickerAdapter).value);
+  //         endTime = (picker.adapter as DateTimePickerAdapter).value;
+  //       });
 
-    List<Widget> actions = [
-      FlatButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: new Text("CANCEL")),
-      FlatButton(
-          onPressed: () {
-            Navigator.pop(context);
-            dd.onConfirm(dd, dd.selecteds);
-            ps.onConfirm(ps, ps.selecteds);
-            pe.onConfirm(pe, pe.selecteds);
-            if (startTime.isAfter(endTime)) {
-              endTime = endTime.add(Duration(days: 1));
-            }
-            print(endTime.difference(startTime).inHours);
+  //   List<Widget> actions = [
+  //     FlatButton(
+  //         onPressed: () {
+  //           Navigator.pop(context);
+  //         },
+  //         child: new Text("CANCEL")),
+  //     FlatButton(
+  //         onPressed: () {
+  //           Navigator.pop(context);
+  //           dd.onConfirm(dd, dd.selecteds);
+  //           ps.onConfirm(ps, ps.selecteds);
+  //           pe.onConfirm(pe, pe.selecteds);
+  //           if (startTime.isAfter(endTime)) {
+  //             endTime = endTime.add(Duration(days: 1));
+  //           }
+  //           print(endTime.difference(startTime).inHours);
 
-            setState(() {
-              monitorData['date'] = selectedDate;
-              monitorData['sleepHours'] = endTime.difference(startTime).inHours;
-              monitorData['startTime'] = DateFormat.Hm().format(startTime);
-              monitorData['endTime'] = DateFormat.Hm().format(endTime);
-              _saveData();
-            });
-          },
-          child: new Text("OK")),
-    ];
+  //           setState(() {
+  //             monitorData['date'] = selectedDate;
+  //             monitorData['sleepHours'] = endTime.difference(startTime).inHours;
+  //             monitorData['startTime'] = DateFormat.Hm().format(startTime);
+  //             monitorData['endTime'] = DateFormat.Hm().format(endTime);
+  //             _saveData();
+  //           });
+  //         },
+  //         child: new Text("OK")),
+  //   ];
 
-    Dialog.showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return new AlertDialog(
-            // title: Text("วันที่"),
-            actions: actions,
-            content: Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Text("วันที่"),
-                  dd.makePicker(),
-                  Text("เวลาเข้านอน"),
-                  ps.makePicker(),
-                  Text("เวลาตื่น"),
-                  pe.makePicker()
-                ],
-              ),
-            ),
-          );
-        });
-  }
+  //   Dialog.showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return new AlertDialog(
+  //           // title: Text("วันที่"),
+  //           actions: actions,
+  //           content: Container(
+  //             child: Column(
+  //               crossAxisAlignment: CrossAxisAlignment.start,
+  //               mainAxisSize: MainAxisSize.min,
+  //               children: <Widget>[
+  //                 Text("วันที่"),
+  //                 dd.makePicker(),
+  //                 Text("เวลาเข้านอน"),
+  //                 ps.makePicker(),
+  //                 Text("เวลาตื่น"),
+  //                 pe.makePicker()
+  //               ],
+  //             ),
+  //           ),
+  //         );
+  //       });
+  // }
 
   Widget _buildHistory() {
     snapshotData = snapshotData
@@ -315,34 +320,34 @@ class _SleepMonitorPageState extends State<SleepMonitorPage> {
     ));
   }
 
-  void _saveData() async {
-    if (monitorData.length < 2) {
-      showInSnackBar("No Data");
-      return;
-    }
+  // void _saveData() async {
+  //   if (monitorData.length < 2) {
+  //     showInSnackBar("No Data");
+  //     return;
+  //   }
 
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        int timestamp = monitorData['date'].millisecondsSinceEpoch;
-        DocumentReference monitor = Firestore.instance
-            .collection('wellness_data')
-            .document(uid)
-            .collection('sleep')
-            .document(timestamp.toString());
-        Firestore.instance.runTransaction((transaction) async {
-          await transaction
-              .set(monitor, monitorData)
-              .whenComplete(() => showInSnackBar("Successful"));
-        });
-      } else {
-        showInSnackBar("No Internet Connection");
-      }
-    } on SocketException catch (_) {
-      showInSnackBar("No Internet Connection");
-      return;
-    }
-  }
+  //   try {
+  //     final result = await InternetAddress.lookup('google.com');
+  //     if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+  //       int timestamp = monitorData['date'].millisecondsSinceEpoch;
+  //       DocumentReference monitor = Firestore.instance
+  //           .collection('wellness_data')
+  //           .document(uid)
+  //           .collection('sleep')
+  //           .document(timestamp.toString());
+  //       Firestore.instance.runTransaction((transaction) async {
+  //         await transaction
+  //             .set(monitor, monitorData)
+  //             .whenComplete(() => showInSnackBar("Successful"));
+  //       });
+  //     } else {
+  //       showInSnackBar("No Internet Connection");
+  //     }
+  //   } on SocketException catch (_) {
+  //     showInSnackBar("No Internet Connection");
+  //     return;
+  //   }
+  // }
 
   Future<ConfirmAction> confirmDialog(
       BuildContext context, SleepMonitor record) async {

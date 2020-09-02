@@ -11,7 +11,7 @@ description: Wellness Center Mobile App.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.4+5
+version: 1.0.5+6
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -27,19 +27,22 @@ dependencies:
   intl: ^0.16.0
   flutter_picker: ^1.1.0
   flutter_cache_manager: ^1.1.3
-  url_launcher: ^5.4.10
+  url_launcher: ^5.5.0
   firebase_storage: ^3.1.5
-  cloud_firestore: ^0.13.5
+  cloud_firestore: ^0.13.7
   firebase_auth: ^0.16.0
   scoped_model: ^1.0.1
   modal_progress_hud: ^0.1.3
   charts_flutter: ^0.9.0
-  image_picker: ^0.6.2+3
-  flutter_datetime_picker: ^1.3.8
+  image_picker: ^0.6.7+4
+  # flutter_datetime_picker: ^1.3.8
+  flutter_datetime_picker:
+    git:
+      url: https://github.com/ditheshthegreat/flutter_datetime_picker # Repo
+      ref: patch-1 # Branch name
   gradient_app_bar: ^0.1.3
   rounded_modal: ^1.0.1
   material_design_icons_flutter: ^3.4.4795
-  image: ^2.1.10
   mime_type: ^0.2.4
   flutter_launcher_icons: ^0.7.4
   google_nav_bar: ^2.2.0
@@ -49,13 +52,12 @@ dependencies:
   fl_chart: ^0.9.4
   jiffy: ^3.0.1
   introduction_screen: ^1.0.8
-  flutter_form_builder: ^3.10.1
+  flutter_form_builder: ^3.12.3
   font_awesome_flutter: ^8.8.1
   flutter_speed_dial: ^1.2.5
   easy_alert: ^0.0.8
   flutter_package_manager: ^0.2.0
-
-
+  flutter_webview_plugin: ^0.3.11
 
 dev_dependencies:
 #  flutter_test:
@@ -117,3 +119,4 @@ flutter:
     - family: Prompt
       fonts:
         - asset: assets/fonts/Prompt/Prompt-Regular.ttf
+

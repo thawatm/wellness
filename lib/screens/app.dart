@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wellness/group/group_join.dart';
 import 'package:wellness/screens/blood_tests.dart';
 import 'package:wellness/screens/contact.dart';
+import 'package:wellness/screens/disclaimer.dart';
 import 'package:wellness/screens/fat.dart';
 import 'package:wellness/screens/intro_page.dart';
 import 'package:wellness/screens/kiosk_info_page.dart';
@@ -48,6 +49,7 @@ class WellnessApp extends StatelessWidget {
         routes: {
           '/': (context) => _getMainPage(),
           '/login': (context) => LoginPage(),
+          '/disclaimer': (context) => DisclaimerPage(),
           '/home': (context) => HomePage(),
           '/signup': (context) => SignInPage(),
           '/newuser': (context) => NewUserPage(),

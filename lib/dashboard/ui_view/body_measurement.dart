@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:wellness/models/healthdata.dart';
 import 'package:wellness/models/state_model.dart';
 import 'package:wellness/models/rulebase_ai.dart';
+import 'package:wellness/widgets/webview.dart';
 
 class BodyMeasurementView extends StatelessWidget {
   final AnimationController animationController;
@@ -22,6 +23,7 @@ class BodyMeasurementView extends StatelessWidget {
     double weight = 0;
     double bmi = 0;
     String recordDate = 'ไม่มีข้อมูล';
+    String kioskDocumentId;
 
     return StreamBuilder<QuerySnapshot>(
       stream: Firestore.instance
@@ -39,6 +41,7 @@ class BodyMeasurementView extends StatelessWidget {
             weight = bloodData.weight ?? 0;
             bmi = bloodData.bmi ?? 0;
             recordDate = DateFormat.yMMMd().format(bloodData.date);
+            kioskDocumentId = snapshotData['kioskDocumentId'];
           }
         } catch (e) {}
 
@@ -82,7 +85,8 @@ class BodyMeasurementView extends StatelessWidget {
                                 size: 16,
                               ),
                               Padding(
-                                padding: const EdgeInsets.only(left: 8.0),
+                                padding:
+                                    const EdgeInsets.only(left: 8.0, right: 4),
                                 child: Text(
                                   'น้ำหนัก',
                                   textAlign: TextAlign.center,
@@ -95,6 +99,22 @@ class BodyMeasurementView extends StatelessWidget {
                                   ),
                                 ),
                               ),
+                              kioskDocumentId != null
+                                  ? InkWell(
+                                      child: Icon(FontAwesomeIcons.kickstarter,
+                                          size: 20,
+                                          color: Colors.cyan.shade300),
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (_) => WebView(
+                                                    url:
+                                                        'http://bsp-kiosk.ddns.net/?id=' +
+                                                            kioskDocumentId)));
+                                      },
+                                    )
+                                  : SizedBox(width: 0),
                               Spacer(),
                               Icon(
                                 Icons.access_time,

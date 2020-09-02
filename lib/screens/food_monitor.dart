@@ -24,7 +24,6 @@ import 'package:intl/intl.dart';
 import 'package:rounded_modal/rounded_modal.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:image/image.dart' as ImagePackage;
 import 'package:mime_type/mime_type.dart';
 
 class FoodMonitorPage extends StatefulWidget {
@@ -125,11 +124,15 @@ class _FoodMonitorPageState extends State<FoodMonitorPage> {
   }
 
   Future getCameraImage() async {
-    File image = await ImagePicker.pickImage(
+    final picker = ImagePicker();
+    final pickedFile = await picker.getImage(
       source: ImageSource.camera,
       maxWidth: 500.0,
+      imageQuality: 90,
     );
-    if (image != null) {
+
+    if (pickedFile != null) {
+      File image = File(pickedFile.path);
       tempImage = image;
       Navigator.pushReplacement(
           context,
@@ -143,11 +146,14 @@ class _FoodMonitorPageState extends State<FoodMonitorPage> {
   }
 
   Future getGalleryImage() async {
-    File image = await ImagePicker.pickImage(
+    final picker = ImagePicker();
+    final pickedFile = await picker.getImage(
       source: ImageSource.gallery,
       maxWidth: 500.0,
+      imageQuality: 90,
     );
-    if (image != null) {
+    if (pickedFile != null) {
+      File image = File(pickedFile.path);
       tempImage = image;
       Navigator.pushReplacement(
           context,
@@ -623,7 +629,7 @@ class _FoodContentEditDialogState extends State<FoodContentEditDialog> {
                 ),
                 onTap: () {
                   _showPickerNumber(
-                      context, 0, 20, 1, 'Serving(s)', widget.food);
+                      context, 1, 20, 1, 'Serving(s)', widget.food);
                 },
               ),
               SizedBox(height: 36),
@@ -836,7 +842,7 @@ class _FoodContentAddDialogState extends State<FoodContentAddDialog> {
                   ),
                 ),
                 onTap: () {
-                  _showPickerNumber(context, 0, 20, 1, 'Serving(s)');
+                  _showPickerNumber(context, 1, 20, 1, 'Serving(s)');
                 },
               ),
               SizedBox(height: 24),
@@ -862,17 +868,14 @@ class _FoodContentAddDialogState extends State<FoodContentAddDialog> {
       File imageFile = widget.image;
 
       String mimeType = mime(widget.image.uri.path);
-
-      if (mimeType == 'image/jpeg') {
-        imageFile = resizeJpg(widget.image);
-      }
+      String ext = '.jpg';
 
       if (mimeType == 'image/png') {
-        imageFile = pngToJpg(widget.image);
+        ext = '.png';
       }
 
       final uploadPath =
-          '/food_images/' + widget.uid + '/' + timestamp.toString() + '.jpg';
+          '/food_images/' + widget.uid + '/' + timestamp.toString() + ext;
       final StorageReference ref = widget.storage.ref().child(uploadPath);
       final StorageUploadTask uploadTask = ref.putFile(imageFile);
 
@@ -895,27 +898,6 @@ class _FoodContentAddDialogState extends State<FoodContentAddDialog> {
       print(e);
       Alert.toast(context, 'อัพโหลดรูปภาพไม่ได้');
     }
-  }
-
-  File pngToJpg(File pngFile) {
-    ImagePackage.Image pngImage =
-        ImagePackage.decodePng(pngFile.readAsBytesSync());
-
-    ImagePackage.Image jpgImage = ImagePackage.copyResize(pngImage, width: 500);
-
-    pngFile.writeAsBytesSync(ImagePackage.encodeJpg(jpgImage, quality: 80));
-
-    return pngFile;
-  }
-
-  File resizeJpg(File jpgFile) {
-    ImagePackage.Image temp = ImagePackage.decodeJpg(jpgFile.readAsBytesSync());
-
-    ImagePackage.Image jpgImage = ImagePackage.copyResize(temp, width: 500);
-
-    jpgFile.writeAsBytesSync(ImagePackage.encodeJpg(jpgImage, quality: 80));
-
-    return jpgFile;
   }
 
   void _showPickerNumber(

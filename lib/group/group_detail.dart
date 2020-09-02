@@ -7,6 +7,7 @@ import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:wellness/dashboard/app_theme.dart';
 import 'package:wellness/dashboard/ui_view/title_view.dart';
+import 'package:wellness/group/group_admin.dart';
 import 'package:wellness/group/group_detail_edit.dart';
 import 'package:wellness/group/group_edit.dart';
 import 'package:wellness/models/state_model.dart';
@@ -36,14 +37,16 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
   String groupDesc;
   String owner;
   bool isOwner = false;
+  String uid;
+  int memberCount = 0;
   @override
   void initState() {
+    uid = ScopedModel.of<StateModel>(context).uid;
     super.initState();
     initData = getData();
   }
 
   Future<bool> getData() async {
-    String uid = ScopedModel.of<StateModel>(context).uid;
     return await Firestore.instance
         .collection('wellness_groups')
         .document(widget.groupId)
@@ -76,6 +79,31 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
               title: Text('รายละเอียดกลุ่ม'),
               gradient: LinearGradient(
                   colors: [AppTheme.appBarColor1, AppTheme.appBarColor2]),
+              actions: <Widget>[
+                IconButton(
+                  onPressed: () => Alert.confirm(context,
+                          title: "Leave Group", content: 'ต้องการออกจากกลุ่ม?')
+                      .then((int ret) {
+                    if (ret == Alert.OK) {
+                      _leaveGroup(widget.groupId, uid);
+                      Navigator.pop(context);
+                    } else {
+                      return;
+                    }
+                  }),
+                  icon: Icon(Icons.exit_to_app),
+                ),
+                isOwner
+                    ? IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () => Alert.confirm(context,
+                                title: "Delete group",
+                                content: 'ต้องการลบกลุ่มนี้?')
+                            .then((int ret) => ret == Alert.OK
+                                ? _deleteGroup(widget.groupId)
+                                : null))
+                    : SizedBox(width: 0),
+              ],
             ),
             body: _buildBody(),
           );
@@ -91,6 +119,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return LinearProgressIndicator();
+          memberCount = snapshot.data.documents.length;
           var listViews = snapshot.data.documents
               .map((v) => FutureBuilder(
                   future: _getProfileName(v.documentID),
@@ -138,7 +167,9 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
               _buildHeader(),
               SizedBox(height: 20),
               TitleView(
-                titleTxt: listViews.isNotEmpty ? 'สมาชิก' : 'ยังไม่มีสมาชิก',
+                titleTxt: listViews.isNotEmpty
+                    ? "สมาชิก ($memberCount)"
+                    : 'ยังไม่มีสมาชิก',
                 isMenuOption: false,
               ),
               _buildMemberList(listViews),
@@ -184,11 +215,33 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                 ListTile(
                   leading: Icon(FontAwesomeIcons.userNurse, color: Colors.teal),
                   title: Text('ผู้ดูแล'),
+                  // trailing: isOwner
+                  //     ? IconButton(
+                  //         icon: Icon(Icons.add),
+                  //         onPressed: () {
+                  //           Navigator.push(
+                  //               context,
+                  //               MaterialPageRoute(
+                  //                   builder: (_) => GroupAdminPage()));
+                  //         },
+                  //       )
+                  //     : null,
                   subtitle: FutureBuilder<UserProfile>(
                       future: _getProfileName(owner),
                       builder: (context, AsyncSnapshot<UserProfile> sn) {
                         if (!sn.hasData) return SizedBox();
-                        return Text(sn.data.fullname);
+                        return Wrap(children: [
+                          InputChip(
+                            avatar: CircleAvatar(
+                              backgroundColor: Colors.purple,
+                              child: Icon(
+                                FontAwesomeIcons.crown,
+                                size: 10,
+                              ),
+                            ),
+                            label: Text(sn.data.fullname),
+                          ),
+                        ]);
                       }),
                 ),
                 ListTile(
@@ -259,5 +312,27 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
         .document('wellness_groups/$groupId/members/$uid')
         .delete();
     Firestore.instance.document('wellness_users/$uid/groups/$groupId').delete();
+  }
+
+  Future<void> _deleteGroup(String groupId) async {
+    await Firestore.instance
+        .collection('wellness_groups/$groupId/members')
+        .getDocuments()
+        .then((v) {
+      v.documents.forEach((d) {
+        String uid = d.documentID;
+        Firestore.instance
+            .document('wellness_users/$uid/groups/$groupId')
+            .delete();
+        Firestore.instance
+            .document('wellness_groups/$groupId/members/$uid')
+            .delete();
+      });
+    }).then((value) {
+      Firestore.instance.document('wellness_groups/$groupId').delete();
+      Navigator.pop(context);
+    }).catchError((e) {
+      print(e);
+    });
   }
 }

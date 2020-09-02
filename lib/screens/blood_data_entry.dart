@@ -76,7 +76,7 @@ class _BloodDataEntryState extends State<BloodDataEntry> {
               trailing: Text("${monitorData['hba1c'] ?? ''} %",
                   style: TextStyle(color: Colors.grey[500])),
               onTap: () {
-                _showPickerDouble(context, 0, 100, 10, 'HbA1c (%)', 'hba1c');
+                _showPickerDouble(context, 0, 100, 6, 'HbA1c (%)', 'hba1c');
               }),
           ListTile(
               leading: Icon(Icons.fastfood, color: Colors.grey[500]),
@@ -101,7 +101,7 @@ class _BloodDataEntryState extends State<BloodDataEntry> {
               trailing: Text("${monitorData['ldl'] ?? ''} mg/dL",
                   style: TextStyle(color: Colors.grey[500])),
               onTap: () {
-                _showPickerNumber(context, 0, 400, 50, 'LDL (mg/dL)', 'ldl');
+                _showPickerNumber(context, 0, 400, 100, 'LDL (mg/dL)', 'ldl');
               }),
           ListTile(
               leading: Icon(Icons.terrain, color: Colors.grey[500]),
@@ -118,8 +118,8 @@ class _BloodDataEntryState extends State<BloodDataEntry> {
               trailing: Text("${monitorData['creatinine'] ?? ''} mg/dL",
                   style: TextStyle(color: Colors.grey[500])),
               onTap: () {
-                _showPickerDouble(
-                    context, 0, 9, 5, 'Creatinine (mg/dL)', 'creatinine');
+                _showPickerDouble2Digit(
+                    context, 0, 9, 1, 'Creatinine (mg/dL)', 'creatinine');
               }),
           ListTile(
               leading: Icon(Icons.eject, color: Colors.grey[500]),
@@ -127,7 +127,7 @@ class _BloodDataEntryState extends State<BloodDataEntry> {
               trailing: Text("${monitorData['eGFR'] ?? ''}",
                   style: TextStyle(color: Colors.grey[500])),
               onTap: () {
-                _showPickerDouble2Digit(context, 0, 100, 50, 'eGFR', 'eGFR');
+                _showPickerDouble2Digit(context, 0, 200, 80, 'eGFR', 'eGFR');
               }),
           ListTile(
               leading: Icon(Icons.tonality, color: Colors.grey[500]),
@@ -136,7 +136,7 @@ class _BloodDataEntryState extends State<BloodDataEntry> {
                   style: TextStyle(color: Colors.grey[500])),
               onTap: () {
                 _showPickerDouble(
-                    context, 0, 19, 10, 'Uric Acid (mg/dL)', 'uricAcid');
+                    context, 0, 19, 6, 'Uric Acid (mg/dL)', 'uricAcid');
               }),
           SizedBox(height: 24),
           Padding(

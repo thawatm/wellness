@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mime_type/mime_type.dart';
 import 'package:wellness/dashboard/app_theme.dart';
 import 'package:wellness/models/datepicker_custom.dart';
 import 'package:wellness/models/state_model.dart';
@@ -568,11 +569,16 @@ class _UserProfilePageState extends State<UserProfilePage> {
   }
 
   Future getCameraImage() async {
-    File image = await ImagePicker.pickImage(
-      source: ImageSource.camera,
-      maxWidth: 200.0,
-    );
-    if (image != null) {
+    final picker = ImagePicker();
+
+    final pickedFile = await picker.getImage(
+        source: ImageSource.camera,
+        maxWidth: 200.0,
+        imageQuality: 90,
+        preferredCameraDevice: CameraDevice.front);
+
+    if (pickedFile != null) {
+      File image = File(pickedFile.path);
       setState(() {
         tempImage = image;
         _isTempImage = true;
@@ -582,11 +588,16 @@ class _UserProfilePageState extends State<UserProfilePage> {
   }
 
   Future getGalleryImage() async {
-    File image = await ImagePicker.pickImage(
+    final picker = ImagePicker();
+
+    final pickedFile = await picker.getImage(
       source: ImageSource.gallery,
       maxWidth: 200.0,
+      imageQuality: 90,
     );
-    if (image != null) {
+
+    if (pickedFile != null) {
+      File image = File(pickedFile.path);
       setState(() {
         tempImage = image;
         _isTempImage = true;
@@ -598,7 +609,14 @@ class _UserProfilePageState extends State<UserProfilePage> {
   uploadPictureProfile(File image) {
     Map updateData = Map<String, dynamic>();
 
-    final uploadPath = '/profile_images/' + uid + '.jpg';
+    String mimeType = mime(image.uri.path);
+    String ext = '.jpg';
+
+    if (mimeType == 'image/png') {
+      ext = '.png';
+    }
+
+    final uploadPath = '/profile_images/' + uid + ext;
     final StorageReference ref = storage.ref().child(uploadPath);
     final StorageUploadTask uploadTask = ref.putFile(image);
 

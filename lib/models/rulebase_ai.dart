@@ -13,15 +13,22 @@ class RuleBaseAI {
   RuleBaseAI();
 
   RuleBaseAI.bmi(num bmi) {
-    if (bmi > 18.5 && bmi < 25) {
+    if (bmi > 18.5 && bmi < 23) {
       display.desc = 'ปกติ';
       display.color = AppTheme.kRecovercolor;
-    } else if (bmi >= 25) {
+    } else if (bmi >= 23) {
       display.desc = 'น้ำหนักเกิน';
-      display.color = AppTheme.kDeathColor;
+      // display.color = AppTheme.kDeathColor;
       neglect = 2;
       weight = 309;
       suggestion = 'BMI มากกว่าเกณฑ์มาตรฐาน ควรออกกำลังกายอย่างสม่ำเสมอ';
+      if (bmi >= 23 && bmi < 25) {
+        display.color = Colors.orange;
+      } else if (bmi >= 25 && bmi < 30) {
+        display.color = Colors.orange.shade700;
+      } else {
+        display.color = AppTheme.kDeathColor;
+      }
     } else {
       display.desc = 'ผอม';
       display.color = AppTheme.kDeathColor;
@@ -66,7 +73,7 @@ class RuleBaseAI {
     if (ldl == 0) display.color = AppTheme.grey.withOpacity(0.2);
   }
   RuleBaseAI.cholesterol(num cholesterol) {
-    if (cholesterol < 190) {
+    if (cholesterol < 200) {
       display.desc = 'ปกติ';
       display.color = AppTheme.kRecovercolor;
     } else {

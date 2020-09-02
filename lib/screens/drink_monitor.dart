@@ -18,6 +18,7 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:intl/intl.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+// ignore: implementation_imports
 import 'package:flutter/src/painting/text_style.dart' as Flutter;
 
 enum ConfirmAction { CANCEL, DELETE }

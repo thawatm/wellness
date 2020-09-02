@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:wellness/models/healthdata.dart';
 import 'package:wellness/models/rulebase_ai.dart';
 import 'package:wellness/models/state_model.dart';
+import 'package:wellness/widgets/webview.dart';
 
 class BloodPressureView extends StatelessWidget {
   final AnimationController animationController;
@@ -20,7 +21,9 @@ class BloodPressureView extends StatelessWidget {
     String uid = ScopedModel.of<StateModel>(context).uid;
     int bpupper = 0;
     int bplower = 0;
+    int hr = 0;
     String recordDate = 'ไม่มีข้อมูล';
+    String kioskDocumentId;
 
     return StreamBuilder<QuerySnapshot>(
       stream: Firestore.instance
@@ -41,6 +44,15 @@ class BloodPressureView extends StatelessWidget {
             bpupper = bloodData.pressureUpper ?? 0;
             bplower = bloodData.pressureLower ?? 0;
             recordDate = DateFormat.yMMMd().format(bloodData.date);
+            kioskDocumentId = snapshotData['kioskDocumentId'];
+          }
+
+          DocumentSnapshot snapshotData1 =
+              snapshot.data.documents.lastWhere((v) => v.data['hr'] != null);
+
+          if (snapshotData != null) {
+            HealthMonitor bloodData = HealthMonitor.fromSnapshot(snapshotData1);
+            hr = bloodData.hr ?? 0;
           }
         } catch (e) {}
         return AnimatedBuilder(
@@ -83,7 +95,8 @@ class BloodPressureView extends StatelessWidget {
                                 size: 16,
                               ),
                               Padding(
-                                padding: const EdgeInsets.only(left: 8.0),
+                                padding: const EdgeInsets.only(
+                                    left: 8.0, right: 4.0),
                                 child: Text(
                                   'ความดันโลหิต',
                                   textAlign: TextAlign.center,
@@ -96,6 +109,22 @@ class BloodPressureView extends StatelessWidget {
                                   ),
                                 ),
                               ),
+                              kioskDocumentId != null
+                                  ? InkWell(
+                                      child: Icon(FontAwesomeIcons.kickstarter,
+                                          size: 20,
+                                          color: Colors.cyan.shade300),
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (_) => WebView(
+                                                    url:
+                                                        'http://bsp-kiosk.ddns.net/?id=' +
+                                                            kioskDocumentId)));
+                                      },
+                                    )
+                                  : SizedBox(width: 0),
                               Spacer(),
                               Icon(
                                 Icons.access_time,
@@ -121,7 +150,7 @@ class BloodPressureView extends StatelessWidget {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(
-                              top: 16, left: 24, right: 24, bottom: 12),
+                              top: 16, left: 12, right: 24, bottom: 12),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,7 +180,7 @@ class BloodPressureView extends StatelessWidget {
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.only(
-                                        left: 8, bottom: 8),
+                                        left: 2, bottom: 8),
                                     child: Text(
                                       'mmHg',
                                       textAlign: TextAlign.center,
@@ -167,17 +196,14 @@ class BloodPressureView extends StatelessWidget {
                                   Spacer(),
                                   Padding(
                                     padding: const EdgeInsets.only(
-                                        left: 0, bottom: 8),
+                                        left: 4, bottom: 3),
                                     child: Text(
-                                      RuleBaseAI.bloodPressure(bpupper, bplower)
-                                          .display
-                                          .desc,
-                                      textAlign: TextAlign.end,
+                                      hr.toString(),
+                                      textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontFamily: AppTheme.fontName,
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 16,
-                                        letterSpacing: -0.2,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 30,
                                         color: RuleBaseAI.bloodPressure(
                                                 bpupper, bplower)
                                             .display
@@ -185,6 +211,42 @@ class BloodPressureView extends StatelessWidget {
                                       ),
                                     ),
                                   ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 2, bottom: 8),
+                                    child: Text(
+                                      'bpm',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontFamily: AppTheme.fontName,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 16,
+                                        letterSpacing: -0.2,
+                                        color: AppTheme.kTextLightColor,
+                                      ),
+                                    ),
+                                  ),
+
+                                  // Padding(
+                                  //   padding: const EdgeInsets.only(
+                                  //       left: 0, bottom: 8),
+                                  //   child: Text(
+                                  //     RuleBaseAI.bloodPressure(bpupper, bplower)
+                                  //         .display
+                                  //         .desc,
+                                  //     textAlign: TextAlign.end,
+                                  //     style: TextStyle(
+                                  //       fontFamily: AppTheme.fontName,
+                                  //       fontWeight: FontWeight.w500,
+                                  //       fontSize: 16,
+                                  //       letterSpacing: -0.2,
+                                  //       color: RuleBaseAI.bloodPressure(
+                                  //               bpupper, bplower)
+                                  //           .display
+                                  //           .color,
+                                  //     ),
+                                  //   ),
+                                  // ),
                                 ],
                               ),
                             ],

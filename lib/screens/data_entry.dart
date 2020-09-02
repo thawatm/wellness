@@ -134,25 +134,13 @@ class _DataEntryDialogState extends State<DataEntryDialog> {
       showInSnackBar("No Internet Connection");
       return;
     }
-
-    // int timestamp = monitorData['date'].millisecondsSinceEpoch;
-
-    // DocumentReference monitor = Firestore.instance
-    //     .collection('wellness_data')
-    //     .document(currentUser.uid)
-    //     .collection(collection)
-    //     .document(timestamp.toString());
-    // Firestore.instance.runTransaction((transaction) async {
-    //   await transaction.set(monitor, monitorData);
-    // });
-    // showInSnackBar("Successful");
   }
 
   _showPressurePicker(BuildContext context) {
     new Picker(
         adapter: NumberPickerAdapter(data: [
-          NumberPickerColumn(begin: 80, end: 200, initValue: 110),
-          NumberPickerColumn(begin: 50, end: 120, initValue: 70),
+          NumberPickerColumn(begin: 80, end: 200, initValue: 120),
+          NumberPickerColumn(begin: 50, end: 120, initValue: 80),
         ]),
         delimiter: [
           PickerDelimiter(
@@ -186,7 +174,7 @@ class _DataEntryDialogState extends State<DataEntryDialog> {
     new Picker(
         adapter: NumberPickerAdapter(
           data: [
-            NumberPickerColumn(begin: 20, end: 220, initValue: 60),
+            NumberPickerColumn(begin: 20, end: 220, initValue: 70),
           ],
         ),
         hideHeader: true,

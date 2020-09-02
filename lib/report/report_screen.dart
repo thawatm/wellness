@@ -112,9 +112,10 @@ class _ReportScreenState extends State<ReportScreen>
       listViews.add(
         SizedBox(height: 14),
       );
-    listViews.add(
-      GlassView(text: suggestText),
-    );
+    if (startDate.add(Duration(days: 7)).isBefore(DateTime.now()))
+      listViews.add(
+        GlassView(text: suggestText),
+      );
 
     listViews.add(Simple7Card(
         workout: totalWorkout,
@@ -337,22 +338,24 @@ class _ReportScreenState extends State<ReportScreen>
                   color: AppTheme.nearlyBlack,
                   letterSpacing: -1.2)),
         ),
-        InkWell(
-            child: SizedBox(
-              width: 24,
-              child: Icon(
-                Icons.arrow_forward_ios,
-                size: 18,
-                color: AppTheme.nearlyBlack,
-              ),
-            ),
-            onTap: () {
-              setState(() {
-                startDate = startDate.add(Duration(days: 7));
-                listViews = [];
-                buildSimple7Data(startDate);
-              });
-            }),
+        startDate.add(Duration(days: 7)).isBefore(DateTime.now())
+            ? InkWell(
+                child: SizedBox(
+                  width: 24,
+                  child: Icon(
+                    Icons.arrow_forward_ios,
+                    size: 18,
+                    color: AppTheme.nearlyBlack,
+                  ),
+                ),
+                onTap: () {
+                  setState(() {
+                    startDate = startDate.add(Duration(days: 7));
+                    listViews = [];
+                    buildSimple7Data(startDate);
+                  });
+                })
+            : SizedBox(width: 18),
       ],
     );
   }
@@ -467,8 +470,11 @@ class _ReportScreenState extends State<ReportScreen>
   }
 
   String getWeekDayList(DateTime startDate) {
+    DateTime today = DateTime.now();
     DateTime sDate = Jiffy(startDate).startOf(Units.WEEK);
     DateTime eDate = Jiffy(startDate).endOf(Units.WEEK);
+
+    if (eDate.isAfter(today)) eDate = today;
 
     String s = Jiffy(sDate).MMMd;
     String e = Jiffy(eDate).MMMd;

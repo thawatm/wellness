@@ -3,8 +3,7 @@ import 'package:easy_alert/easy_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:wellness/models/healthdata.dart';
 import 'package:intl/intl.dart';
-
-enum ConfirmAction { CANCEL, DELETE }
+import 'package:wellness/widgets/kiosk_chip.dart';
 
 class HistoryList extends StatelessWidget {
   const HistoryList(
@@ -55,8 +54,16 @@ class HistoryList extends StatelessWidget {
     return Column(
       children: <Widget>[
         ListTile(
-          title: Text(DateFormat.yMMMEd().format(record.date),
-              style: TextStyle(color: Colors.black87)),
+          title: Row(children: <Widget>[
+            Text(DateFormat.yMMMd().format(record.date),
+                style: TextStyle(color: Colors.black87)),
+            SizedBox(width: 10),
+            (data['kioskDocumentId'] != null)
+                ? KioskChip(
+                    kioskDocumentId: data['kioskDocumentId'],
+                  )
+                : SizedBox(width: 0),
+          ]),
           subtitle: subtitle,
           onTap: () {
             Alert.confirm(
@@ -97,35 +104,5 @@ class HistoryList extends StatelessWidget {
         print(e);
       });
     }
-  }
-
-  Future<ConfirmAction> confirmDialog(
-      BuildContext context, HealthMonitor record) async {
-    return showDialog<ConfirmAction>(
-      context: context,
-      barrierDismissible: false, // user must tap button for close dialog!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("ลบข้อมูล"),
-          content: Text(
-            DateFormat('dd/MM/yyyy').format(record.date),
-          ),
-          actions: <Widget>[
-            FlatButton(
-              child: const Text('CANCEL'),
-              onPressed: () {
-                Navigator.of(context).pop(ConfirmAction.CANCEL);
-              },
-            ),
-            FlatButton(
-              child: const Text('DELETE'),
-              onPressed: () {
-                Navigator.of(context).pop(ConfirmAction.DELETE);
-              },
-            )
-          ],
-        );
-      },
-    );
   }
 }
