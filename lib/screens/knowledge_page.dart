@@ -150,6 +150,26 @@ class _KnowledgePageState extends State<KnowledgePage> {
                           url: 'http://18.141.44.152/wellness/wellness2.pdf',
                           startColor: Color(0xFF738AE6),
                           endColor: Color(0xFF5C5EDD)),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 24, right: 24, top: 8, bottom: 8),
+                        child: Container(
+                          height: 2,
+                          decoration: BoxDecoration(
+                            color: AppTheme.background,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(4.0)),
+                          ),
+                        ),
+                      ),
+                      buildNotificationItem(
+                          icon: FontAwesomeIcons.filePdf,
+                          title: '7 Weeks',
+                          subtitle: '7 สัปดาห์ สุขภาพดี หุ่นดี ที่บ้าน',
+                          url:
+                              'https://multimedia.anamai.moph.go.th/ebooks/7weeks-fit-at-home/',
+                          startColor: Color(0xFF738AE6),
+                          endColor: Color(0xFF5C5EDD)),
                     ],
                   ),
                 ),

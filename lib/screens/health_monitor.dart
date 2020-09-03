@@ -27,7 +27,7 @@ class _HealthMonitorPageState extends State<HealthMonitorPage> {
   List<DocumentSnapshot> healthData;
   List<HealthMonitor> pressureData;
   List<HealthMonitor> hrData;
-  int chartDays = 5;
+  int chartDays = 99999;
 
   DateTime today;
   String collection = 'healthdata';

@@ -31,7 +31,7 @@ class _WeightPageState extends State<WeightPage> {
 
   DateTime today;
 
-  int chartDays = 5;
+  int chartDays = 99999;
 
   final Map<int, Widget> chartPeriod = const <int, Widget>{
     5: Text('สัปดาห์'),

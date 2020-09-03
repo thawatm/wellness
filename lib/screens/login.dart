@@ -56,14 +56,14 @@ class _LoginPageState extends State<LoginPage> {
                 Center(child: logo),
                 SizedBox(height: 8),
                 Text(
-                  'ศูนย์สุขภาพดีวัยทำงาน',
+                  'ไทยสุข',
                   style: TextStyle(
                       fontSize: 24,
                       // fontWeight: FontWeight.bold,
                       color: Colors.grey.shade200),
                 ),
                 Text(
-                  'Wellness Center',
+                  'ThaiSook',
                   style: TextStyle(
                       fontSize: 24,
                       // fontWeight: FontWeight.bold,

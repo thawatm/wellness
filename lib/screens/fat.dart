@@ -30,10 +30,12 @@ class _FatPageState extends State<FatPage> {
   List<HealthMonitor> bodyFatData;
   List<HealthMonitor> visceralFatData;
   List<HealthMonitor> fatData;
+  List<HealthMonitor> muscleData;
+  List<HealthMonitor> waistData;
 
   DateTime today;
 
-  int chartDays = 5;
+  int chartDays = 99999;
 
   final Map<int, Widget> chartPeriod = const <int, Widget>{
     5: Text('สัปดาห์'),
@@ -139,6 +141,20 @@ class _FatPageState extends State<FatPage> {
                       ..removeWhere(
                           (v) => today.difference(v.date).inDays > chartDays)
                       ..removeWhere((v) => v.bodyAge == null);
+                // Muscle DATA
+                muscleData = healthData
+                    .map((data) => HealthMonitor.fromSnapshot(data))
+                    .toList()
+                      ..removeWhere(
+                          (v) => today.difference(v.date).inDays > chartDays)
+                      ..removeWhere((v) => v.muscle == null);
+                // waist DATA
+                waistData = healthData
+                    .map((data) => HealthMonitor.fromSnapshot(data))
+                    .toList()
+                      ..removeWhere(
+                          (v) => today.difference(v.date).inDays > chartDays)
+                      ..removeWhere((v) => v.waist == null);
 
                 // FAT DATA
                 fatData = healthData
@@ -221,6 +237,21 @@ class _FatPageState extends State<FatPage> {
                 ],
               ),
         SizedBox(height: 30),
+        muscleData.isEmpty
+            ? SizedBox(height: 0)
+            : Column(
+                children: <Widget>[
+                  ChartPercentTitle(
+                      title: 'Muscle Mass',
+                      first: bodyAgeData.first.muscle,
+                      last: bodyAgeData.last.muscle),
+                  Container(
+                    height: 220,
+                    child: _buildMuscleChart(),
+                  ),
+                ],
+              ),
+        SizedBox(height: 30),
         bodyAgeData.isEmpty
             ? SizedBox(height: 0)
             : Column(
@@ -232,6 +263,21 @@ class _FatPageState extends State<FatPage> {
                   Container(
                     height: 220,
                     child: _buildBodyAgeChart(),
+                  ),
+                ],
+              ),
+        SizedBox(height: 30),
+        waistData.isEmpty
+            ? SizedBox(height: 0)
+            : Column(
+                children: <Widget>[
+                  ChartPercentTitle(
+                      title: 'Waist',
+                      first: bodyAgeData.first.waist,
+                      last: bodyAgeData.last.waist),
+                  Container(
+                    height: 220,
+                    child: _buildWaistChart(),
                   ),
                 ],
               ),
@@ -322,6 +368,40 @@ class _FatPageState extends State<FatPage> {
 
     return SimpleTimeSeriesChart(_chartData(),
         animate: true, title: 'Body Age', unit: 'ปี');
+  }
+
+  Widget _buildMuscleChart() {
+    List<Series<HealthMonitor, DateTime>> _chartData() {
+      return [
+        new Series<HealthMonitor, DateTime>(
+          id: 'Muscle Mass',
+          colorFn: (_, __) => MaterialPalette.green.shadeDefault,
+          domainFn: (HealthMonitor health, _) => health.date,
+          measureFn: (HealthMonitor health, _) => health.muscle,
+          data: muscleData,
+        )..setAttribute(rendererIdKey, 'customArea')
+      ];
+    }
+
+    return SimpleTimeSeriesChart(_chartData(),
+        animate: true, title: 'Muscle Mass', unit: 'kg');
+  }
+
+  Widget _buildWaistChart() {
+    List<Series<HealthMonitor, DateTime>> _chartData() {
+      return [
+        new Series<HealthMonitor, DateTime>(
+          id: 'Waist',
+          colorFn: (_, __) => MaterialPalette.blue.shadeDefault,
+          domainFn: (HealthMonitor health, _) => health.date,
+          measureFn: (HealthMonitor health, _) => health.waist,
+          data: waistData,
+        )..setAttribute(rendererIdKey, 'customArea')
+      ];
+    }
+
+    return SimpleTimeSeriesChart(_chartData(),
+        animate: true, title: 'รอบเอว', unit: 'inch');
   }
 
   Widget _buildFatChart() {

@@ -83,6 +83,15 @@ class _FatDataEntryState extends State<FatDataEntry> {
               }),
           ListTile(
               leading: Icon(Icons.person, color: Colors.grey[500]),
+              title: Text("Muscle Mass"),
+              trailing: Text("${monitorData['muscle'] ?? ''} kg",
+                  style: TextStyle(color: Colors.grey[500])),
+              onTap: () {
+                _showPickerDouble(
+                    context, 0, 99, 40, 'Muscle Mass (kg)', 'muscle');
+              }),
+          ListTile(
+              leading: Icon(Icons.person, color: Colors.grey[500]),
               title: Text("Body Age"),
               trailing: Text("${monitorData['bodyAge'] ?? ''} ปี",
                   style: TextStyle(color: Colors.grey[500])),
@@ -91,50 +100,65 @@ class _FatDataEntryState extends State<FatDataEntry> {
                     context, 0, 999, 35, 'Body Age (ปี)', 'bodyAge');
               }),
           ListTile(
-              leading: Icon(Icons.border_right, color: Colors.grey[500]),
-              title: Text("ไขมัน แขนขวา"),
-              trailing: Text("${monitorData['rightArmFat'] ?? ''} %",
+              leading: Icon(Icons.person, color: Colors.grey[500]),
+              title: Text("รอบเอว"),
+              trailing: Text("${monitorData['waist'] ?? ''} นิ้ว",
                   style: TextStyle(color: Colors.grey[500])),
               onTap: () {
-                _showPickerDouble(
-                    context, 0, 999, 20, '%ไขมัน แขนขวา', 'rightArmFat');
+                _showPickerDouble(context, 15, 60, 30, 'นิ้ว', 'waist');
               }),
-          ListTile(
-              leading: Icon(Icons.border_left, color: Colors.grey[500]),
-              title: Text("ไขมัน แขนซ้าย"),
-              trailing: Text("${monitorData['leftArmFat'] ?? ''} %",
-                  style: TextStyle(color: Colors.grey[500])),
-              onTap: () {
-                _showPickerDouble(
-                    context, 0, 999, 20, '%ไขมัน แขนขวา', 'leftArmFat');
-              }),
-          ListTile(
-              leading: Icon(Icons.rotate_right, color: Colors.grey[500]),
-              title: Text("ไขมัน ขาขวา"),
-              trailing: Text("${monitorData['rightLegFat'] ?? ''} %",
-                  style: TextStyle(color: Colors.grey[500])),
-              onTap: () {
-                _showPickerDouble(
-                    context, 0, 999, 20, '%ไขมัน ขาขวา', 'rightLegFat');
-              }),
-          ListTile(
-              leading: Icon(Icons.rotate_left, color: Colors.grey[500]),
-              title: Text("ไขมัน ขาซ้าย"),
-              trailing: Text("${monitorData['leftLegFat'] ?? ''} %",
-                  style: TextStyle(color: Colors.grey[500])),
-              onTap: () {
-                _showPickerDouble(
-                    context, 0, 999, 20, '%ไขมัน ขาซ้าย', 'leftLegFat');
-              }),
-          ListTile(
-              leading: Icon(Icons.border_all, color: Colors.grey[500]),
-              title: Text("ไขมัน หน้าท้อง"),
-              trailing: Text("${monitorData['trunkFat'] ?? ''} %",
-                  style: TextStyle(color: Colors.grey[500])),
-              onTap: () {
-                _showPickerDouble(
-                    context, 0, 999, 20, '%ไขมัน หน้าท้อง', 'trunkFat');
-              }),
+          ExpansionTile(
+            leading: Icon(Icons.add_circle_outline, color: Colors.grey[500]),
+            title: Text('ไขมัน'),
+            backgroundColor: Theme.of(context).accentColor.withOpacity(0.025),
+            children: [
+              ListTile(
+                  leading: Icon(Icons.border_right, color: Colors.grey[500]),
+                  title: Text("ไขมัน แขนขวา"),
+                  trailing: Text("${monitorData['rightArmFat'] ?? ''} %",
+                      style: TextStyle(color: Colors.grey[500])),
+                  onTap: () {
+                    _showPickerDouble(
+                        context, 0, 999, 20, '%ไขมัน แขนขวา', 'rightArmFat');
+                  }),
+              ListTile(
+                  leading: Icon(Icons.border_left, color: Colors.grey[500]),
+                  title: Text("ไขมัน แขนซ้าย"),
+                  trailing: Text("${monitorData['leftArmFat'] ?? ''} %",
+                      style: TextStyle(color: Colors.grey[500])),
+                  onTap: () {
+                    _showPickerDouble(
+                        context, 0, 999, 20, '%ไขมัน แขนขวา', 'leftArmFat');
+                  }),
+              ListTile(
+                  leading: Icon(Icons.rotate_right, color: Colors.grey[500]),
+                  title: Text("ไขมัน ขาขวา"),
+                  trailing: Text("${monitorData['rightLegFat'] ?? ''} %",
+                      style: TextStyle(color: Colors.grey[500])),
+                  onTap: () {
+                    _showPickerDouble(
+                        context, 0, 999, 20, '%ไขมัน ขาขวา', 'rightLegFat');
+                  }),
+              ListTile(
+                  leading: Icon(Icons.rotate_left, color: Colors.grey[500]),
+                  title: Text("ไขมัน ขาซ้าย"),
+                  trailing: Text("${monitorData['leftLegFat'] ?? ''} %",
+                      style: TextStyle(color: Colors.grey[500])),
+                  onTap: () {
+                    _showPickerDouble(
+                        context, 0, 999, 20, '%ไขมัน ขาซ้าย', 'leftLegFat');
+                  }),
+              ListTile(
+                  leading: Icon(Icons.border_all, color: Colors.grey[500]),
+                  title: Text("ไขมัน หน้าท้อง"),
+                  trailing: Text("${monitorData['trunkFat'] ?? ''} %",
+                      style: TextStyle(color: Colors.grey[500])),
+                  onTap: () {
+                    _showPickerDouble(
+                        context, 0, 999, 20, '%ไขมัน หน้าท้อง', 'trunkFat');
+                  }),
+            ],
+          ),
           SizedBox(height: 24),
           Padding(
             padding: const EdgeInsets.all(16.0),

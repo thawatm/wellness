@@ -669,7 +669,8 @@ class _FoodContentEditDialogState extends State<FoodContentEditDialog> {
   }
 
   _deleteData() {
-    widget.storage.ref().child(widget.food.uploadPath).delete();
+    if (widget.food.uploadPath != null)
+      widget.storage.ref().child(widget.food.uploadPath).delete();
     Firestore.instance
         .collection('wellness_data')
         .document(widget.uid)

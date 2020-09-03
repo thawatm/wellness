@@ -32,7 +32,7 @@ class _HealthTrendChartState extends State<HealthTrendChart> {
   List<HealthMonitor> ldlData;
   List<HealthMonitor> hba1cData;
 
-  int chartDays = 5;
+  int chartDays = 99999;
 
   DateTime today;
   String collection = 'healthdata';

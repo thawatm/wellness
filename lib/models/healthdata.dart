@@ -19,6 +19,9 @@ class HealthMonitor {
   double trunkFat;
   double bodyFat;
   double visceralFat;
+  double muscle;
+  double waist;
+
   double hba1c;
   int bodyAge;
   int glucose;
@@ -55,6 +58,8 @@ class HealthMonitor {
         bodyAge = snapshot.data["bodyAge"],
         bodyFat = snapshot.data["bodyFat"],
         visceralFat = snapshot.data["visceralFat"],
+        muscle = snapshot.data["muscle"],
+        waist = snapshot.data["waist"],
         glucose = snapshot.data["glucose"],
         cholesterol = snapshot.data["cholesterol"],
         hdl = snapshot.data["hdl"],

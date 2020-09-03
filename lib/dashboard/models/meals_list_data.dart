@@ -7,6 +7,7 @@ class MealsListData {
     this.meals,
     this.kacl = 0,
     this.serving = '',
+    this.isAddIcon = false,
   });
 
   String imagePath;
@@ -16,6 +17,7 @@ class MealsListData {
   String serving;
   List<String> meals;
   int kacl;
+  bool isAddIcon;
 
   static List<MealsListData> tabIconsList = <MealsListData>[
     // MealsListData(

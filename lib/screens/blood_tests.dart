@@ -34,7 +34,7 @@ class _BloodTestPageState extends State<BloodTestPage> {
   List<HealthMonitor> eGFRData;
   List<HealthMonitor> uricAcidData;
   List<HealthMonitor> hba1cData;
-  int chartDays = 5;
+  int chartDays = 99999;
   DateTime today;
 
   final Map<int, Widget> chartPeriod = const <int, Widget>{
