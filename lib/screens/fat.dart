@@ -69,7 +69,7 @@ class _FatPageState extends State<FatPage> {
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
               SliverAppBar(
-                title: Text("ไขมัน"),
+                title: Text("องค์ประกอบร่างกาย"),
                 pinned: true,
                 floating: true,
                 forceElevated: innerBoxIsScrolled,

@@ -88,7 +88,7 @@ class FatView extends StatelessWidget {
                               Padding(
                                 padding: const EdgeInsets.only(left: 8.0),
                                 child: Text(
-                                  'ไขมัน',
+                                  'องค์ประกอบร่างกาย',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontFamily: AppTheme.fontName,
