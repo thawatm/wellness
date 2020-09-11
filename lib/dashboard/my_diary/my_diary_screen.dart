@@ -71,11 +71,11 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
     uid = ScopedModel.of<StateModel>(context).uid;
     userProfile = ScopedModel.of<StateModel>(context).userProfile;
 
-    getFitData();
-
     if (userProfile.citizenId is String && userProfile.citizenId.length == 13) {
       getKioskData();
     }
+    getFitData();
+    addAllListData();
   }
 
   @override
@@ -88,7 +88,7 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       setState(() {
-        listViews.clear();
+        addAllListData();
         getFitData();
       });
     }
@@ -206,6 +206,8 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
   void addAllListData() {
     const int count = 9;
 
+    if (listViews.isNotEmpty) listViews.clear();
+
     listViews.add(
       InkWell(
         onTap: () => Navigator.of(context).pushNamed('/workout'),
@@ -319,10 +321,6 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
     );
   }
 
-  Future<bool> getData() async {
-    return true;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -348,29 +346,19 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
   }
 
   Widget getMainListViewUI() {
-    return FutureBuilder<bool>(
-      future: getData(),
-      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-        if (!snapshot.hasData) {
-          return LinearProgressIndicator();
-        } else {
-          if (listViews.isEmpty) addAllListData();
-          return ListView.builder(
-            controller: scrollController,
-            padding: EdgeInsets.only(
-              top: AppBar().preferredSize.height +
-                  MediaQuery.of(context).padding.top +
-                  24,
-              bottom: 62 + MediaQuery.of(context).padding.bottom,
-            ),
-            itemCount: listViews.length,
-            scrollDirection: Axis.vertical,
-            itemBuilder: (BuildContext context, int index) {
-              widget.animationController.forward();
-              return listViews[index];
-            },
-          );
-        }
+    return ListView.builder(
+      controller: scrollController,
+      padding: EdgeInsets.only(
+        top: AppBar().preferredSize.height +
+            MediaQuery.of(context).padding.top +
+            24,
+        bottom: 62 + MediaQuery.of(context).padding.bottom,
+      ),
+      itemCount: listViews.length,
+      scrollDirection: Axis.vertical,
+      itemBuilder: (BuildContext context, int index) {
+        widget.animationController.forward();
+        return listViews[index];
       },
     );
   }
