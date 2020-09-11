@@ -74,14 +74,14 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
       // crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         _isCodeSent ? _signInPhone : _verifyPhone,
-        Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          child: Text(
-            _message,
-            style: TextStyle(color: Colors.red),
-          ),
-        )
+        // Container(
+        //   alignment: Alignment.center,
+        //   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        //   child: Text(
+        //     _message,
+        //     style: TextStyle(color: Colors.red),
+        //   ),
+        // )
       ],
     );
   }

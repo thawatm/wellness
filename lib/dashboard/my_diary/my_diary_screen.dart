@@ -26,7 +26,7 @@ class MyDiaryScreen extends StatefulWidget {
 }
 
 class _MyDiaryScreenState extends State<MyDiaryScreen>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   Animation<double> topBarAnimation;
 
   List<Widget> listViews = <Widget>[];
@@ -64,7 +64,10 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
         }
       }
     });
+
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+
     uid = ScopedModel.of<StateModel>(context).uid;
     userProfile = ScopedModel.of<StateModel>(context).userProfile;
 
@@ -72,6 +75,22 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
 
     if (userProfile.citizenId is String && userProfile.citizenId.length == 13) {
       getKioskData();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      setState(() {
+        listViews.clear();
+        getFitData();
+      });
     }
   }
 
