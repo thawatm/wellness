@@ -28,17 +28,17 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
     uid = ScopedModel.of<StateModel>(context).uid;
 
     final DocumentReference ref =
-        Firestore.instance.collection('wellness_users').document(uid);
+        FirebaseFirestore.instance.collection('wellness_users').doc(uid);
 
     ref.get().then((snapshot) {
-      if (snapshot.data.containsKey('isDrugAllergy')) {
-        _isDrugAllergy = snapshot.data['isDrugAllergy'];
+      if (snapshot.data().containsKey('isDrugAllergy')) {
+        _isDrugAllergy = snapshot.data()['isDrugAllergy'];
       }
-      if (snapshot.data.containsKey('isDrugAllergySuspect')) {
-        _isDrugAllergySuspect = snapshot.data['isDrugAllergySuspect'];
+      if (snapshot.data().containsKey('isDrugAllergySuspect')) {
+        _isDrugAllergySuspect = snapshot.data()['isDrugAllergySuspect'];
       }
-      if (snapshot.data.containsKey('isFoodAllergy')) {
-        _isFoodAllergy = snapshot.data['isFoodAllergy'];
+      if (snapshot.data().containsKey('isFoodAllergy')) {
+        _isFoodAllergy = snapshot.data()['isFoodAllergy'];
       }
     });
   }
@@ -52,9 +52,9 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
               colors: [AppTheme.appBarColor1, AppTheme.appBarColor2]),
         ),
         body: StreamBuilder<DocumentSnapshot>(
-            stream: Firestore.instance
+            stream: FirebaseFirestore.instance
                 .collection('wellness_users')
-                .document(uid)
+                .doc(uid)
                 .snapshots(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) return LinearProgressIndicator();
@@ -309,10 +309,9 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
     updateData['isDrugAllergySuspect'] = _isDrugAllergySuspect;
     updateData['isFoodAllergy'] = _isFoodAllergy;
 
-    DocumentReference ref =
-        Firestore.instance.collection('wellness_users').document(uid);
-    Firestore.instance.runTransaction((transaction) async {
-      await transaction.update(ref, updateData);
-    });
+    FirebaseFirestore.instance
+        .collection('wellness_users')
+        .doc(uid)
+        .update(updateData);
   }
 }

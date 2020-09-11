@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   AnimationController animationController;
 
   List _pageOptions;
-  FirebaseUser currentUser;
+  User currentUser;
 
   @override
   void initState() {
@@ -89,7 +89,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               tabs: [
                 GButton(
                   iconActiveColor: AppTheme.nearlyPurple,
-                  iconColor: Colors.grey.shade600,
+                  iconColor: Colors.grey.shade500,
                   textColor: AppTheme.nearlyPurple,
                   backgroundColor: AppTheme.nearlyPurple.withOpacity(.2),
                   iconSize: 24,
@@ -97,10 +97,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   text: 'Today',
                 ),
                 GButton(
-                  iconActiveColor: Colors.teal,
-                  iconColor: Colors.grey.shade600,
-                  textColor: Colors.teal,
-                  backgroundColor: Colors.teal.withOpacity(.2),
+                  iconActiveColor: AppTheme.nearlyPurple,
+                  iconColor: Colors.grey.shade500,
+                  textColor: AppTheme.nearlyPurple,
+                  backgroundColor: AppTheme.nearlyPurple.withOpacity(.2),
                   iconSize: 24,
                   icon: Icons.insert_chart,
                   text: 'Weekly',
@@ -108,19 +108,19 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 GButton(
                   icon: Icons.group,
                   text: 'Group',
-                  iconActiveColor: Colors.pink,
-                  iconColor: Colors.grey.shade600,
-                  textColor: Colors.pink,
-                  backgroundColor: Colors.pink.withOpacity(.2),
+                  iconActiveColor: AppTheme.nearlyPurple,
+                  iconColor: Colors.grey.shade500,
+                  textColor: AppTheme.nearlyPurple,
+                  backgroundColor: AppTheme.nearlyPurple.withOpacity(.2),
                   iconSize: 24,
                 ),
                 GButton(
                   icon: Icons.rss_feed,
                   text: 'News',
-                  iconActiveColor: Colors.blueAccent,
-                  iconColor: Colors.grey.shade600,
-                  textColor: Colors.blueAccent,
-                  backgroundColor: Colors.blueAccent.withOpacity(.2),
+                  iconActiveColor: AppTheme.nearlyPurple,
+                  iconColor: Colors.grey.shade500,
+                  textColor: AppTheme.nearlyPurple,
+                  backgroundColor: AppTheme.nearlyPurple.withOpacity(.2),
                   iconSize: 24,
                 ),
               ],

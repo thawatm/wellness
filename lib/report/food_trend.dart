@@ -111,9 +111,9 @@ class _FoodTrendChartState extends State<FoodTrendChart> {
   }
 
   initData() {
-    snapshotData = widget.snapshot.documents
-      ..sort(
-          (a, b) => b.data['date'].toDate().compareTo(a.data['date'].toDate()));
+    snapshotData = widget.snapshot.docs
+      ..sort((a, b) =>
+          b.data()['date'].toDate().compareTo(a.data()['date'].toDate()));
 
     foodData =
         snapshotData.map((data) => FoodMonitor.fromSnapshot(data)).toList();
@@ -220,7 +220,7 @@ class _FoodTrendChartState extends State<FoodTrendChart> {
   }
 
   Widget _buildImagesListItem(BuildContext context, FoodMonitor content) {
-    // DateTime _date = news.data['record_date'];
+    // DateTime _date = news.data()['record_date'];
     return SafeArea(
       top: false,
       bottom: false,
@@ -257,8 +257,8 @@ class _FoodTrendChartState extends State<FoodTrendChart> {
         height: 40,
         child: CupertinoSegmentedControl<int>(
           children: chartPeriod,
-          selectedColor: Colors.blueAccent,
-          borderColor: Colors.blueAccent,
+          selectedColor: AppTheme.buttonColor,
+          borderColor: AppTheme.buttonColor,
           onValueChanged: (int newValue) {
             setState(() {
               chartDays = newValue;

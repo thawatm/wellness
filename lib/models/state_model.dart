@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wellness/models/userdata.dart';
 
 class StateModel extends Model {
-  FirebaseUser _currentUser;
+  User _currentUser;
   bool isLoading;
   UserProfile _userProfile;
   String _uid;
@@ -14,11 +14,11 @@ class StateModel extends Model {
     this.isLoading = false,
   });
 
-  FirebaseUser get currentUser => _currentUser;
+  User get currentUser => _currentUser;
   UserProfile get userProfile => _userProfile;
   String get uid => _uid;
 
-  void addUser(FirebaseUser user) {
+  void addUser(User user) {
     _currentUser = user;
     _uid = user.uid;
     isLoading = false;

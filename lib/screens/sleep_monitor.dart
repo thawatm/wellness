@@ -96,22 +96,22 @@ class _SleepMonitorPageState extends State<SleepMonitorPage> {
             colors: [AppTheme.appBarColor1, AppTheme.appBarColor2]),
       ),
       body: StreamBuilder<QuerySnapshot>(
-          stream: Firestore.instance
+          stream: FirebaseFirestore.instance
               .collection('wellness_data')
-              .document(uid)
+              .doc(uid)
               .collection('sleep')
               .snapshots(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) return LoadingIndicator();
 
-            snapshotData = snapshot.data.documents;
+            snapshotData = snapshot.data.docs;
 
             return snapshotData.isEmpty
                 ? FirstLoad(title: "เพิ่มข้อมูลใหม่\nแตะที่ไอคอนมุมขวาล่าง")
                 : _buildBody();
           }),
       floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.blueAccent,
+          backgroundColor: AppTheme.appBarColor2,
           onPressed: () {
             // showPickerDateRange(context);
             Navigator.push(
@@ -130,8 +130,8 @@ class _SleepMonitorPageState extends State<SleepMonitorPage> {
         height: 72,
         child: CupertinoSegmentedControl<int>(
           children: chartPeriod,
-          selectedColor: Colors.blueAccent,
-          borderColor: Colors.blueAccent,
+          selectedColor: AppTheme.buttonColor,
+          borderColor: AppTheme.buttonColor,
           onValueChanged: (int newValue) {
             setState(() {
               chartDays = newValue;
@@ -257,8 +257,8 @@ class _SleepMonitorPageState extends State<SleepMonitorPage> {
 
   Widget _buildHistory() {
     snapshotData = snapshotData
-      ..sort(
-          (a, b) => b.data['date'].toDate().compareTo(a.data['date'].toDate()));
+      ..sort((a, b) =>
+          b.data()['date'].toDate().compareTo(a.data()['date'].toDate()));
     return Column(
       children: snapshotData.map((data) => _buildListItem(data)).toList(),
     );
@@ -291,8 +291,8 @@ class _SleepMonitorPageState extends State<SleepMonitorPage> {
                       record.startTime +
                       ' - ' +
                       record.endTime,
-                ).then((int ret) =>
-                    ret == Alert.OK ? deleteData(data.documentID) : null);
+                ).then(
+                    (int ret) => ret == Alert.OK ? deleteData(data.id) : null);
               },
             )),
         Divider(
@@ -303,11 +303,11 @@ class _SleepMonitorPageState extends State<SleepMonitorPage> {
   }
 
   deleteData(docId) {
-    Firestore.instance
+    FirebaseFirestore.instance
         .collection('wellness_data')
-        .document(uid)
+        .doc(uid)
         .collection('sleep')
-        .document(docId)
+        .doc(docId)
         .delete()
         .catchError((e) {
       print(e);
@@ -319,35 +319,6 @@ class _SleepMonitorPageState extends State<SleepMonitorPage> {
       content: Text(value),
     ));
   }
-
-  // void _saveData() async {
-  //   if (monitorData.length < 2) {
-  //     showInSnackBar("No Data");
-  //     return;
-  //   }
-
-  //   try {
-  //     final result = await InternetAddress.lookup('google.com');
-  //     if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-  //       int timestamp = monitorData['date'].millisecondsSinceEpoch;
-  //       DocumentReference monitor = Firestore.instance
-  //           .collection('wellness_data')
-  //           .document(uid)
-  //           .collection('sleep')
-  //           .document(timestamp.toString());
-  //       Firestore.instance.runTransaction((transaction) async {
-  //         await transaction
-  //             .set(monitor, monitorData)
-  //             .whenComplete(() => showInSnackBar("Successful"));
-  //       });
-  //     } else {
-  //       showInSnackBar("No Internet Connection");
-  //     }
-  //   } on SocketException catch (_) {
-  //     showInSnackBar("No Internet Connection");
-  //     return;
-  //   }
-  // }
 
   Future<ConfirmAction> confirmDialog(
       BuildContext context, SleepMonitor record) async {

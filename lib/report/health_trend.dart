@@ -55,9 +55,9 @@ class _HealthTrendChartState extends State<HealthTrendChart> {
 
   initData() {
     if (widget.snapshot != null) {
-      healthData = widget.snapshot.documents
+      healthData = widget.snapshot.docs
         ..sort((a, b) =>
-            b.data['date'].toDate().compareTo(a.data['date'].toDate()));
+            b.data()['date'].toDate().compareTo(a.data()['date'].toDate()));
 
       // PRESSURE DATA
       pressureData = healthData
@@ -123,8 +123,8 @@ class _HealthTrendChartState extends State<HealthTrendChart> {
           height: 72,
           child: CupertinoSegmentedControl<int>(
             children: chartPeriod,
-            selectedColor: Colors.blueAccent,
-            borderColor: Colors.blueAccent,
+            selectedColor: AppTheme.buttonColor,
+            borderColor: AppTheme.buttonColor,
             onValueChanged: (int newValue) {
               setState(() {
                 chartDays = newValue;

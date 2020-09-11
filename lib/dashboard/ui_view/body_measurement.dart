@@ -26,24 +26,26 @@ class BodyMeasurementView extends StatelessWidget {
     String kioskDocumentId;
 
     return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance
+      stream: FirebaseFirestore.instance
           .collection('wellness_data')
-          .document(uid)
+          .doc(uid)
           .collection('healthdata')
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return SizedBox();
         try {
-          DocumentSnapshot snapshotData = snapshot.data.documents
-              .lastWhere((v) => v.data['weight'] != null);
+          DocumentSnapshot snapshotData = snapshot.data.docs
+              .lastWhere((v) => v.data()['weight'] != null, orElse: () => null);
           if (snapshotData != null) {
             HealthMonitor bloodData = HealthMonitor.fromSnapshot(snapshotData);
             weight = bloodData.weight ?? 0;
             bmi = bloodData.bmi ?? 0;
             recordDate = DateFormat.yMMMd().format(bloodData.date);
-            kioskDocumentId = snapshotData['kioskDocumentId'];
+            kioskDocumentId = snapshotData.data()['kioskDocumentId'];
           }
-        } catch (e) {}
+        } catch (e) {
+          print(e);
+        }
 
         return AnimatedBuilder(
           animation: animationController,

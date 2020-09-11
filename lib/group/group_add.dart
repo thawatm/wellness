@@ -39,19 +39,17 @@ class _GroupAddPageState extends State<GroupAddPage> {
       var groupData = _fbKey.currentState.value;
       groupData['owner'] = uid;
 
-      await Firestore.instance
+      await FirebaseFirestore.instance
           .collection('wellness_groups')
-          .getDocuments()
+          .get()
           .then((docs) {
-        groupId = docs.documents?.last?.documentID;
+        groupId = docs.docs?.last?.id;
         if (groupId != null) {
           groupId = (int.parse(groupId) + 1).toString();
         }
       }).catchError((e) {});
 
-      Firestore.instance
-          .document('wellness_groups/$groupId')
-          .setData(groupData);
+      FirebaseFirestore.instance.doc('wellness_groups/$groupId').set(groupData);
 
       showInSnackBar("Successful");
       ScopedModel.of<StateModel>(context).isLoading = true;

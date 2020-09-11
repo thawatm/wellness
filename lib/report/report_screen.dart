@@ -201,30 +201,30 @@ class _ReportScreenState extends State<ReportScreen>
 
   Future<bool> getData() async {
     DocumentReference docRef =
-        Firestore.instance.collection('wellness_data').document(uid);
+        FirebaseFirestore.instance.collection('wellness_data').doc(uid);
 
-    await docRef.collection('workout').getDocuments().then((snapshot) {
+    await docRef.collection('workout').get().then((snapshot) {
       workoutSn = snapshot;
     });
-    await docRef.collection('food').getDocuments().then((snapshot) {
+    await docRef.collection('food').get().then((snapshot) {
       foodSn = snapshot;
     });
-    await docRef.collection('healthdata').getDocuments().then((snapshot) {
+    await docRef.collection('healthdata').get().then((snapshot) {
       healthSn = snapshot;
     });
-    await docRef.collection('water').getDocuments().then((snapshot) {
+    await docRef.collection('water').get().then((snapshot) {
       waterSn = snapshot;
     });
-    await docRef.collection('sleep').getDocuments().then((snapshot) {
+    await docRef.collection('sleep').get().then((snapshot) {
       sleepSn = snapshot;
     });
 
     if (isFromGroup)
-      await Firestore.instance
-          .document('wellness_users/$uid')
+      await FirebaseFirestore.instance
+          .doc('wellness_users/$uid')
           .get()
           .then((doc) {
-        if (doc.data['smoke'] != null) smoke = doc.data['smoke'];
+        if (doc.data()['smoke'] != null) smoke = doc.data()['smoke'];
         userProfile = UserProfile.fromSnapshot(doc);
       });
     buildSimple7Data(startDate);
@@ -384,9 +384,9 @@ class _ReportScreenState extends State<ReportScreen>
     try {
       DateTime s = DateTime.now();
       if (startDate != null) s = startDate;
-      List<DocumentSnapshot> snapshotData = snapshot.documents.where((v) {
-        DateTime d = v.data[date].toDate();
-        return v.data[value] != null &&
+      List<DocumentSnapshot> snapshotData = snapshot.docs.where((v) {
+        DateTime d = v.data()[date].toDate();
+        return v.data()[value] != null &&
             Jiffy(d).week == Jiffy(s).week &&
             Jiffy(d).year == Jiffy(s).year;
       }).toList();
@@ -409,8 +409,8 @@ class _ReportScreenState extends State<ReportScreen>
     if (snapshotData != null) {
       var data = snapshotData.map((v) {
         return {
-          'day': Jiffy(v.data[date].toDate()).day,
-          'value': v.data[value]
+          'day': Jiffy(v.data()[date].toDate()).day,
+          'value': v.data()[value]
         };
       });
       groupBy(data, (obj) => obj['day']).forEach((k, v) {
@@ -426,9 +426,10 @@ class _ReportScreenState extends State<ReportScreen>
 
   num getSum(List<DocumentSnapshot> snapshotData, String key) {
     if (snapshotData != null) {
-      num sum = snapshotData.where((v) => v[key] != null).fold(0, (a, b) {
-        if (b[key] is String) return a + num.parse(b[key]);
-        return a + b[key];
+      num sum =
+          snapshotData.where((v) => v.data()[key] != null).fold(0, (a, b) {
+        if (b.data()[key] is String) return a + num.parse(b.data()[key]);
+        return a + b.data()[key];
       });
       return sum;
     }
@@ -437,11 +438,13 @@ class _ReportScreenState extends State<ReportScreen>
 
   num getLastData(QuerySnapshot snapshot, String key, DateTime endDate) {
     try {
-      DocumentSnapshot s4 = snapshot.documents
-          .where((v) => v[key] != null && v['date'].toDate().isBefore(endDate))
-          .last;
-      if (s4 != null) {
-        return s4.data[key];
+      List<DocumentSnapshot> s4 = snapshot.docs
+          .where((v) =>
+              v.data()[key] != null &&
+              v.data()['date'].toDate().isBefore(endDate))
+          .toList();
+      if (s4.isNotEmpty) {
+        return s4.last.data()[key];
       }
     } catch (e) {
       print(e);
@@ -451,16 +454,16 @@ class _ReportScreenState extends State<ReportScreen>
 
   Map getLastPressureData(QuerySnapshot snapshot, DateTime endDate) {
     try {
-      DocumentSnapshot s = snapshot.documents
+      List<DocumentSnapshot> s = snapshot.docs
           .where((v) =>
-              v['pressureUpper'] != null &&
-              v['pressureLower'] != null &&
-              v['date'].toDate().isBefore(endDate))
-          .last;
-      if (s != null) {
+              v.data()['pressureUpper'] != null &&
+              v.data()['pressureLower'] != null &&
+              v.data()['date'].toDate().isBefore(endDate))
+          .toList();
+      if (s.isNotEmpty) {
         return {
-          'bpupper': s.data['pressureUpper'],
-          'bplower': s.data['pressureLower']
+          'bpupper': s.last.data()['pressureUpper'],
+          'bplower': s.last.data()['pressureLower']
         };
       }
     } catch (e) {

@@ -72,7 +72,7 @@ class _SleepTrendChartState extends State<SleepTrendChart> {
     super.initState();
     DateTime now = DateTime.now();
     today = DateTime(now.year, now.month, now.day);
-    if (widget.snapshot != null) snapshotData = widget.snapshot.documents;
+    if (widget.snapshot != null) snapshotData = widget.snapshot.docs;
   }
 
   @override
@@ -95,8 +95,8 @@ class _SleepTrendChartState extends State<SleepTrendChart> {
         height: 72,
         child: CupertinoSegmentedControl<int>(
           children: chartPeriod,
-          selectedColor: Colors.blueAccent,
-          borderColor: Colors.blueAccent,
+          selectedColor: AppTheme.buttonColor,
+          borderColor: AppTheme.buttonColor,
           onValueChanged: (int newValue) {
             setState(() {
               chartDays = newValue;

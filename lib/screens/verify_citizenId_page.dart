@@ -42,20 +42,20 @@ class _VerifyCitizenIdPageState extends State<VerifyCitizenIdPage> {
 
   Widget _buildBody(BuildContext context) {
     return StreamBuilder<DocumentSnapshot>(
-      stream: Firestore.instance
+      stream: FirebaseFirestore.instance
           .collection('wellness_users')
-          .document(uid)
+          .doc(uid)
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
 
         if (snapshot.data.data != null) {
-          userData['firstname'] = snapshot.data.data['firstname'];
-          userData['lastname'] = snapshot.data.data['lastname'];
-          userData['gender'] = snapshot.data.data['gender'];
+          userData['firstname'] = snapshot.data.data()['firstname'];
+          userData['lastname'] = snapshot.data.data()['lastname'];
+          userData['gender'] = snapshot.data.data()['gender'];
 
-          if (snapshot.data.data['birthdate'] != null) {
-            userData['birthdate'] = snapshot.data.data['birthdate'].toDate();
+          if (snapshot.data.data()['birthdate'] != null) {
+            userData['birthdate'] = snapshot.data.data()['birthdate'].toDate();
           }
         }
 
@@ -282,29 +282,28 @@ class _VerifyCitizenIdPageState extends State<VerifyCitizenIdPage> {
 
     updateData[updateKey] = value;
 
-    DocumentReference ref =
-        Firestore.instance.collection("wellness_users").document(uid);
-    Firestore.instance.runTransaction((transaction) async {
-      await transaction.update(ref, updateData);
-    });
+    FirebaseFirestore.instance
+        .collection("wellness_users")
+        .doc(uid)
+        .update(updateData);
   }
 
   verify() async {
-    QuerySnapshot query = await Firestore.instance
+    QuerySnapshot query = await FirebaseFirestore.instance
         .collection("data")
         .where('citizenId',
             isEqualTo: userData['citizenId'] ?? '__NotNullValue__')
-        .getDocuments();
-    final count = query.documents.where((doc) {
+        .get();
+    final count = query.docs.where((doc) {
       String gender;
       String birthyear = userData['birthdate'].year.toString();
       if (userData['gender'] == 'male') gender = 'ชาย';
       if (userData['gender'] == 'female') gender = 'หญิง';
 
-      if (doc.data['firstname'] == userData['firstname'] &&
-          doc.data['lastname'] == userData['lastname'] &&
-          doc.data['gender'] == gender &&
-          doc.data['birthyear'] == birthyear) {
+      if (doc.data()['firstname'] == userData['firstname'] &&
+          doc.data()['lastname'] == userData['lastname'] &&
+          doc.data()['gender'] == gender &&
+          doc.data()['birthyear'] == birthyear) {
         return true;
       }
       return false;
@@ -325,7 +324,7 @@ class _VerifyCitizenIdPageState extends State<VerifyCitizenIdPage> {
       padding: const EdgeInsets.all(16.0),
       child: FlatButton(
           padding: EdgeInsets.all(12),
-          color: Colors.blueAccent,
+          color: AppTheme.buttonColor,
           child: Text('ยืนยัน',
               style: TextStyle(color: Colors.white, fontSize: 16)),
           onPressed: () async {

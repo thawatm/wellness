@@ -138,16 +138,13 @@ class _SleepDataEntryState extends State<SleepDataEntry> {
         monitorData['startTime'] = DateFormat.Hm().format(startTime);
         monitorData['endTime'] = DateFormat.Hm().format(endTime);
 
-        DocumentReference monitor = Firestore.instance
+        FirebaseFirestore.instance
             .collection('wellness_data')
-            .document(uid)
+            .doc(uid)
             .collection('sleep')
-            .document(timestamp.toString());
-        Firestore.instance.runTransaction((transaction) async {
-          await transaction
-              .set(monitor, monitorData)
-              .whenComplete(() => Navigator.pop(context));
-        });
+            .doc(timestamp.toString())
+            .set(monitorData)
+            .whenComplete(() => Navigator.pop(context));
       } else {
         showInSnackBar("No Internet Connection");
       }

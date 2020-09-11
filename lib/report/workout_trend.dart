@@ -46,9 +46,9 @@ class _WorkoutTrendChartState extends State<WorkoutTrendChart> {
 
   initData() {
     if (widget.snapshot != null) {
-      snapshotData = widget.snapshot.documents
+      snapshotData = widget.snapshot.docs
         ..sort((a, b) =>
-            b.data['date'].toDate().compareTo(a.data['date'].toDate()));
+            b.data()['date'].toDate().compareTo(a.data()['date'].toDate()));
 
       // Sugar DATA
       stepsData = snapshotData
@@ -97,8 +97,8 @@ class _WorkoutTrendChartState extends State<WorkoutTrendChart> {
           height: 72,
           child: CupertinoSegmentedControl<int>(
             children: chartPeriod,
-            selectedColor: Colors.blueAccent,
-            borderColor: Colors.blueAccent,
+            selectedColor: AppTheme.buttonColor,
+            borderColor: AppTheme.buttonColor,
             onValueChanged: (int newValue) {
               setState(() {
                 chartDays = newValue;

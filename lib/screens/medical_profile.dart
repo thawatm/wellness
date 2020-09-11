@@ -33,9 +33,9 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
               colors: [AppTheme.appBarColor1, AppTheme.appBarColor2]),
         ),
         body: StreamBuilder<DocumentSnapshot>(
-            stream: Firestore.instance
+            stream: FirebaseFirestore.instance
                 .collection('wellness_users')
-                .document(uid)
+                .doc(uid)
                 .snapshots(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) return LinearProgressIndicator();
@@ -50,7 +50,7 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 24, vertical: 8.0),
                         child: FormBuilderTextField(
-                          initialValue: snapshot.data['diagnosis'] ?? '',
+                          initialValue: snapshot.data.data()['diagnosis'] ?? '',
                           maxLines: 2,
                           keyboardType: TextInputType.text,
                           attribute: "diagnosis",
@@ -62,7 +62,7 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
                             horizontal: 24, vertical: 8.0),
                         child: FormBuilderTextField(
                           initialValue:
-                              snapshot.data['currentMedication'] ?? '',
+                              snapshot.data.data()['currentMedication'] ?? '',
                           maxLines: 2,
                           keyboardType: TextInputType.text,
                           attribute: "currentMedication",
@@ -73,7 +73,8 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 24, vertical: 8.0),
                         child: FormBuilderTextField(
-                          initialValue: snapshot.data['passMedication'] ?? '',
+                          initialValue:
+                              snapshot.data.data()['passMedication'] ?? '',
                           maxLines: 2,
                           keyboardType: TextInputType.text,
                           attribute: "passMedication",
@@ -84,7 +85,8 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 24, vertical: 8.0),
                         child: FormBuilderTextField(
-                          initialValue: snapshot.data['vaccination'] ?? '',
+                          initialValue:
+                              snapshot.data.data()['vaccination'] ?? '',
                           maxLines: 2,
                           keyboardType: TextInputType.text,
                           attribute: "vaccination",
@@ -96,7 +98,8 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 24, vertical: 8.0),
                         child: FormBuilderTextField(
-                          initialValue: snapshot.data['drugAllergy'] ?? '',
+                          initialValue:
+                              snapshot.data.data()['drugAllergy'] ?? '',
                           maxLines: 2,
                           keyboardType: TextInputType.text,
                           attribute: "drugAllergy",
@@ -109,7 +112,7 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
                         padding: const EdgeInsets.symmetric(horizontal: 24),
                         child: FlatButton(
                             padding: EdgeInsets.all(12),
-                            color: Colors.blueAccent,
+                            color: AppTheme.buttonColor,
                             child: Text('Save',
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 16)),
@@ -131,10 +134,9 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
   }
 
   _saveData(Map<String, dynamic> updateData) {
-    DocumentReference ref =
-        Firestore.instance.collection('wellness_users').document(uid);
-    Firestore.instance.runTransaction((transaction) async {
-      await transaction.update(ref, updateData);
-    });
+    FirebaseFirestore.instance
+        .collection('wellness_users')
+        .doc(uid)
+        .update(updateData);
   }
 }

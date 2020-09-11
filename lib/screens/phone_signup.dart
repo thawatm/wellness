@@ -76,7 +76,7 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
         _isCodeSent ? _signInPhone : _verifyPhone,
         Container(
           alignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           child: Text(
             _message,
             style: TextStyle(color: Colors.red),
@@ -222,7 +222,7 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
     };
 
     final PhoneVerificationFailed verificationFailed =
-        (AuthException authException) {
+        (FirebaseAuthException authException) {
       setState(() {
         _isLoading = false;
         // _message =
@@ -261,14 +261,13 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
 
   // Example code of how to sign in with phone.
   void _signInWithPhoneNumber() async {
-    final AuthCredential credential = PhoneAuthProvider.getCredential(
+    final AuthCredential credential = PhoneAuthProvider.credential(
       verificationId: _verificationId,
       smsCode: _smsController.text,
     );
     try {
-      final FirebaseUser user =
-          (await _auth.signInWithCredential(credential)).user;
-      final FirebaseUser currentUser = await _auth.currentUser();
+      final User user = (await _auth.signInWithCredential(credential)).user;
+      final User currentUser = _auth.currentUser;
       assert(user.uid == currentUser.uid);
 
       setState(() {
@@ -285,7 +284,15 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
       setState(() {
         _isLoading = false;
         _smsController.clear();
-        _message = e.toString();
+        if (e.code == 'invalid-verification-code') {
+          _message = '';
+          widget._scaffold.showSnackBar(SnackBar(
+            duration: Duration(seconds: 10),
+            content: Text('The sms verification code is invalid'),
+          ));
+        } else {
+          _message = e.message;
+        }
       });
     }
   }

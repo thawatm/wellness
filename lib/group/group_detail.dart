@@ -47,14 +47,14 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
   }
 
   Future<bool> getData() async {
-    return await Firestore.instance
+    return await FirebaseFirestore.instance
         .collection('wellness_groups')
-        .document(widget.groupId)
+        .doc(widget.groupId)
         .get()
         .then((g) {
-      groupName = g.data['name'];
-      groupDesc = g.data['desc'];
-      owner = g.data['owner'];
+      groupName = g.data()['name'];
+      groupDesc = g.data()['desc'];
+      owner = g.data()['owner'];
       if (uid == owner) isOwner = true;
       return true;
     });
@@ -112,17 +112,17 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
 
   Widget _buildBody() {
     return StreamBuilder<QuerySnapshot>(
-        stream: Firestore.instance
+        stream: FirebaseFirestore.instance
             .collection('wellness_groups')
-            .document(widget.groupId)
+            .doc(widget.groupId)
             .collection('members')
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return LinearProgressIndicator();
-          memberCount = snapshot.data.documents.length;
-          var listViews = snapshot.data.documents
+          memberCount = snapshot.data.docs.length;
+          var listViews = snapshot.data.docs
               .map((v) => FutureBuilder(
-                  future: _getProfileName(v.documentID),
+                  future: _getProfileName(v.id),
                   builder: (context, AsyncSnapshot<UserProfile> userSn) {
                     if (!userSn.hasData) return SizedBox();
                     return ListTile(
@@ -302,34 +302,39 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
   }
 
   Future<UserProfile> _getProfileName(String uid) {
-    return Firestore.instance.document('wellness_users/$uid').get().then((v) {
+    return FirebaseFirestore.instance
+        .doc('wellness_users/$uid')
+        .get()
+        .then((v) {
       return UserProfile.fromSnapshot(v);
     });
   }
 
   void _leaveGroup(String groupId, String uid) {
-    Firestore.instance
-        .document('wellness_groups/$groupId/members/$uid')
+    FirebaseFirestore.instance
+        .doc('wellness_groups/$groupId/members/$uid')
         .delete();
-    Firestore.instance.document('wellness_users/$uid/groups/$groupId').delete();
+    FirebaseFirestore.instance
+        .doc('wellness_users/$uid/groups/$groupId')
+        .delete();
   }
 
   Future<void> _deleteGroup(String groupId) async {
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection('wellness_groups/$groupId/members')
-        .getDocuments()
+        .get()
         .then((v) {
-      v.documents.forEach((d) {
-        String uid = d.documentID;
-        Firestore.instance
-            .document('wellness_users/$uid/groups/$groupId')
+      v.docs.forEach((d) {
+        String uid = d.id;
+        FirebaseFirestore.instance
+            .doc('wellness_users/$uid/groups/$groupId')
             .delete();
-        Firestore.instance
-            .document('wellness_groups/$groupId/members/$uid')
+        FirebaseFirestore.instance
+            .doc('wellness_groups/$groupId/members/$uid')
             .delete();
       });
     }).then((value) {
-      Firestore.instance.document('wellness_groups/$groupId').delete();
+      FirebaseFirestore.instance.doc('wellness_groups/$groupId').delete();
       Navigator.pop(context);
     }).catchError((e) {
       print(e);

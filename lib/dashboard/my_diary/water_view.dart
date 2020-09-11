@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:wellness/dashboard/ui_view/wave_view.dart';
@@ -53,14 +54,14 @@ class _WaterViewState extends State<WaterView> with TickerProviderStateMixin {
             transform: Matrix4.translationValues(
                 0.0, 30 * (1.0 - widget.mainScreenAnimation.value), 0.0),
             child: StreamBuilder<QuerySnapshot>(
-              stream: Firestore.instance
+              stream: FirebaseFirestore.instance
                   .collection('wellness_data')
-                  .document(uid)
+                  .doc(uid)
                   .collection('water')
                   .snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) return SizedBox();
-                snapshotData = snapshot.data.documents;
+                snapshotData = snapshot.data.docs;
 
                 todayData = snapshotData
                     .map((data) => WaterMonitor.fromSnapshot(data))
@@ -105,6 +106,36 @@ class _WaterViewState extends State<WaterView> with TickerProviderStateMixin {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 4, bottom: 8, top: 0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: <Widget>[
+                                          Icon(
+                                            FontAwesomeIcons.glassWhiskey,
+                                            color: Colors.blueAccent,
+                                            size: 16,
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 12.0),
+                                            child: Text(
+                                              'ดื่มน้ำ',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontFamily: AppTheme.fontName,
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 16,
+                                                letterSpacing: -0.1,
+                                                color: AppTheme.nearlyBlack,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.start,
@@ -113,7 +144,7 @@ class _WaterViewState extends State<WaterView> with TickerProviderStateMixin {
                                       children: <Widget>[
                                         Padding(
                                           padding: const EdgeInsets.only(
-                                              left: 4, bottom: 3, top: 0),
+                                              left: 10, bottom: 0, top: 0),
                                           child: Text(
                                             '$drink',
                                             textAlign: TextAlign.center,
@@ -142,119 +173,153 @@ class _WaterViewState extends State<WaterView> with TickerProviderStateMixin {
                                         ),
                                       ],
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 4, top: 2, bottom: 8),
-                                      child: Text(
-                                        'จากทั้งหมด 2.4L',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontFamily: AppTheme.fontName,
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 14,
-                                          letterSpacing: 0.0,
-                                          color: AppTheme.darkText,
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: <Widget>[
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 10),
+                                          child: Icon(
+                                            Icons.access_time,
+                                            color:
+                                                AppTheme.grey.withOpacity(0.5),
+                                            size: 14,
+                                          ),
                                         ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 4, right: 4, top: 8, bottom: 4),
-                                  child: Container(
-                                    height: 2,
-                                    decoration: BoxDecoration(
-                                      color: AppTheme.background,
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(4.0)),
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 8),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: <Widget>[
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: <Widget>[
-                                          Padding(
-                                            padding:
-                                                const EdgeInsets.only(left: 4),
-                                            child: Icon(
-                                              Icons.access_time,
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 4.0),
+                                          child: Text(
+                                            '$lastDrink',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontFamily: AppTheme.fontName,
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 12,
+                                              letterSpacing: 0.0,
                                               color: AppTheme.grey
                                                   .withOpacity(0.5),
-                                              size: 16,
                                             ),
                                           ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 4.0),
-                                            child: Text(
-                                              '$lastDrink',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                fontFamily: AppTheme.fontName,
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 14,
-                                                letterSpacing: 0.0,
-                                                color: AppTheme.grey
-                                                    .withOpacity(0.5),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 4),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: <Widget>[
-                                            SizedBox(
-                                              width: 24,
-                                              height: 24,
-                                              child: Image.asset(
-                                                  'assets/fitness_app/bell.png'),
-                                            ),
-                                            Flexible(
-                                              child: Text(
-                                                'ควรดื่มน้ำอย่างน้อยวันละ 8 แก้ว',
-                                                textAlign: TextAlign.start,
-                                                style: TextStyle(
-                                                  fontFamily: AppTheme.fontName,
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: 12,
-                                                  letterSpacing: 0.0,
-                                                  color: HexColor('#F65283'),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                )
+                                      ],
+                                    ),
+                                    // Padding(
+                                    //   padding: const EdgeInsets.only(
+                                    //       left: 4, top: 2, bottom: 8),
+                                    //   child: Text(
+                                    //     'จากทั้งหมด 2.4L',
+                                    //     textAlign: TextAlign.center,
+                                    //     style: TextStyle(
+                                    //       fontFamily: AppTheme.fontName,
+                                    //       fontWeight: FontWeight.w500,
+                                    //       fontSize: 14,
+                                    //       letterSpacing: 0.0,
+                                    //       color: AppTheme.darkText,
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                  ],
+                                ),
+                                // Padding(
+                                //   padding: const EdgeInsets.only(
+                                //       left: 4, right: 4, top: 8, bottom: 4),
+                                //   child: Container(
+                                //     height: 2,
+                                //     decoration: BoxDecoration(
+                                //       color: AppTheme.background,
+                                //       borderRadius: const BorderRadius.all(
+                                //           Radius.circular(4.0)),
+                                //     ),
+                                //   ),
+                                // ),
+                                // Padding(
+                                //   padding: const EdgeInsets.only(top: 8),
+                                //   child: Column(
+                                //     mainAxisAlignment: MainAxisAlignment.center,
+                                //     crossAxisAlignment: CrossAxisAlignment.end,
+                                //     children: <Widget>[
+                                //       Row(
+                                //         mainAxisAlignment:
+                                //             MainAxisAlignment.start,
+                                //         crossAxisAlignment:
+                                //             CrossAxisAlignment.center,
+                                //         children: <Widget>[
+                                //           Padding(
+                                //             padding:
+                                //                 const EdgeInsets.only(left: 4),
+                                //             child: Icon(
+                                //               Icons.access_time,
+                                //               color: AppTheme.grey
+                                //                   .withOpacity(0.5),
+                                //               size: 16,
+                                //             ),
+                                //           ),
+                                //           Padding(
+                                //             padding: const EdgeInsets.only(
+                                //                 left: 4.0),
+                                //             child: Text(
+                                //               '$lastDrink',
+                                //               textAlign: TextAlign.center,
+                                //               style: TextStyle(
+                                //                 fontFamily: AppTheme.fontName,
+                                //                 fontWeight: FontWeight.w500,
+                                //                 fontSize: 14,
+                                //                 letterSpacing: 0.0,
+                                //                 color: AppTheme.grey
+                                //                     .withOpacity(0.5),
+                                //               ),
+                                //             ),
+                                //           ),
+                                //         ],
+                                //       ),
+                                //       // Padding(
+                                //       //   padding: const EdgeInsets.only(top: 4),
+                                //       //   child: Row(
+                                //       //     mainAxisAlignment:
+                                //       //         MainAxisAlignment.start,
+                                //       //     crossAxisAlignment:
+                                //       //         CrossAxisAlignment.center,
+                                //       //     children: <Widget>[
+                                //       //       SizedBox(
+                                //       //         width: 24,
+                                //       //         height: 24,
+                                //       //         child: Image.asset(
+                                //       //             'assets/fitness_app/bell.png'),
+                                //       //       ),
+                                //       //       Flexible(
+                                //       //         child: Text(
+                                //       //           'ควรดื่มน้ำอย่างน้อยวันละ 8 แก้ว',
+                                //       //           textAlign: TextAlign.start,
+                                //       //           style: TextStyle(
+                                //       //             fontFamily: AppTheme.fontName,
+                                //       //             fontWeight: FontWeight.w500,
+                                //       //             fontSize: 12,
+                                //       //             letterSpacing: 0.0,
+                                //       //             color: HexColor('#F65283'),
+                                //       //           ),
+                                //       //         ),
+                                //       //       ),
+                                //       //     ],
+                                //       //   ),
+                                //       // ),
+                                //     ],
+                                //   ),
+                                // )
                               ],
                             ),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(
-                                left: 16, right: 16, top: 0),
+                                left: 16, right: 24, top: 0),
                             child: InkWell(
                               onTap: _saveData,
                               child: Container(
-                                width: 60,
-                                height: 160,
+                                width: 55,
+                                height: 120,
                                 decoration: BoxDecoration(
                                   color: HexColor('#E8EDFE'),
                                   borderRadius: const BorderRadius.only(
@@ -296,12 +361,12 @@ class _WaterViewState extends State<WaterView> with TickerProviderStateMixin {
       int timestamp = monitorData['date'].millisecondsSinceEpoch;
       monitorData['drinkTime'] = DateFormat.Hm().format(monitorData['date']);
       monitorData['waterVolume'] = 200;
-      Firestore.instance
+      FirebaseFirestore.instance
           .collection('wellness_data')
-          .document(uid)
+          .doc(uid)
           .collection('water')
-          .document(timestamp.toString())
-          .setData(monitorData)
+          .doc(timestamp.toString())
+          .set(monitorData)
           .then((value) => monitorData['date'] =
               monitorData['date'].add(Duration(seconds: 1)));
     } catch (e) {

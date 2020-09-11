@@ -10,6 +10,6 @@ class GroupData {
 
   GroupData.fromSnapshot(DocumentSnapshot snapshot)
       : reference = snapshot.reference,
-        name = snapshot.data['name'],
-        owner = snapshot.data["owner"];
+        name = snapshot.data()['name'],
+        owner = snapshot.data()["owner"];
 }

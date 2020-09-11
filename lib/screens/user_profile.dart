@@ -103,9 +103,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
   Widget _buildBody(BuildContext context) {
     return StreamBuilder<DocumentSnapshot>(
-      stream: Firestore.instance
+      stream: FirebaseFirestore.instance
           .collection('wellness_users')
-          .document(uid)
+          .doc(uid)
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
@@ -117,19 +117,19 @@ class _UserProfilePageState extends State<UserProfilePage> {
           profileImage = AssetImage('assets/images/user.png');
         }
 
-        final citizenId = snapshot.data.data['citizenId'];
+        final citizenId = snapshot.data.data()['citizenId'];
         (citizenId != null && citizenId.length == 13)
             ? isLinkKiosk = true
             : isLinkKiosk = false;
 
         return profileData != null
-            ? _buildList(context, snapshot.data)
+            ? _buildList(context, snapshot.data.data())
             : LinearProgressIndicator();
       },
     );
   }
 
-  _buildList(BuildContext context, DocumentSnapshot data) {
+  _buildList(BuildContext context, Map<String, dynamic> data) {
     String bDate = data['birthdate'] == null
         ? ''
         : DateFormat('dd/MM/yyyy').format(data['birthdate'].toDate());
@@ -246,7 +246,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: FlatButton(
               padding: EdgeInsets.all(12),
-              color: Colors.blueAccent,
+              color: AppTheme.buttonColor,
               child: Text('ข้อมูลทางการแพทย์',
                   style: TextStyle(color: Colors.white, fontSize: 16)),
               onPressed: () {
@@ -344,7 +344,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   Navigator.pop(context);
                 },
                 padding: EdgeInsets.all(12),
-                color: Colors.blue,
+                color: Colors.blueAccent,
                 child: Text('Save',
                     style: TextStyle(color: Colors.white, fontSize: 16)),
               ),
@@ -447,40 +447,38 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
     updateData[updateKey] = value;
 
-    DocumentReference ref =
-        Firestore.instance.collection('wellness_users').document(uid);
-    Firestore.instance.runTransaction((transaction) async {
-      await transaction.update(ref, updateData);
-    });
+    FirebaseFirestore.instance
+        .collection('wellness_users')
+        .doc(uid)
+        .update(updateData);
   }
 
   unlinkKiosk() async {
     Map updateData = Map<String, dynamic>();
     updateData['citizenId'] = '';
     DocumentReference ref =
-        Firestore.instance.collection('wellness_users').document(uid);
-    Firestore.instance.runTransaction((transaction) {
-      transaction.update(ref, updateData).then((_) => _buildDialog(
-          context, 'ยกเลิก', 'ยกเลิกการเชื่อมต่อกับ NSTDA Kiosk สำเร็จ'));
+        FirebaseFirestore.instance.collection('wellness_users').doc(uid);
+    ref.update(updateData).then((_) {
+      _buildDialog(
+          context, 'ยกเลิก', 'ยกเลิกการเชื่อมต่อกับ NSTDA Kiosk สำเร็จ');
       deleteKioskData();
-      return;
     });
   }
 
   deleteKioskData() {
-    Firestore.instance
+    FirebaseFirestore.instance
         .collection('wellness_data')
-        .document(uid)
+        .doc(uid)
         .collection('healthdata')
-        .getDocuments()
+        .get()
         .then((value) {
-      value.documents.forEach((doc) {
-        if (doc['kioskDocumentId'] != null) {
-          Firestore.instance
+      value.docs.forEach((doc) {
+        if (doc.data()['kioskDocumentId'] != null) {
+          FirebaseFirestore.instance
               .collection('wellness_data')
-              .document(uid)
+              .doc(uid)
               .collection('healthdata')
-              .document(doc.documentID)
+              .doc(doc.id)
               .delete();
         }
       });
@@ -494,7 +492,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       child: OutlineButton(
           padding: EdgeInsets.all(12),
-          color: Colors.blueAccent,
+          color: AppTheme.buttonColor,
           borderSide: BorderSide(color: Colors.blue.shade600),
           child: Text('ยกเลิกการเชื่อมต่อ',
               style: TextStyle(color: Colors.blue.shade600, fontSize: 16)),
@@ -509,7 +507,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
       padding: const EdgeInsets.all(16.0),
       child: FlatButton(
           padding: EdgeInsets.all(12),
-          color: Colors.blueAccent,
+          color: AppTheme.buttonColor,
           child: Text('เชื่อมต่อกับ NSTDA Kiosk',
               style: TextStyle(color: Colors.white, fontSize: 16)),
           onPressed: () {
@@ -625,14 +623,12 @@ class _UserProfilePageState extends State<UserProfilePage> {
         .then((url) {
       updateData['pictureUrl'] = url;
 
-      DocumentReference ref =
-          Firestore.instance.collection('wellness_users').document(uid);
+      FirebaseFirestore.instance
+          .collection('wellness_users')
+          .doc(uid)
+          .update(updateData);
 
-      Firestore.instance.runTransaction((transaction) async {
-        await transaction.update(ref, updateData);
-
-        _isTempImage = false;
-      });
+      _isTempImage = false;
     });
   }
 }

@@ -154,9 +154,9 @@ class WeeklyBarChart extends StatelessWidget {
     try {
       DateTime s = DateTime.now();
       if (startDate != null) s = startDate;
-      List<DocumentSnapshot> snapshotData = snapshot.documents.where((v) {
-        DateTime d = v.data[date].toDate();
-        return v.data[value] != null &&
+      List<DocumentSnapshot> snapshotData = snapshot.docs.where((v) {
+        DateTime d = v.data()[date].toDate();
+        return v.data()[value] != null &&
             Jiffy(d).week == Jiffy(s).week &&
             Jiffy(d).year == Jiffy(s).year;
       }).toList();
@@ -164,8 +164,8 @@ class WeeklyBarChart extends StatelessWidget {
       if (snapshotData != null) {
         var data = snapshotData.map((v) {
           return {
-            'day': Jiffy(v.data[date].toDate()).day,
-            'value': v.data[value]
+            'day': Jiffy(v.data()[date].toDate()).day,
+            'value': v.data()[value]
           };
         });
         groupBy(data, (obj) => obj['day']).forEach((k, v) {

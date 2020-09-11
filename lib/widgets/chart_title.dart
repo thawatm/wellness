@@ -11,8 +11,8 @@ class ChartPercentTitle extends StatelessWidget {
         super(key: key);
 
   final String title;
-  final dynamic first;
-  final dynamic last;
+  final num first;
+  final num last;
   final Color color;
 
   @override
@@ -36,7 +36,7 @@ class ChartPercentTitle extends StatelessWidget {
     );
   }
 
-  double percentChange(dynamic first, dynamic last) {
+  double percentChange(num first, num last) {
     if (first == null || last == null) return 0;
     return (first - last) * 100 / last;
   }

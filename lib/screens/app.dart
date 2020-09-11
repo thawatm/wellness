@@ -1,5 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_alert/easy_alert.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wellness/group/group_join.dart';
@@ -28,59 +32,76 @@ import 'package:wellness/screens/workout.dart';
 import 'package:wellness/group/group_add.dart';
 
 class WellnessApp extends StatelessWidget {
+  final FirebaseAnalytics analytics = FirebaseAnalytics();
+  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+
   @override
   Widget build(BuildContext context) {
-    return AlertProvider(
-      config: AlertConfig(
-        ok: "OK",
-        cancel: "CANCEL",
-        useIosStyle: false,
-      ),
-      child: MaterialApp(
-        title: 'Wellness Center',
-        // debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          fontFamily: 'Prompt',
-          primarySwatch: Colors.blue,
-          primaryTextTheme: TextTheme(
-            headline6: TextStyle(color: Colors.white),
-          ),
-        ),
-        routes: {
-          '/': (context) => _getMainPage(),
-          '/login': (context) => LoginPage(),
-          '/disclaimer': (context) => DisclaimerPage(),
-          '/home': (context) => HomePage(),
-          '/signup': (context) => SignInPage(),
-          '/newuser': (context) => NewUserPage(),
-          '/pressure': (context) => HealthMonitorPage(),
-          '/weight': (context) => WeightPage(),
-          '/fat': (context) => FatPage(),
-          '/blood': (context) => BloodTestPage(),
-          '/food': (context) => FoodMonitorPage(),
-          '/sleep': (context) => SleepMonitorPage(),
-          '/drink': (context) => DrinkMonitorPage(),
-          '/medical': (context) => MedicalProfilePage(),
-          '/user': (context) => UserProfilePage(),
-          '/contact': (context) => ContactPage(),
-          '/workout': (context) => WorkoutPage(),
-          '/verifycitizenId': (context) => VerifyCitizenIdPage(),
-          '/kioskinfo': (context) => KioskInfoPage(),
-          '/groupadd': (context) => GroupAddPage(),
-          '/groupjoin': (context) => GroupJoinPage(),
-        },
-      ),
-    );
+    return FutureBuilder(
+        future: _initialization,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return loading();
+          }
+          if (snapshot.connectionState == ConnectionState.done) {
+            return AlertProvider(
+              config: AlertConfig(
+                ok: "OK",
+                cancel: "CANCEL",
+                useIosStyle: false,
+              ),
+              child: MaterialApp(
+                navigatorObservers: [
+                  FirebaseAnalyticsObserver(analytics: analytics),
+                ],
+                title: 'Wellness Center',
+
+                // debugShowCheckedModeBanner: false,
+                theme: ThemeData(
+                  fontFamily: 'Prompt',
+                  primarySwatch: Colors.blue,
+                  primaryTextTheme: TextTheme(
+                    headline6: TextStyle(color: Colors.white),
+                  ),
+                ),
+                routes: {
+                  '/': (context) => _getMainPage(),
+                  '/login': (context) => LoginPage(),
+                  '/disclaimer': (context) => DisclaimerPage(),
+                  '/home': (context) => HomePage(),
+                  '/signup': (context) => SignInPage(),
+                  '/newuser': (context) => NewUserPage(),
+                  '/pressure': (context) => HealthMonitorPage(),
+                  '/weight': (context) => WeightPage(),
+                  '/fat': (context) => FatPage(),
+                  '/blood': (context) => BloodTestPage(),
+                  '/food': (context) => FoodMonitorPage(),
+                  '/sleep': (context) => SleepMonitorPage(),
+                  '/drink': (context) => DrinkMonitorPage(),
+                  '/medical': (context) => MedicalProfilePage(),
+                  '/user': (context) => UserProfilePage(),
+                  '/contact': (context) => ContactPage(),
+                  '/workout': (context) => WorkoutPage(),
+                  '/verifycitizenId': (context) => VerifyCitizenIdPage(),
+                  '/kioskinfo': (context) => KioskInfoPage(),
+                  '/groupadd': (context) => GroupAddPage(),
+                  '/groupjoin': (context) => GroupJoinPage(),
+                },
+              ),
+            );
+          }
+          return loading();
+        });
   }
 
   Widget _getMainPage() {
-    return StreamBuilder<FirebaseUser>(
-      stream: FirebaseAuth.instance.onAuthStateChanged,
+    return StreamBuilder<User>(
+      stream: FirebaseAuth.instance.authStateChanges(),
       builder: (BuildContext context, snapshot) {
         return StreamBuilder<DocumentSnapshot>(
-            stream: Firestore.instance
+            stream: FirebaseFirestore.instance
                 .collection('wellness_users')
-                .document(snapshot?.data?.uid)
+                .doc(snapshot?.data?.uid)
                 .snapshots(),
             builder: (BuildContext context, userSn) {
               if (snapshot.hasData && userSn.hasData) {
@@ -88,10 +109,12 @@ class WellnessApp extends StatelessWidget {
                 ScopedModel.of<StateModel>(context).addUser(snapshot.data);
 
                 // new user
-                if (userSn.data.data == null) return NewUserPage();
+                if (userSn.data.data() == null) return NewUserPage();
 
                 // logged in
                 ScopedModel.of<StateModel>(context).addUserProfile(userSn.data);
+                Crashlytics.instance.setUserIdentifier(snapshot.data.uid);
+                Crashlytics.instance.setUserName(snapshot.data.phoneNumber);
                 return HomePage();
               } else {
                 //Loading
@@ -105,5 +128,9 @@ class WellnessApp extends StatelessWidget {
             });
       },
     );
+  }
+
+  Widget loading() {
+    return MaterialApp(home: LinearProgressIndicator());
   }
 }

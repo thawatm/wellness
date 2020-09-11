@@ -77,13 +77,13 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
 
   void getKioskData() {
     try {
-      Firestore.instance
+      FirebaseFirestore.instance
           .collection("data")
           .where('citizenId', isEqualTo: userProfile.citizenId)
-          .getDocuments()
+          .get()
           .then((snapshot) {
         if (snapshot != null) {
-          snapshot.documents.forEach((doc) {
+          snapshot.docs.forEach((doc) {
             _saveKioskData(doc);
           });
         }
@@ -94,7 +94,7 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
   }
 
   void _saveKioskData(DocumentSnapshot document) {
-    String dateString = document.documentID;
+    String dateString = document.id;
     if (dateString.length >= 14) {
       int yStr = int.parse(dateString.substring(0, 4));
       if (yStr > 2500 && yStr < 2600) {
@@ -106,15 +106,15 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
       DateTime date = DateTime.parse(temp);
       int timestamp = date.millisecondsSinceEpoch;
 
-      num bpupper = document.data["bpupper"];
-      num bplower = document.data["bplower"];
-      num pulse = document.data["pulse"];
+      num bpupper = document.data()["bpupper"];
+      num bplower = document.data()["bplower"];
+      num pulse = document.data()["pulse"];
 
-      num height = document.data["height"];
-      num weight = document.data["weight"];
+      num height = document.data()["height"];
+      num weight = document.data()["weight"];
       num bmi = weight * 100 * 100 / (height * height);
 
-      String kioskLocation = document.data["location"];
+      String kioskLocation = document.data()["location"];
 
       Map<String, dynamic> kioskData = {
         'date': date,
@@ -124,7 +124,7 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
         'weight': weight,
         'height': height,
         'bmi': num.parse(bmi.toStringAsFixed(2)),
-        'kioskDocumentId': document.documentID,
+        'kioskDocumentId': document.id,
         'kioskLocation': kioskLocation
       };
       kioskData.forEach((key, value) {
@@ -132,12 +132,12 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
       });
 
       try {
-        Firestore.instance
+        FirebaseFirestore.instance
             .collection('wellness_data')
-            .document(uid)
+            .doc(uid)
             .collection('healthdata')
-            .document(timestamp.toString())
-            .setData(kioskData);
+            .doc(timestamp.toString())
+            .set(kioskData);
       } catch (e) {
         print(e);
       }
@@ -173,12 +173,12 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
       'totalWorkout': stepsCount ~/ 400,
     };
     try {
-      Firestore.instance
+      FirebaseFirestore.instance
           .collection('wellness_data')
-          .document(uid)
+          .doc(uid)
           .collection('workout')
-          .document(timestamp.toString())
-          .setData(monitorData);
+          .doc(timestamp.toString())
+          .set(monitorData);
     } catch (e) {
       print(e);
     }

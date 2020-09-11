@@ -12,10 +12,10 @@ class SleepMonitor {
 
   SleepMonitor.fromSnapshot(DocumentSnapshot snapshot)
       : reference = snapshot.reference,
-        date = snapshot.data['date'].toDate(),
-        sleepHours = snapshot.data["sleepHours"],
-        startTime = snapshot.data["startTime"],
-        endTime = snapshot.data["endTime"],
+        date = snapshot.data()['date'].toDate(),
+        sleepHours = snapshot.data()["sleepHours"],
+        startTime = snapshot.data()["startTime"],
+        endTime = snapshot.data()["endTime"],
         dateString =
-            DateFormat('yyyyMMdd').format(snapshot.data['date'].toDate());
+            DateFormat('yyyyMMdd').format(snapshot.data()['date'].toDate());
 }

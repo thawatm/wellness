@@ -29,16 +29,16 @@ class SleepView extends StatelessWidget {
             transform: new Matrix4.translationValues(
                 0.0, 30 * (1.0 - animation.value), 0.0),
             child: StreamBuilder<QuerySnapshot>(
-              stream: Firestore.instance
+              stream: FirebaseFirestore.instance
                   .collection('wellness_data')
-                  .document(uid)
+                  .doc(uid)
                   .collection('sleep')
                   .snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) return SizedBox();
 
                 DateTime today = DateTime.now();
-                List<DocumentSnapshot> snapshotData = snapshot.data.documents;
+                List<DocumentSnapshot> snapshotData = snapshot.data.docs;
                 try {
                   SleepMonitor sleepData = snapshotData
                       .map((data) => SleepMonitor.fromSnapshot(data))
@@ -121,7 +121,7 @@ class SleepView extends StatelessWidget {
                                     children: <Widget>[
                                       Padding(
                                         padding: const EdgeInsets.only(
-                                            left: 4, bottom: 3),
+                                            left: 10, bottom: 3),
                                         child: Text(
                                           '$sleepHours',
                                           textAlign: TextAlign.center,

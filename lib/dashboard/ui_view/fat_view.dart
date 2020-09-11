@@ -19,22 +19,23 @@ class FatView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String uid = ScopedModel.of<StateModel>(context).uid;
-    double bodyFat = 0;
-    int bodyAge = 0;
-    double visceralFat = 0;
+    num bodyFat = 0;
+    num bodyAge = 0;
+    num visceralFat = 0;
     String recordDate = 'ไม่มีข้อมูล';
 
     return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance
+      stream: FirebaseFirestore.instance
           .collection('wellness_data')
-          .document(uid)
+          .doc(uid)
           .collection('healthdata')
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return SizedBox();
         try {
-          DocumentSnapshot snapshotData = snapshot.data.documents
-              .lastWhere((v) => v.data['bodyFat'] != null);
+          DocumentSnapshot snapshotData = snapshot.data.docs.lastWhere(
+              (v) => v.data()['bodyFat'] != null,
+              orElse: () => null);
 
           if (snapshotData != null) {
             HealthMonitor fatData = HealthMonitor.fromSnapshot(snapshotData);

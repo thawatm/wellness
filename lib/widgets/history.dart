@@ -27,7 +27,7 @@ class HistoryList extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.only(top: 20.0),
       children: snapshot.map((data) {
-        if (data['category'] == collection) {
+        if (data.data()['category'] == collection) {
           return _buildListItem(context, data);
         } else if (collection == 'weight' ||
             collection == 'pressure' ||
@@ -44,7 +44,7 @@ class HistoryList extends StatelessWidget {
     var record = HealthMonitor.fromSnapshot(data);
     Text subtitle = Text(record.toString());
 
-    if (data['kioskDocumentId'] != null) {
+    if (data.data()['kioskDocumentId'] != null) {
       subtitle = Text(
         record.toString(),
         style: TextStyle(color: Colors.teal),
@@ -58,9 +58,9 @@ class HistoryList extends StatelessWidget {
             Text(DateFormat.yMMMd().format(record.date),
                 style: TextStyle(color: Colors.black87)),
             SizedBox(width: 10),
-            (data['kioskDocumentId'] != null)
+            (data.data()['kioskDocumentId'] != null)
                 ? KioskChip(
-                    kioskDocumentId: data['kioskDocumentId'],
+                    kioskDocumentId: data.data()['kioskDocumentId'],
                   )
                 : SizedBox(width: 0),
           ]),
@@ -71,7 +71,7 @@ class HistoryList extends StatelessWidget {
               title: "ลบข้อมูล",
               content: DateFormat('dd/MM/yyyy').format(record.date),
             ).then((int ret) => ret == Alert.OK
-                ? deleteData(data.documentID, data['kioskDocumentId'])
+                ? deleteData(data.id, data.data()['kioskDocumentId'])
                 : null);
           },
         ),
@@ -85,20 +85,20 @@ class HistoryList extends StatelessWidget {
   deleteData(docId, kioskDocumentId) {
     String col = collection;
     if (collection != 'workout') col = 'healthdata';
-    Firestore.instance
+    FirebaseFirestore.instance
         .collection('wellness_data')
-        .document(uid)
+        .doc(uid)
         .collection(col)
-        .document(docId)
+        .doc(docId)
         .delete()
         .catchError((e) {
       print(e);
     });
 
     if (kioskDocumentId != null) {
-      Firestore.instance
+      FirebaseFirestore.instance
           .collection('data')
-          .document(kioskDocumentId)
+          .doc(kioskDocumentId)
           .delete()
           .catchError((e) {
         print(e);

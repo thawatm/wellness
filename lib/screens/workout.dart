@@ -103,17 +103,18 @@ class _WorkoutPageState extends State<WorkoutPage> {
             ];
           },
           body: StreamBuilder<QuerySnapshot>(
-              stream: Firestore.instance
+              stream: FirebaseFirestore.instance
                   .collection('wellness_data')
-                  .document(uid)
+                  .doc(uid)
                   .collection(collection)
                   .snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) return LoadingIndicator();
-                snapshotData = snapshot.data.documents
-                  ..sort((a, b) => b.data['date']
+                snapshotData = snapshot.data.docs
+                  ..sort((a, b) => b
+                      .data()['date']
                       .toDate()
-                      .compareTo(a.data['date'].toDate()));
+                      .compareTo(a.data()['date'].toDate()));
 
                 // Sugar DATA
                 stepsData = snapshotData
@@ -170,8 +171,8 @@ class _WorkoutPageState extends State<WorkoutPage> {
           // width: 500.0,
           child: CupertinoSegmentedControl<int>(
             children: chartPeriod,
-            selectedColor: Colors.blueAccent,
-            borderColor: Colors.blueAccent,
+            selectedColor: AppTheme.buttonColor,
+            borderColor: AppTheme.buttonColor,
             onValueChanged: (int newValue) {
               setState(() {
                 chartDays = newValue;

@@ -78,10 +78,9 @@ class _EditProfileState extends State<EditProfile> {
 
     updateData[widget.updateKey] = value;
 
-    DocumentReference ref =
-        Firestore.instance.collection('wellness_users').document(widget.uid);
-    Firestore.instance.runTransaction((transaction) async {
-      await transaction.update(ref, updateData);
-    });
+    FirebaseFirestore.instance
+        .collection('wellness_users')
+        .doc(widget.uid)
+        .update(updateData);
   }
 }

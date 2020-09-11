@@ -164,14 +164,14 @@ class _DrinkMonitorPageState extends State<DrinkMonitorPage> {
             ];
           },
           body: StreamBuilder<QuerySnapshot>(
-              stream: Firestore.instance
+              stream: FirebaseFirestore.instance
                   .collection('wellness_data')
-                  .document(uid)
+                  .doc(uid)
                   .collection('water')
                   .snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) return LoadingIndicator();
-                snapshotData = snapshot.data.documents;
+                snapshotData = snapshot.data.docs;
 
                 todayData = snapshotData
                     .map((data) => WaterMonitor.fromSnapshot(data))
@@ -311,8 +311,8 @@ class _DrinkMonitorPageState extends State<DrinkMonitorPage> {
         height: 72,
         child: CupertinoSegmentedControl<int>(
           children: chartPeriod,
-          selectedColor: Colors.blueAccent,
-          borderColor: Colors.blueAccent,
+          selectedColor: AppTheme.buttonColor,
+          borderColor: AppTheme.buttonColor,
           onValueChanged: (int newValue) {
             setState(() {
               chartDays = newValue;
@@ -329,11 +329,11 @@ class _DrinkMonitorPageState extends State<DrinkMonitorPage> {
   }
 
   deleteData(docId) {
-    Firestore.instance
+    FirebaseFirestore.instance
         .collection('wellness_data')
-        .document(uid)
+        .doc(uid)
         .collection('water')
-        .document(docId)
+        .doc(docId)
         .delete()
         .catchError((e) {
       print(e);
@@ -354,16 +354,15 @@ class _DrinkMonitorPageState extends State<DrinkMonitorPage> {
 
     int timestamp = monitorData['date'].millisecondsSinceEpoch;
 
-    DocumentReference monitor = Firestore.instance
+    FirebaseFirestore.instance
         .collection('wellness_data')
-        .document(uid)
+        .doc(uid)
         .collection('water')
-        .document(timestamp.toString());
-    Firestore.instance.runTransaction((transaction) async {
-      await transaction.set(monitor, monitorData);
+        .doc(timestamp.toString())
+        .set(monitorData);
 
-      monitorData['date'] = monitorData['date'].add(Duration(seconds: 1));
-    });
+    monitorData['date'] = monitorData['date'].add(Duration(seconds: 1));
+
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wellness/dashboard/app_theme.dart';
 
 typedef Callback = void Function(String text);
 
@@ -57,7 +58,7 @@ class EditDialog extends StatelessWidget {
                   Navigator.pop(context);
                 },
                 padding: EdgeInsets.all(12),
-                color: Colors.blueAccent,
+                color: AppTheme.buttonColor,
                 child: Text(this.buttonLabel,
                     style: TextStyle(color: Colors.white, fontSize: 18)),
               ),

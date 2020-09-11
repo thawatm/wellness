@@ -23,7 +23,7 @@ class _NewUserPageState extends State<NewUserPage> {
   final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
 
   Map userData = Map<String, dynamic>();
-  FirebaseUser currentUser;
+  User currentUser;
   bool _autovalidate = false;
   bool _isLoading = false;
 
@@ -32,29 +32,6 @@ class _NewUserPageState extends State<NewUserPage> {
     currentUser = ScopedModel.of<StateModel>(context).currentUser;
     super.initState();
   }
-
-  // void _handleSubmitted() {
-  //   final FormState form = _formKey.currentState;
-  //   if (!form.validate()) {
-  //     _autovalidate = true; // Start validating on every change.
-  //     showInSnackBar('Please fix the errors in red before submitting.');
-  //   } else {
-  //     _isLoading = true;
-  //     form.save();
-  //     DocumentReference docRef = Firestore.instance
-  //         .collection('wellness_users')
-  //         .document(currentUser.uid);
-  //     Firestore.instance.runTransaction((transaction) async {
-  //       profileData['uid'] = currentUser.uid;
-  //       profileData['phoneNumber'] = currentUser.phoneNumber;
-  //       await transaction.set(docRef, profileData);
-  //       // print("instance saved");
-  //     });
-  //     showInSnackBar("Successful");
-  //     ScopedModel.of<StateModel>(context).isLoading = true;
-  //     Navigator.pushReplacementNamed(context, '/');
-  //   }
-  // }
 
   void _handleSubmitted() {
     if (_fbKey.currentState.saveAndValidate()) {
@@ -71,15 +48,13 @@ class _NewUserPageState extends State<NewUserPage> {
       setState(() {
         _isLoading = true;
       });
-      DocumentReference docRef = Firestore.instance
+      userData['uid'] = currentUser.uid;
+      userData['phoneNumber'] = currentUser.phoneNumber;
+      FirebaseFirestore.instance
           .collection('wellness_users')
-          .document(currentUser.uid);
-      Firestore.instance.runTransaction((transaction) async {
-        userData['uid'] = currentUser.uid;
-        userData['phoneNumber'] = currentUser.phoneNumber;
-        await transaction.set(docRef, userData);
-        // print("instance saved");
-      });
+          .doc(currentUser.uid)
+          .set(userData);
+
       showInSnackBar("Successful");
       ScopedModel.of<StateModel>(context).isLoading = true;
 

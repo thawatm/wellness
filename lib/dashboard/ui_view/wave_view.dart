@@ -127,7 +127,7 @@ class _WaveViewState extends State<WaveView> with TickerProviderStateMixin {
               clipper: new WaveClipper(animationController.value, animList2),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 48),
+              padding: const EdgeInsets.only(top: 4),
               child: Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -139,20 +139,20 @@ class _WaveViewState extends State<WaveView> with TickerProviderStateMixin {
                       style: TextStyle(
                         fontFamily: AppTheme.fontName,
                         fontWeight: FontWeight.w500,
-                        fontSize: 24,
+                        fontSize: 18,
                         letterSpacing: 0.0,
                         color: AppTheme.white,
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(top: 3.0),
+                      padding: const EdgeInsets.only(top: 10.0),
                       child: Text(
                         '%',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontFamily: AppTheme.fontName,
                           fontWeight: FontWeight.w500,
-                          fontSize: 14,
+                          fontSize: 10,
                           letterSpacing: 0.0,
                           color: AppTheme.white,
                         ),
@@ -239,14 +239,14 @@ class _WaveViewState extends State<WaveView> with TickerProviderStateMixin {
                 ),
               ),
             ),
-            Column(
-              children: <Widget>[
-                AspectRatio(
-                  aspectRatio: 1,
-                  child: Image.asset("assets/fitness_app/bottle.png"),
-                ),
-              ],
-            )
+            // Column(
+            //   children: <Widget>[
+            //     AspectRatio(
+            //       aspectRatio: 1,
+            //       child: Image.asset("assets/fitness_app/bottle.png"),
+            //     ),
+            //   ],
+            // )
           ],
         ),
       ),

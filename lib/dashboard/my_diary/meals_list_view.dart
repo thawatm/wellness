@@ -47,19 +47,19 @@ class _MealsListViewState extends State<MealsListView>
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance
+      stream: FirebaseFirestore.instance
           .collection('wellness_data')
-          .document(uid)
+          .doc(uid)
           .collection('food')
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return SizedBox();
 
-        List<DocumentSnapshot> snapshotData = snapshot.data.documents;
+        List<DocumentSnapshot> snapshotData = snapshot.data.docs;
 
-        snapshotData = snapshot.data.documents
+        snapshotData = snapshot.data.docs
           ..sort((a, b) =>
-              b.data['date'].toDate().compareTo(a.data['date'].toDate()));
+              b.data()['date'].toDate().compareTo(a.data()['date'].toDate()));
 
         todayData = snapshotData
             .map((data) => FoodMonitor.fromSnapshot(data))
@@ -497,11 +497,11 @@ class MealsView extends StatelessWidget {
 
     monitorData['menu'] = menu;
 
-    Firestore.instance
+    FirebaseFirestore.instance
         .collection('wellness_data')
-        .document(uid)
+        .doc(uid)
         .collection('food')
-        .document(timestamp.toString())
-        .setData(monitorData);
+        .doc(timestamp.toString())
+        .set(monitorData);
   }
 }

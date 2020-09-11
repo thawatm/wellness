@@ -52,35 +52,35 @@ class UserProfile {
   // : this.fromMap(snapshot.data, reference: snapshot.reference);
   UserProfile.fromSnapshot(DocumentSnapshot snapshot)
       : reference = snapshot.reference,
-        uid = snapshot.data['uid'],
-        firstname = snapshot.data['firstname'],
-        lastname = snapshot.data['lastname'],
-        fullname = (snapshot.data['firstname'] ?? '') +
+        uid = snapshot.data()['uid'],
+        firstname = snapshot.data()['firstname'],
+        lastname = snapshot.data()['lastname'],
+        fullname = (snapshot.data()['firstname'] ?? '') +
             ' ' +
-            (snapshot.data['lastname'] ?? ''),
-        phoneNumber = snapshot.data['phoneNumber'],
-        email = snapshot.data['email'],
-        sex = snapshot.data['sex'],
-        height = snapshot.data['height'],
-        bloodGroup = snapshot.data['bloodGroup'],
-        expense = snapshot.data['expense'],
-        lineId = snapshot.data['lineId'],
-        citizenId = snapshot.data['citizenId'],
-        address = snapshot.data['address'],
-        isDrugAllergy = snapshot.data['isDrugAllergy'],
-        isDrugAllergySuspect = snapshot.data['isDrugAllergySuspect'],
-        isFoodAllergy = snapshot.data['isFoodAllergy'],
-        drugAllergy = snapshot.data['drugAllergy'],
-        diagnoseHospital = snapshot.data['diagnoseHospital'],
-        doctor = snapshot.data['doctor'],
-        treatmentHospital = snapshot.data['treatmentHospital'],
-        suspectSymptom = snapshot.data['suspectSymptom'],
-        allergySymptom = snapshot.data['allergySymptom'],
-        foodAllergy = snapshot.data['foodAllergy'],
-        ingredientAllergy = snapshot.data['ingredientAllergy'],
-        smoke = snapshot.data['smoke'],
-        pictureUrl = snapshot.data['pictureUrl'];
-  // birthday = snapshot.data['birthday'].toDate();
+            (snapshot.data()['lastname'] ?? ''),
+        phoneNumber = snapshot.data()['phoneNumber'],
+        email = snapshot.data()['email'],
+        sex = snapshot.data()['sex'],
+        height = snapshot.data()['height'],
+        bloodGroup = snapshot.data()['bloodGroup'],
+        expense = snapshot.data()['expense'],
+        lineId = snapshot.data()['lineId'],
+        citizenId = snapshot.data()['citizenId'],
+        address = snapshot.data()['address'],
+        isDrugAllergy = snapshot.data()['isDrugAllergy'],
+        isDrugAllergySuspect = snapshot.data()['isDrugAllergySuspect'],
+        isFoodAllergy = snapshot.data()['isFoodAllergy'],
+        drugAllergy = snapshot.data()['drugAllergy'],
+        diagnoseHospital = snapshot.data()['diagnoseHospital'],
+        doctor = snapshot.data()['doctor'],
+        treatmentHospital = snapshot.data()['treatmentHospital'],
+        suspectSymptom = snapshot.data()['suspectSymptom'],
+        allergySymptom = snapshot.data()['allergySymptom'],
+        foodAllergy = snapshot.data()['foodAllergy'],
+        ingredientAllergy = snapshot.data()['ingredientAllergy'],
+        smoke = snapshot.data()['smoke'],
+        pictureUrl = snapshot.data()['pictureUrl'];
+  // birthday = snapshot.data()['birthday'].toDate();
 
   @override
   String toString() => "UserProfile<$phoneNumber:$firstname>";

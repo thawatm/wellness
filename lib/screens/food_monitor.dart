@@ -209,7 +209,7 @@ class _FoodMonitorPageState extends State<FoodMonitorPage> {
           body: buildBody(),
         ),
         floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.blueAccent,
+          backgroundColor: AppTheme.appBarColor2,
           onPressed: () => showRoundedModalBottomSheet(
               context: context,
               builder: (context) => ImageSourceModal(
@@ -226,16 +226,16 @@ class _FoodMonitorPageState extends State<FoodMonitorPage> {
 
   Widget buildBody() {
     return StreamBuilder<QuerySnapshot>(
-        stream: Firestore.instance
+        stream: FirebaseFirestore.instance
             .collection('wellness_data')
-            .document(uid)
+            .doc(uid)
             .collection('food')
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return LoadingIndicator();
-          snapshotData = snapshot.data.documents
+          snapshotData = snapshot.data.docs
             ..sort((a, b) =>
-                b.data['date'].toDate().compareTo(a.data['date'].toDate()));
+                b.data()['date'].toDate().compareTo(a.data()['date'].toDate()));
 
           foodData = snapshotData
               .map((data) => FoodMonitor.fromSnapshot(data))
@@ -293,7 +293,7 @@ class _FoodMonitorPageState extends State<FoodMonitorPage> {
   }
 
   Widget _buildImagesListItem(BuildContext context, FoodMonitor content) {
-    // DateTime _date = news.data['record_date'];
+    // DateTime _date = news.data()['record_date'];
     return SafeArea(
       top: false,
       bottom: false,
@@ -344,8 +344,8 @@ class _FoodMonitorPageState extends State<FoodMonitorPage> {
         height: 40,
         child: CupertinoSegmentedControl<int>(
           children: chartPeriod,
-          selectedColor: Colors.blueAccent,
-          borderColor: Colors.blueAccent,
+          selectedColor: AppTheme.buttonColor,
+          borderColor: AppTheme.buttonColor,
           onValueChanged: (int newValue) {
             setState(() {
               chartDays = newValue;
@@ -639,7 +639,7 @@ class _FoodContentEditDialogState extends State<FoodContentEditDialog> {
                   elevation: 1.0,
                   onPressed: _handleSubmitted,
                   padding: EdgeInsets.all(12),
-                  color: Colors.blueAccent,
+                  color: AppTheme.buttonColor,
                   child: Text('Save',
                       style: TextStyle(color: Colors.white, fontSize: 16)),
                 ),
@@ -671,11 +671,11 @@ class _FoodContentEditDialogState extends State<FoodContentEditDialog> {
   _deleteData() {
     if (widget.food.uploadPath != null)
       widget.storage.ref().child(widget.food.uploadPath).delete();
-    Firestore.instance
+    FirebaseFirestore.instance
         .collection('wellness_data')
-        .document(widget.uid)
+        .doc(widget.uid)
         .collection('food')
-        .document(widget.food.documentID)
+        .doc(widget.food.documentID)
         .delete()
         .catchError((e) {
       print(e);
@@ -687,11 +687,11 @@ class _FoodContentEditDialogState extends State<FoodContentEditDialog> {
     int timestamp = widget.food.date.millisecondsSinceEpoch;
 
     if (timestamp.toString() != widget.food.documentID) {
-      Firestore.instance
+      FirebaseFirestore.instance
           .collection('wellness_data')
-          .document(widget.uid)
+          .doc(widget.uid)
           .collection('food')
-          .document(widget.food.documentID)
+          .doc(widget.food.documentID)
           .delete()
           .catchError((e) {
         print(e);
@@ -700,12 +700,12 @@ class _FoodContentEditDialogState extends State<FoodContentEditDialog> {
 
     if (widget.food.menu == '') widget.food.menu = 'ผักผลไม้';
 
-    Firestore.instance
+    FirebaseFirestore.instance
         .collection('wellness_data')
-        .document(widget.uid)
+        .doc(widget.uid)
         .collection('food')
-        .document(timestamp.toString())
-        .setData(widget.food.getMapData());
+        .doc(timestamp.toString())
+        .set(widget.food.getMapData());
   }
 
   void _showPickerNumber(BuildContext context, int begin, int end,
@@ -853,7 +853,7 @@ class _FoodContentAddDialogState extends State<FoodContentAddDialog> {
                   elevation: 1.0,
                   onPressed: _handleSubmitted,
                   padding: EdgeInsets.all(12),
-                  color: Colors.blueAccent,
+                  color: AppTheme.buttonColor,
                   child: Text('Add',
                       style: TextStyle(color: Colors.white, fontSize: 16)),
                 ),
@@ -888,12 +888,12 @@ class _FoodContentAddDialogState extends State<FoodContentAddDialog> {
 
         if (monitorData['menu'] == '') monitorData['menu'] = 'ผักผลไม้';
 
-        Firestore.instance
+        FirebaseFirestore.instance
             .collection('wellness_data')
-            .document(widget.uid)
+            .doc(widget.uid)
             .collection('food')
-            .document(timestamp.toString())
-            .setData(monitorData);
+            .doc(timestamp.toString())
+            .set(monitorData);
       });
     } catch (e) {
       print(e);

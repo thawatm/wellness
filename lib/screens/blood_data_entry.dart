@@ -172,16 +172,13 @@ class _BloodDataEntryState extends State<BloodDataEntry> {
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         int timestamp = monitorData['date'].millisecondsSinceEpoch;
 
-        DocumentReference monitor = Firestore.instance
+        FirebaseFirestore.instance
             .collection('wellness_data')
-            .document(uid)
+            .doc(uid)
             .collection(collection)
-            .document(timestamp.toString());
-        Firestore.instance.runTransaction((transaction) async {
-          await transaction
-              .set(monitor, monitorData)
-              .whenComplete(() => Navigator.pop(context));
-        });
+            .doc(timestamp.toString())
+            .set(monitorData)
+            .whenComplete(() => Navigator.pop(context));
       } else {
         showInSnackBar("No Internet Connection");
       }

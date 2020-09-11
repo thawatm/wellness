@@ -93,14 +93,14 @@ class _LoginPageState extends State<LoginPage> {
                   child: RaisedButton.icon(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
-                    icon: Icon(Icons.vpn_key, color: Colors.blue.shade900),
+                    icon: Icon(Icons.vpn_key, color: AppTheme.appBarColor2),
                     // elevation: 7.0,
                     onPressed: () => Navigator.pushNamed(context, '/signup'),
                     // padding: EdgeInsets.all(12),
                     color: Colors.white.withOpacity(0.7),
                     label: Text('เข้าสู่ระบบ',
                         style: TextStyle(
-                            color: Colors.blue.shade900, fontSize: 18)),
+                            color: AppTheme.appBarColor2, fontSize: 18)),
                   ),
                 ),
               ],

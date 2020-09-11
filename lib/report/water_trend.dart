@@ -78,7 +78,7 @@ class _WaterTrendChartState extends State<WaterTrendChart> {
 
   initData() {
     if (widget.snapshot != null) {
-      snapshotData = widget.snapshot.documents;
+      snapshotData = widget.snapshot.docs;
 
       todayData = snapshotData
           .map((data) => WaterMonitor.fromSnapshot(data))
@@ -110,8 +110,8 @@ class _WaterTrendChartState extends State<WaterTrendChart> {
         height: 72,
         child: CupertinoSegmentedControl<int>(
           children: chartPeriod,
-          selectedColor: Colors.blueAccent,
-          borderColor: Colors.blueAccent,
+          selectedColor: AppTheme.buttonColor,
+          borderColor: AppTheme.buttonColor,
           onValueChanged: (int newValue) {
             setState(() {
               chartDays = newValue;

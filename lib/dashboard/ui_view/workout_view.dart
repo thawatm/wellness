@@ -27,16 +27,16 @@ class WorkoutView extends StatelessWidget {
     int etc = 0;
     double etcPercent = 0;
     return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance
+      stream: FirebaseFirestore.instance
           .collection('wellness_data')
-          .document(uid)
+          .doc(uid)
           .collection('workout')
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return SizedBox();
         List<DocumentSnapshot> snapshotData;
 
-        snapshotData = snapshot.data.documents;
+        snapshotData = snapshot.data.docs;
 
         String todayString = DateFormat.yMd().format(DateTime.now());
         List<WorkoutMonitor> todayData = snapshotData

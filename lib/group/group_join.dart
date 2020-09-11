@@ -39,18 +39,18 @@ class _GroupJoinPageState extends State<GroupJoinPage> {
       setState(() {
         _isLoading = true;
       });
-      Firestore.instance
-          .document('wellness_groups/$groupId')
+      FirebaseFirestore.instance
+          .doc('wellness_groups/$groupId')
           .get()
           .then((onValue) {
         if (onValue.exists) {
-          Firestore.instance
-              .document('wellness_groups/$groupId/members/$uid')
-              .setData(updateData);
+          FirebaseFirestore.instance
+              .doc('wellness_groups/$groupId/members/$uid')
+              .set(updateData);
 
-          Firestore.instance
-              .document('wellness_users/$uid/groups/$groupId')
-              .setData(updateData);
+          FirebaseFirestore.instance
+              .doc('wellness_users/$uid/groups/$groupId')
+              .set(updateData);
 
           Navigator.pop(context);
         } else {

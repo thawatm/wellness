@@ -38,9 +38,9 @@ class _GroupEditPageState extends State<GroupEditPage> {
       var groupData = _fbKey.currentState.value;
 
       String groupId = widget.groupId;
-      Firestore.instance
-          .document('wellness_groups/$groupId')
-          .updateData(groupData);
+      FirebaseFirestore.instance
+          .doc('wellness_groups/$groupId')
+          .update(groupData);
 
       showInSnackBar("Successful");
       ScopedModel.of<StateModel>(context).isLoading = true;

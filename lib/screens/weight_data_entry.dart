@@ -117,16 +117,13 @@ class _WeightDataEntryState extends State<WeightDataEntry> {
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         int timestamp = monitorData['date'].millisecondsSinceEpoch;
 
-        DocumentReference monitor = Firestore.instance
+        FirebaseFirestore.instance
             .collection('wellness_data')
-            .document(uid)
+            .doc(uid)
             .collection(collection)
-            .document(timestamp.toString());
-        Firestore.instance.runTransaction((transaction) async {
-          await transaction
-              .set(monitor, monitorData)
-              .whenComplete(() => Navigator.pop(context));
-        });
+            .doc(timestamp.toString())
+            .set(monitorData)
+            .whenComplete(() => Navigator.pop(context));
       } else {
         showInSnackBar("No Internet Connection");
       }
@@ -134,20 +131,6 @@ class _WeightDataEntryState extends State<WeightDataEntry> {
       showInSnackBar("No Internet Connection");
       return;
     }
-
-    // int timestamp = monitorData['date'].millisecondsSinceEpoch;
-
-    // DocumentReference monitor = Firestore.instance
-    //     .collection('wellness_data')
-    //     .document(currentUser.uid)
-    //     .collection(collection)
-    //     .document(timestamp.toString());
-    // Firestore.instance.runTransaction((transaction) async {
-    //   await transaction.set(monitor, monitorData);
-    // });
-    // // print(monitorData.keys);
-    // // print(monitorData.values);
-    // showInSnackBar("Successful");
   }
 
   _showPickerDouble(BuildContext context, int begin, int end, int initValue,

@@ -12,10 +12,10 @@ class WaterMonitor {
 
   WaterMonitor.fromSnapshot(DocumentSnapshot snapshot)
       : reference = snapshot.reference,
-        date = snapshot.data['date'].toDate(),
+        date = snapshot.data()['date'].toDate(),
         dateString =
-            DateFormat('yyyyMMdd').format(snapshot.data['date'].toDate()),
-        drinkTime = snapshot.data['drinkTime'],
-        waterVolume = snapshot.data["waterVolume"],
-        documentID = snapshot.documentID;
+            DateFormat('yyyyMMdd').format(snapshot.data()['date'].toDate()),
+        drinkTime = snapshot.data()['drinkTime'],
+        waterVolume = snapshot.data()["waterVolume"],
+        documentID = snapshot.id;
 }

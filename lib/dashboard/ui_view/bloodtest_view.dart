@@ -26,26 +26,45 @@ class BloodTestView extends StatelessWidget {
     String recordDate = 'ไม่มีข้อมูล';
 
     return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance
+      stream: FirebaseFirestore.instance
           .collection('wellness_data')
-          .document(uid)
+          .doc(uid)
           .collection('healthdata')
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return SizedBox();
         try {
-          DocumentSnapshot snapshotData = snapshot.data.documents
-              .lastWhere((v) => v.data['cholesterol'] != null);
+          DateTime date1;
+          DateTime date2;
+
+          DocumentSnapshot snapshotData = snapshot.data.docs.lastWhere(
+              (v) => v.data()['cholesterol'] != null,
+              orElse: () => null);
 
           if (snapshotData != null) {
             HealthMonitor bloodData = HealthMonitor.fromSnapshot(snapshotData);
             cholesterol = bloodData.cholesterol ?? 0;
             ldl = bloodData.ldl ?? 0;
+            recordDate = DateFormat.yMMMd().format(bloodData.date);
+            date1 = bloodData.date;
+          }
+
+          DocumentSnapshot snapshotData1 = snapshot.data.docs.lastWhere(
+              (v) => v.data()['glucose'] != null,
+              orElse: () => null);
+
+          if (snapshotData1 != null) {
+            HealthMonitor bloodData = HealthMonitor.fromSnapshot(snapshotData1);
             glucose = bloodData.glucose ?? 0;
             hba1c = bloodData.hba1c ?? 0;
-            recordDate = DateFormat.yMMMd().format(bloodData.date);
+            date2 = bloodData.date;
+            if (date1 is DateTime && date2.isAfter(date1)) {
+              recordDate = DateFormat.yMMMd().format(bloodData.date);
+            }
           }
-        } catch (e) {}
+        } catch (e) {
+          print(e);
+        }
         return AnimatedBuilder(
           animation: animationController,
           builder: (BuildContext context, Widget child) {

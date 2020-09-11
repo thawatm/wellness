@@ -107,17 +107,18 @@ class _FatPageState extends State<FatPage> {
             ];
           },
           body: StreamBuilder<QuerySnapshot>(
-              stream: Firestore.instance
+              stream: FirebaseFirestore.instance
                   .collection('wellness_data')
-                  .document(uid)
+                  .doc(uid)
                   .collection(collection)
                   .snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) return LoadingIndicator();
-                healthData = snapshot.data.documents
-                  ..sort((a, b) => b.data['date']
+                healthData = snapshot.data.docs
+                  ..sort((a, b) => b
+                      .data()['date']
                       .toDate()
-                      .compareTo(a.data['date'].toDate()));
+                      .compareTo(a.data()['date'].toDate()));
 
                 // bodyFat DATA
                 bodyFatData = healthData
@@ -196,8 +197,8 @@ class _FatPageState extends State<FatPage> {
           // width: 500.0,
           child: CupertinoSegmentedControl<int>(
             children: chartPeriod,
-            selectedColor: Colors.blueAccent,
-            borderColor: Colors.blueAccent,
+            selectedColor: AppTheme.buttonColor,
+            borderColor: AppTheme.buttonColor,
             onValueChanged: (int newValue) {
               setState(() {
                 chartDays = newValue;
@@ -213,8 +214,8 @@ class _FatPageState extends State<FatPage> {
                 children: <Widget>[
                   ChartPercentTitle(
                       title: 'Body Fat',
-                      first: bodyFatData.first.weight,
-                      last: bodyFatData.last.weight),
+                      first: bodyFatData.first.bodyFat,
+                      last: bodyFatData.last.bodyFat),
                   Container(
                     height: 220,
                     child: _buildBodyFatChart(),
@@ -228,8 +229,8 @@ class _FatPageState extends State<FatPage> {
                 children: <Widget>[
                   ChartPercentTitle(
                       title: 'Visceral Fat',
-                      first: visceralFatData.first.weight,
-                      last: visceralFatData.last.weight),
+                      first: visceralFatData.first.visceralFat,
+                      last: visceralFatData.last.visceralFat),
                   Container(
                     height: 220,
                     child: _buildVisceralFatChart(),
@@ -243,8 +244,8 @@ class _FatPageState extends State<FatPage> {
                 children: <Widget>[
                   ChartPercentTitle(
                       title: 'Muscle Mass',
-                      first: bodyAgeData.first.muscle,
-                      last: bodyAgeData.last.muscle),
+                      first: muscleData.first.muscle,
+                      last: muscleData.last.muscle),
                   Container(
                     height: 220,
                     child: _buildMuscleChart(),
@@ -273,8 +274,8 @@ class _FatPageState extends State<FatPage> {
                 children: <Widget>[
                   ChartPercentTitle(
                       title: 'Waist',
-                      first: bodyAgeData.first.waist,
-                      last: bodyAgeData.last.waist),
+                      first: waistData.first.waist,
+                      last: waistData.last.waist),
                   Container(
                     height: 220,
                     child: _buildWaistChart(),
@@ -350,7 +351,7 @@ class _FatPageState extends State<FatPage> {
     }
 
     return SimpleTimeSeriesChart(_chartData(),
-        animate: true, title: 'Visceral Fat', unit: '%');
+        animate: true, title: 'Visceral Fat', unit: '');
   }
 
   Widget _buildBodyAgeChart() {

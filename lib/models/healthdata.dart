@@ -6,32 +6,32 @@ class HealthMonitor {
   String dateString;
   String kioskDocumentId;
   String category;
-  int pressureUpper;
-  int pressureLower;
-  int hr;
-  double weight;
+  num pressureUpper;
+  num pressureLower;
+  num hr;
+  num weight;
   num height;
-  double bmi;
-  double rightArmFat;
-  double leftArmFat;
-  double rightLegFat;
-  double leftLegFat;
-  double trunkFat;
-  double bodyFat;
-  double visceralFat;
-  double muscle;
-  double waist;
+  num bmi;
+  num rightArmFat;
+  num leftArmFat;
+  num rightLegFat;
+  num leftLegFat;
+  num trunkFat;
+  num bodyFat;
+  num visceralFat;
+  num muscle;
+  num waist;
 
-  double hba1c;
-  int bodyAge;
-  int glucose;
-  int cholesterol;
-  int hdl;
-  int ldl;
-  int triglycerides;
-  double creatinine;
-  double eGFR;
-  double uricAcid;
+  num hba1c;
+  num bodyAge;
+  num glucose;
+  num cholesterol;
+  num hdl;
+  num ldl;
+  num triglycerides;
+  num creatinine;
+  num eGFR;
+  num uricAcid;
 
   final DocumentReference reference;
   final DocumentSnapshot snapshot;
@@ -39,36 +39,36 @@ class HealthMonitor {
   HealthMonitor.fromSnapshot(DocumentSnapshot snapshot)
       : reference = snapshot.reference,
         snapshot = snapshot,
-        date = snapshot.data['date'].toDate(),
-        kioskDocumentId = snapshot.data['kioskDocumentId'],
-        category = snapshot.data['category'],
+        date = snapshot.data()['date'].toDate(),
+        kioskDocumentId = snapshot.data()['kioskDocumentId'],
+        category = snapshot.data()['category'],
         dateString =
-            DateFormat('dd/MM/yyyy').format(snapshot.data['date'].toDate()),
-        pressureUpper = snapshot.data["pressureUpper"],
-        pressureLower = snapshot.data["pressureLower"],
-        hr = snapshot.data["hr"],
-        weight = snapshot.data["weight"],
-        height = snapshot.data["height"],
-        bmi = snapshot.data["bmi"],
-        rightArmFat = snapshot.data["rightArmFat"],
-        leftArmFat = snapshot.data["leftArmFat"],
-        rightLegFat = snapshot.data["rightLegFat"],
-        leftLegFat = snapshot.data["leftLegFat"],
-        trunkFat = snapshot.data["trunkFat"],
-        bodyAge = snapshot.data["bodyAge"],
-        bodyFat = snapshot.data["bodyFat"],
-        visceralFat = snapshot.data["visceralFat"],
-        muscle = snapshot.data["muscle"],
-        waist = snapshot.data["waist"],
-        glucose = snapshot.data["glucose"],
-        cholesterol = snapshot.data["cholesterol"],
-        hdl = snapshot.data["hdl"],
-        ldl = snapshot.data["ldl"],
-        triglycerides = snapshot.data["triglycerides"],
-        creatinine = snapshot.data["creatinine"],
-        eGFR = snapshot.data["eGFR"],
-        hba1c = snapshot.data["hba1c"],
-        uricAcid = snapshot.data["uricAcid"];
+            DateFormat('dd/MM/yyyy').format(snapshot.data()['date'].toDate()),
+        pressureUpper = snapshot.data()["pressureUpper"],
+        pressureLower = snapshot.data()["pressureLower"],
+        hr = snapshot.data()["hr"],
+        weight = snapshot.data()["weight"],
+        height = snapshot.data()["height"],
+        bmi = snapshot.data()["bmi"],
+        rightArmFat = snapshot.data()["rightArmFat"],
+        leftArmFat = snapshot.data()["leftArmFat"],
+        rightLegFat = snapshot.data()["rightLegFat"],
+        leftLegFat = snapshot.data()["leftLegFat"],
+        trunkFat = snapshot.data()["trunkFat"],
+        bodyAge = snapshot.data()["bodyAge"],
+        bodyFat = snapshot.data()["bodyFat"],
+        visceralFat = snapshot.data()["visceralFat"],
+        muscle = snapshot.data()["muscle"],
+        waist = snapshot.data()["waist"],
+        glucose = snapshot.data()["glucose"],
+        cholesterol = snapshot.data()["cholesterol"],
+        hdl = snapshot.data()["hdl"],
+        ldl = snapshot.data()["ldl"],
+        triglycerides = snapshot.data()["triglycerides"],
+        creatinine = snapshot.data()["creatinine"],
+        eGFR = snapshot.data()["eGFR"],
+        hba1c = snapshot.data()["hba1c"],
+        uricAcid = snapshot.data()["uricAcid"];
 
   String toStringData(String collection) {
     switch (collection) {
@@ -95,7 +95,7 @@ class HealthMonitor {
 
   String toString() {
     String temp = '';
-    snapshot.data.forEach((key, value) {
+    snapshot.data().forEach((key, value) {
       if (key == 'kioskLocation') key = 'Kiosk';
 
       if (key != 'date' &&

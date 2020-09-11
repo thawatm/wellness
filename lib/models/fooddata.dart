@@ -23,15 +23,15 @@ class FoodMonitor {
 
   FoodMonitor.fromSnapshot(DocumentSnapshot snapshot)
       : reference = snapshot.reference,
-        date = snapshot.data['date'].toDate(),
+        date = snapshot.data()['date'].toDate(),
         dateString =
-            DateFormat('yyyyMMdd').format(snapshot.data['date'].toDate()),
-        imageUrl = snapshot.data['imageUrl'],
-        uploadPath = snapshot.data['uploadPath'],
-        menu = snapshot.data['menu'] ?? '',
-        serving = snapshot.data["serving"] ?? '0',
-        totalServing = int.parse(snapshot.data["serving"] ?? '0'),
-        documentID = snapshot.documentID;
+            DateFormat('yyyyMMdd').format(snapshot.data()['date'].toDate()),
+        imageUrl = snapshot.data()['imageUrl'],
+        uploadPath = snapshot.data()['uploadPath'],
+        menu = snapshot.data()['menu'] ?? '',
+        serving = snapshot.data()["serving"] ?? '0',
+        totalServing = int.parse(snapshot.data()["serving"] ?? '0'),
+        documentID = snapshot.id;
 
   Map getMapData() {
     Map<String, dynamic> mapData = {

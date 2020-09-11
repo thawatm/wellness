@@ -107,19 +107,20 @@ class _HealthMonitorPageState extends State<HealthMonitorPage> {
               ];
             },
             body: StreamBuilder<QuerySnapshot>(
-                stream: Firestore.instance
+                stream: FirebaseFirestore.instance
                     .collection('wellness_data')
-                    .document(uid)
+                    .doc(uid)
                     .collection(collection)
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) return LoadingIndicator();
-                  healthData = snapshot.data.documents
-                    ..sort((a, b) => b.data['date']
+                  healthData = snapshot.data.docs
+                    ..sort((a, b) => b
+                        .data()['date']
                         .toDate()
-                        .compareTo(a.data['date'].toDate()))
-                    ..removeWhere((v) => v['pressureUpper'] == null)
-                    ..removeWhere((v) => v['pressureLower'] == null);
+                        .compareTo(a.data()['date'].toDate()))
+                    ..removeWhere((v) => v.data()['pressureUpper'] == null)
+                    ..removeWhere((v) => v.data()['pressureLower'] == null);
                   // PRESSURE DATA
                   pressureData = healthData
                       .map((data) => HealthMonitor.fromSnapshot(data))
@@ -164,8 +165,8 @@ class _HealthMonitorPageState extends State<HealthMonitorPage> {
           // width: 500.0,
           child: CupertinoSegmentedControl<int>(
             children: chartPeriod,
-            selectedColor: Colors.blueAccent,
-            borderColor: Colors.blueAccent,
+            selectedColor: AppTheme.buttonColor,
+            borderColor: AppTheme.buttonColor,
             onValueChanged: (int newValue) {
               setState(() {
                 chartDays = newValue;

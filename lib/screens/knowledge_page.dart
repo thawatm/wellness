@@ -167,7 +167,7 @@ class _KnowledgePageState extends State<KnowledgePage> {
                           title: '7 Weeks',
                           subtitle: '7 สัปดาห์ สุขภาพดี หุ่นดี ที่บ้าน',
                           url:
-                              'https://multimedia.anamai.moph.go.th/ebooks/7weeks-fit-at-home/',
+                              'http://multimedia.anamai.moph.go.th/wp-content/uploads/2020/06/7-WEEKS-Fit@home.pdf',
                           startColor: Color(0xFF738AE6),
                           endColor: Color(0xFF5C5EDD)),
                     ],

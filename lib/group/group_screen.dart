@@ -69,7 +69,7 @@ class _GroupScreenState extends State<GroupScreen> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         floatingActionButton: SpeedDial(
-          backgroundColor: Colors.blueAccent,
+          backgroundColor: AppTheme.appBarColor2,
           child: Icon(Icons.add),
           curve: Curves.easeIn,
           children: [
@@ -77,16 +77,16 @@ class _GroupScreenState extends State<GroupScreen> {
               child: Icon(FontAwesomeIcons.userFriends, size: 16),
               label: "เข้ากลุ่ม",
               labelStyle: TextStyle(fontSize: 16.0, color: Colors.white),
-              labelBackgroundColor: Colors.blueAccent,
-              backgroundColor: Colors.blueAccent,
+              labelBackgroundColor: AppTheme.appBarColor2,
+              backgroundColor: AppTheme.appBarColor2,
               onTap: () => Navigator.pushNamed(context, '/groupjoin'),
             ),
             SpeedDialChild(
               child: Icon(FontAwesomeIcons.userPlus, size: 16),
               label: "สร้างกลุ่ม",
               labelStyle: TextStyle(fontSize: 16.0, color: Colors.white),
-              labelBackgroundColor: Colors.blueAccent,
-              backgroundColor: Colors.blueAccent,
+              labelBackgroundColor: AppTheme.appBarColor2,
+              backgroundColor: AppTheme.appBarColor2,
               onTap: () => Navigator.pushNamed(context, '/groupadd'),
             ),
           ],
@@ -110,15 +110,15 @@ class _GroupScreenState extends State<GroupScreen> {
 
   Widget _buildBody(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-        stream: Firestore.instance
+        stream: FirebaseFirestore.instance
             .collection('wellness_groups')
             .where('owner', isEqualTo: uid)
             .snapshots(),
         builder: (context, ownerSn) {
           return StreamBuilder<QuerySnapshot>(
-              stream: Firestore.instance
+              stream: FirebaseFirestore.instance
                   .collection('wellness_users')
-                  .document(uid)
+                  .doc(uid)
                   .collection('groups')
                   .snapshots(),
               builder: (context, memberSn) {
@@ -128,9 +128,9 @@ class _GroupScreenState extends State<GroupScreen> {
                 bool memberEmpty = false;
 
                 if (ownerSn.data != null)
-                  onwerEmpty = ownerSn.data.documents.isEmpty;
+                  onwerEmpty = ownerSn.data.docs.isEmpty;
                 if (memberSn.data != null)
-                  memberEmpty = memberSn.data.documents.isEmpty;
+                  memberEmpty = memberSn.data.docs.isEmpty;
 
                 return (onwerEmpty && memberEmpty)
                     ? FirstLoad(
@@ -149,19 +149,19 @@ class _GroupScreenState extends State<GroupScreen> {
 
   Widget _buildOwnerList(AsyncSnapshot<QuerySnapshot> snapshot) {
     if (snapshot.data == null) return SizedBox();
-    var ownerList = snapshot.data.documents
+    var ownerList = snapshot.data.docs
         .map((e) => InkWell(
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => GroupDetailPage(
                           animationController: widget.animationController,
-                          groupId: e.documentID,
+                          groupId: e.id,
                           isAdmin: true,
                         )),
               ),
               child: FutureBuilder(
-                  future: _getGroupName(e.documentID),
+                  future: _getGroupName(e.id),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) return SizedBox();
                     return ListTile(
@@ -170,14 +170,13 @@ class _GroupScreenState extends State<GroupScreen> {
                         color: Colors.teal,
                       ),
                       title: Text(snapshot.data),
-                      subtitle: Text('เลขกลุ่ม: ' + e.documentID),
+                      subtitle: Text('เลขกลุ่ม: ' + e.id),
                       trailing: InkWell(
                           onTap: () => Alert.confirm(context,
                                   title: "Delete group",
                                   content: "ต้องการลบกลุ่มนี้?")
-                              .then((int ret) => ret == Alert.OK
-                                  ? _deleteGroup(e.documentID)
-                                  : null),
+                              .then((int ret) =>
+                                  ret == Alert.OK ? _deleteGroup(e.id) : null),
                           child: Icon(Icons.delete)),
                     );
                   }),
@@ -215,31 +214,31 @@ class _GroupScreenState extends State<GroupScreen> {
 
   Widget _buildMemberList(AsyncSnapshot<QuerySnapshot> snapshot) {
     if (snapshot.data == null) return SizedBox();
-    var memberList = snapshot.data.documents
+    var memberList = snapshot.data.docs
         .map((e) => InkWell(
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => GroupDetailPage(
                           animationController: widget.animationController,
-                          groupId: e.documentID,
+                          groupId: e.id,
                         )),
               ),
               child: FutureBuilder(
-                  future: _getGroupName(e.documentID),
+                  future: _getGroupName(e.id),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) return SizedBox();
                     return ListTile(
                       leading: Icon(FontAwesomeIcons.userFriends,
                           color: Colors.blue),
                       title: Text(snapshot.data),
-                      subtitle: Text('เลขกลุ่ม: ' + e.documentID),
+                      subtitle: Text('เลขกลุ่ม: ' + e.id),
                       trailing: InkWell(
                           onTap: () => Alert.confirm(context,
                                   title: "Leave Group",
                                   content: 'ต้องการออกจากกลุ่ม?')
                               .then((int ret) => ret == Alert.OK
-                                  ? _leaveGroup(e.documentID, uid)
+                                  ? _leaveGroup(e.id, uid)
                                   : null),
                           child: Icon(Icons.exit_to_app)),
                     );
@@ -277,39 +276,41 @@ class _GroupScreenState extends State<GroupScreen> {
   }
 
   Future<String> _getGroupName(String groupId) {
-    return Firestore.instance
-        .document('wellness_groups/$groupId')
+    return FirebaseFirestore.instance
+        .doc('wellness_groups/$groupId')
         .get()
         .then((v) {
-      return v['name'];
+      return v.data()['name'];
     });
   }
 
   Future<void> _deleteGroup(String groupId) async {
-    await Firestore.instance
+    await FirebaseFirestore.instance
         .collection('wellness_groups/$groupId/members')
-        .getDocuments()
+        .get()
         .then((v) {
-      v.documents.forEach((d) {
-        String uid = d.documentID;
-        Firestore.instance
-            .document('wellness_users/$uid/groups/$groupId')
+      v.docs.forEach((d) {
+        String uid = d.id;
+        FirebaseFirestore.instance
+            .doc('wellness_users/$uid/groups/$groupId')
             .delete();
-        Firestore.instance
-            .document('wellness_groups/$groupId/members/$uid')
+        FirebaseFirestore.instance
+            .doc('wellness_groups/$groupId/members/$uid')
             .delete();
       });
     }).then((value) {
-      Firestore.instance.document('wellness_groups/$groupId').delete();
+      FirebaseFirestore.instance.doc('wellness_groups/$groupId').delete();
     }).catchError((e) {
       print(e);
     });
   }
 
   void _leaveGroup(String groupId, String uid) {
-    Firestore.instance
-        .document('wellness_groups/$groupId/members/$uid')
+    FirebaseFirestore.instance
+        .doc('wellness_groups/$groupId/members/$uid')
         .delete();
-    Firestore.instance.document('wellness_users/$uid/groups/$groupId').delete();
+    FirebaseFirestore.instance
+        .doc('wellness_users/$uid/groups/$groupId')
+        .delete();
   }
 }

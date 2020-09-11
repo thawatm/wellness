@@ -75,11 +75,11 @@ class _FatDataEntryState extends State<FatDataEntry> {
               leading: Icon(Icons.assignment_ind, color: Colors.grey[500]),
               title: Text('Visceral Fat'),
               // title: bmiBarCart(),
-              trailing: Text("${monitorData['visceralFat'] ?? ''} %",
+              trailing: Text("${monitorData['visceralFat'] ?? ''}",
                   style: TextStyle(color: Colors.grey[500])),
               onTap: () {
-                _showPickerDouble(
-                    context, 0, 999, 10, 'visceralFat (%)', 'visceralFat');
+                _showPickerNumber(
+                    context, 0, 59, 10, 'Visceral Fat', 'visceralFat');
               }),
           ListTile(
               leading: Icon(Icons.person, color: Colors.grey[500]),
@@ -193,16 +193,13 @@ class _FatDataEntryState extends State<FatDataEntry> {
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         int timestamp = monitorData['date'].millisecondsSinceEpoch;
 
-        DocumentReference monitor = Firestore.instance
+        FirebaseFirestore.instance
             .collection('wellness_data')
-            .document(uid)
+            .doc(uid)
             .collection(collection)
-            .document(timestamp.toString());
-        Firestore.instance.runTransaction((transaction) async {
-          await transaction
-              .set(monitor, monitorData)
-              .whenComplete(() => Navigator.pop(context));
-        });
+            .doc(timestamp.toString())
+            .set(monitorData)
+            .whenComplete(() => Navigator.pop(context));
       } else {
         showInSnackBar("No Internet Connection");
       }

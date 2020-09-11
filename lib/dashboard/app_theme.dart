@@ -21,9 +21,12 @@ class AppTheme {
   static const Color spacer = Color(0xFFF2F2F2);
   static const String fontName = 'Prompt';
 
-  static const Color appBarColor1 = Color(0xFF448AFF);
-  static const Color appBarColor2 = Color(0xFF2633C5);
-  static const Color buttonColor = Color(0xFF448AFF);
+  // static const Color appBarColor1 = Color(0xFF448AFF);
+  // static const Color appBarColor2 = Color(0xFF2633C5);
+  // static const Color buttonColor = Color(0xFF448AFF);
+  static const Color appBarColor1 = Color(0xFF738AE6);
+  static const Color appBarColor2 = Color(0xFF5C5EDD);
+  static const Color buttonColor = Color(0xFF738AE6);
 
   // Colors
   static const kBackgroundColor = Color(0xFFFEFEFE);

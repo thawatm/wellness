@@ -180,7 +180,7 @@ class _DisclaimerPageState extends State<DisclaimerPage> {
                 elevation: 2.0,
                 onPressed: _accept,
                 padding: EdgeInsets.all(12),
-                color: Colors.blue,
+                color: AppTheme.buttonColor,
                 child: Text('ยินยอมและเข้าสู่โปรแกรม',
                     style: TextStyle(color: Colors.white, fontSize: 16)),
               ),
