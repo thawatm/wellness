@@ -5,11 +5,11 @@ const img1 = "assets/images/logo.png";
 const img3 = "assets/images/simple7.png";
 const img4 = "assets/images/dialysis_kidney.png";
 
-class IntroPage extends StatelessWidget {
-  const IntroPage({Key key}) : super(key: key);
+class KnowledgeSimple7Page extends StatelessWidget {
+  const KnowledgeSimple7Page({Key key}) : super(key: key);
 
   void _onIntroEnd(context) {
-    Navigator.pushReplacementNamed(context, '/disclaimer');
+    Navigator.pop(context);
   }
 
   Widget _buildImage(String image) {
@@ -24,27 +24,27 @@ class IntroPage extends StatelessWidget {
     return Scaffold(
       body: IntroductionScreen(
         pages: [
-          PageViewModel(
-            title: "โปรแกรมไทยสุข",
-            body:
-                "โดยศูนย์วิจัยเทคโนโลยีสิ่งอำนวยความสะดวกและเครื่องมือแพทย์ ร่วมกับเครือข่ายศูนย์สุขภาพดีวัยทำงาน และเวลเนส วีแคร์ เซ็นเตอร์ โดย นพ.สันต์ ใจยอดศิลป์",
-            image: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Image.asset('assets/images/amedlogo.png', height: 140),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Image.asset('assets/images/icon.png', height: 80),
-                    Image.asset('assets/images/wecare_logo.png', height: 100),
-                  ],
-                ),
-                SizedBox(height: 20)
-              ],
-            ),
-          ),
+          // PageViewModel(
+          //   title: "โปรแกรมไทยสุข",
+          //   body:
+          //       "โดยศูนย์วิจัยเทคโนโลยีสิ่งอำนวยความสะดวกและเครื่องมือแพทย์ ร่วมกับเครือข่ายศูนย์สุขภาพดีวัยทำงาน และเวลเนส วีแคร์ เซ็นเตอร์ โดย นพ.สันต์ ใจยอดศิลป์",
+          //   image: Column(
+          //     mainAxisAlignment: MainAxisAlignment.end,
+          //     mainAxisSize: MainAxisSize.max,
+          //     crossAxisAlignment: CrossAxisAlignment.center,
+          //     children: <Widget>[
+          //       Image.asset('assets/images/amedlogo.png', height: 140),
+          //       Row(
+          //         mainAxisAlignment: MainAxisAlignment.center,
+          //         children: <Widget>[
+          //           Image.asset('assets/images/icon.png', height: 80),
+          //           Image.asset('assets/images/wecare_logo.png', height: 100),
+          //         ],
+          //       ),
+          //       SizedBox(height: 20)
+          //     ],
+          //   ),
+          // ),
           PageViewModel(
             title: "Life’s Simple 7",
             body:

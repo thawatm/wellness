@@ -5,16 +5,14 @@ class News {
   News({this.posts, this.id});
 
   News.fromJson(Map<String, dynamic> json) {
-    posts = json['published_posts'] != null
-        ? new Posts.fromJson(json['published_posts'])
-        : null;
+    posts = json['posts'] != null ? new Posts.fromJson(json['posts']) : null;
     id = json['id'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     if (this.posts != null) {
-      data['published_posts'] = this.posts.toJson();
+      data['posts'] = this.posts.toJson();
     }
     data['id'] = this.id;
     return data;

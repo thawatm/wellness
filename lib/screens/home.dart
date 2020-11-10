@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:easy_alert/easy_alert.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_package_manager/flutter_package_manager.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +29,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   void initState() {
+    super.initState();
+
     animationController = AnimationController(
         duration: const Duration(milliseconds: 600), vsync: this);
     _pageOptions = [
@@ -38,29 +40,45 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       NewsPage(animationController: animationController),
     ];
 
-    super.initState();
     if (Platform.isAndroid) {
       FlutterPackageManager.getPackageInfo('com.google.android.apps.fitness')
           .then((value) {
         if (value == null)
-          Alert.alert(context,
-                  title: "แจ้งเตือน",
-                  content:
-                      "ท่านต้องติดตั้ง Google Fit และเปิดเข้าไป Setup ใช้งานครั้งแรก พร้อมทั้งเปิดการ Track Activities")
-              .then((e) {
-            _launchURL(
-                'https://play.google.com/store/apps/details?id=com.google.android.apps.fitness');
-          });
+          SchedulerBinding.instance
+              .addPostFrameCallback((_) => _showGoogleFitAlert(context));
       });
     }
   }
 
-  _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
+  @override
+  dispose() {
+    animationController.dispose(); // you need this
+    super.dispose();
+  }
+
+  Future<void> _showGoogleFitAlert(BuildContext context) async {
+    if (context == null) return;
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('แจ้งเตือน'),
+          content: Text(
+              'ท่านต้องติดตั้ง Google Fit และเปิดเข้าไป Setup ใช้งานครั้งแรก พร้อมทั้งเปิดการ Track Activities'),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(' OK '),
+              onPressed: () {
+                launch(
+                    'https://play.google.com/store/apps/details?id=com.google.android.apps.fitness');
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override

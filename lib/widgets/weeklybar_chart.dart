@@ -60,7 +60,7 @@ class WeeklyBarChart extends StatelessWidget {
                       show: true,
                       bottomTitles: SideTitles(
                         showTitles: true,
-                        textStyle: TextStyle(
+                        getTextStyles: (value) => const TextStyle(
                             color: const Color(0xff7589a2),
                             fontWeight: FontWeight.bold,
                             fontSize: 14),
@@ -88,7 +88,7 @@ class WeeklyBarChart extends StatelessWidget {
                       ),
                       leftTitles: SideTitles(
                           showTitles: true,
-                          textStyle: TextStyle(
+                          getTextStyles: (value) => const TextStyle(
                               color: const Color(0xff7589a2),
                               fontWeight: FontWeight.bold,
                               fontSize: 14),
@@ -138,7 +138,7 @@ class WeeklyBarChart extends StatelessWidget {
       barRods: [
         BarChartRodData(
           y: y,
-          color: barColor,
+          colors: [barColor],
           width: width,
         ),
       ],

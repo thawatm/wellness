@@ -19,7 +19,6 @@ class _GroupJoinPageState extends State<GroupJoinPage> {
   final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
 
   String uid;
-  bool _autovalidate = false;
   bool _isLoading = false;
 
   @override
@@ -42,15 +41,25 @@ class _GroupJoinPageState extends State<GroupJoinPage> {
       FirebaseFirestore.instance
           .doc('wellness_groups/$groupId')
           .get()
-          .then((onValue) {
+          .then((onValue) async {
         if (onValue.exists) {
-          FirebaseFirestore.instance
-              .doc('wellness_groups/$groupId/members/$uid')
-              .set(updateData);
+          try {
+            await FirebaseFirestore.instance
+                .doc('wellness_groups/$groupId/members/$uid')
+                .update(updateData);
 
-          FirebaseFirestore.instance
-              .doc('wellness_users/$uid/groups/$groupId')
-              .set(updateData);
+            await FirebaseFirestore.instance
+                .doc('wellness_users/$uid/groups/$groupId')
+                .update(updateData);
+          } catch (e) {
+            await FirebaseFirestore.instance
+                .doc('wellness_groups/$groupId/members/$uid')
+                .set(updateData);
+
+            await FirebaseFirestore.instance
+                .doc('wellness_users/$uid/groups/$groupId')
+                .set(updateData);
+          }
 
           Navigator.pop(context);
         } else {
@@ -92,7 +101,7 @@ class _GroupJoinPageState extends State<GroupJoinPage> {
       bottom: false,
       child: FormBuilder(
         key: _fbKey,
-        autovalidate: _autovalidate,
+        autovalidateMode: AutovalidateMode.always,
         child: SingleChildScrollView(
           dragStartBehavior: DragStartBehavior.down,
           padding: const EdgeInsets.symmetric(horizontal: 16.0),

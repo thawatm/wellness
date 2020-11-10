@@ -18,10 +18,12 @@ class GroupDetailPage extends StatefulWidget {
   const GroupDetailPage(
       {Key key,
       this.animationController,
+      this.isGroupOwner: false,
       this.isAdmin: false,
       @required this.groupId})
       : super(key: key);
   final AnimationController animationController;
+  final bool isGroupOwner;
   final bool isAdmin;
   final String groupId;
 
@@ -38,7 +40,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
   String owner;
   bool isOwner = false;
   String uid;
-  int memberCount = 0;
+
   @override
   void initState() {
     uid = ScopedModel.of<StateModel>(context).uid;
@@ -119,8 +121,21 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return LinearProgressIndicator();
-          memberCount = snapshot.data.docs.length;
+
+          //admins List
+          var adminLists = snapshot.data.docs
+              .where((i) => i.data()['admin'] == true)
+              .map((v) => FutureBuilder(
+                  future: _getProfileName(v.id),
+                  builder: (context, AsyncSnapshot<UserProfile> userSn) {
+                    if (!userSn.hasData) return SizedBox();
+                    return _buildAdminChip(userProfile: userSn.data);
+                  }))
+              .toList();
+
+          //members list
           var listViews = snapshot.data.docs
+              .where((i) => i.data()['member'] == true)
               .map((v) => FutureBuilder(
                   future: _getProfileName(v.id),
                   builder: (context, AsyncSnapshot<UserProfile> userSn) {
@@ -139,7 +154,6 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                                       ? _leaveGroup(
                                           widget.groupId, userSn.data.uid)
                                       : null),
-                              //),
                               child: Icon(Icons.delete)),
                       onTap: () {
                         if (widget.isAdmin || isOwner) {
@@ -157,6 +171,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                     );
                   }))
               .toList();
+
           return ListView(
             children: <Widget>[
               SizedBox(height: 16),
@@ -164,11 +179,11 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                 titleTxt: 'กลุ่ม: ' + widget.groupId,
                 isMenuOption: false,
               ),
-              _buildHeader(),
+              _buildHeader(adminLists),
               SizedBox(height: 20),
               TitleView(
                 titleTxt: listViews.isNotEmpty
-                    ? "สมาชิก ($memberCount)"
+                    ? "สมาชิก (${listViews.length})"
                     : 'ยังไม่มีสมาชิก',
                 isMenuOption: false,
               ),
@@ -178,7 +193,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
         });
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(List<Widget> adminLists) {
     return Padding(
         padding: const EdgeInsets.all(16.0),
         child: Container(
@@ -200,7 +215,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
               children: <Widget>[
                 ListTile(
                     onTap: () {
-                      if (widget.isAdmin)
+                      if (widget.isGroupOwner)
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -215,38 +230,32 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                 ListTile(
                   leading: Icon(FontAwesomeIcons.userNurse, color: Colors.teal),
                   title: Text('ผู้ดูแล'),
-                  // trailing: isOwner
-                  //     ? IconButton(
-                  //         icon: Icon(Icons.add),
-                  //         onPressed: () {
-                  //           Navigator.push(
-                  //               context,
-                  //               MaterialPageRoute(
-                  //                   builder: (_) => GroupAdminPage()));
-                  //         },
-                  //       )
-                  //     : null,
+                  trailing: isOwner
+                      ? IconButton(
+                          icon: Icon(Icons.add),
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => GroupAdminPage(
+                                        groupId: widget.groupId)));
+                          },
+                        )
+                      : null,
                   subtitle: FutureBuilder<UserProfile>(
                       future: _getProfileName(owner),
                       builder: (context, AsyncSnapshot<UserProfile> sn) {
                         if (!sn.hasData) return SizedBox();
-                        return Wrap(children: [
-                          InputChip(
-                            avatar: CircleAvatar(
-                              backgroundColor: Colors.purple,
-                              child: Icon(
-                                FontAwesomeIcons.crown,
-                                size: 10,
-                              ),
-                            ),
-                            label: Text(sn.data.fullname),
-                          ),
-                        ]);
+                        return Wrap(
+                            children: [
+                                  _buildOwnerChip(fullname: sn.data.fullname)
+                                ] +
+                                adminLists);
                       }),
                 ),
                 ListTile(
                     onTap: () {
-                      if (widget.isAdmin)
+                      if (widget.isGroupOwner)
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -260,6 +269,34 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                     subtitle: Text(groupDesc ?? '')),
               ],
             )));
+  }
+
+  Widget _buildAdminChip({UserProfile userProfile}) {
+    return InputChip(
+      avatar: CircleAvatar(
+        backgroundColor: Colors.blue,
+        child: Icon(FontAwesomeIcons.xbox, size: 10),
+      ),
+      label: Text(userProfile.fullname),
+      onPressed: () {
+        if (widget.isGroupOwner)
+          return Alert.confirm(context,
+                  title: "Delete",
+                  content: "ต้องการลบผู้ดูแลท่านนี้ออกจากกลุ่ม?")
+              .then((int ret) => ret == Alert.OK
+                  ? _deleteAdmin(widget.groupId, userProfile.uid)
+                  : null);
+      },
+    );
+  }
+
+  Widget _buildOwnerChip({String fullname}) {
+    return InputChip(
+        avatar: CircleAvatar(
+          backgroundColor: Colors.purple,
+          child: Icon(FontAwesomeIcons.crown, size: 10),
+        ),
+        label: Text(fullname));
   }
 
   Widget _buildMemberList(var listViews) {
@@ -311,12 +348,31 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
   }
 
   void _leaveGroup(String groupId, String uid) {
-    FirebaseFirestore.instance
-        .doc('wellness_groups/$groupId/members/$uid')
-        .delete();
-    FirebaseFirestore.instance
-        .doc('wellness_users/$uid/groups/$groupId')
-        .delete();
+    Map<String, dynamic> groupData = {'member': false};
+    try {
+      FirebaseFirestore.instance
+          .doc('wellness_groups/$groupId/members/$uid')
+          .get()
+          .then((onValue) async {
+        if (onValue.data()['admin'] == true) {
+          await FirebaseFirestore.instance
+              .doc('wellness_users/$uid/groups/$groupId')
+              .update(groupData);
+          await FirebaseFirestore.instance
+              .doc('wellness_groups/$groupId/members/$uid')
+              .update(groupData);
+        } else {
+          await FirebaseFirestore.instance
+              .doc('wellness_users/$uid/groups/$groupId')
+              .delete();
+          await FirebaseFirestore.instance
+              .doc('wellness_groups/$groupId/members/$uid')
+              .delete();
+        }
+      });
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<void> _deleteGroup(String groupId) async {
@@ -339,5 +395,33 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
     }).catchError((e) {
       print(e);
     });
+  }
+
+  void _deleteAdmin(String groupId, String uid) async {
+    Map<String, dynamic> groupData = {'admin': false};
+    try {
+      FirebaseFirestore.instance
+          .doc('wellness_groups/$groupId/members/$uid')
+          .get()
+          .then((onValue) async {
+        if (onValue['member'] == true) {
+          await FirebaseFirestore.instance
+              .doc('wellness_users/$uid/groups/$groupId')
+              .update(groupData);
+          await FirebaseFirestore.instance
+              .doc('wellness_groups/$groupId/members/$uid')
+              .update(groupData);
+        } else {
+          await FirebaseFirestore.instance
+              .doc('wellness_users/$uid/groups/$groupId')
+              .delete();
+          await FirebaseFirestore.instance
+              .doc('wellness_groups/$groupId/members/$uid')
+              .delete();
+        }
+      });
+    } catch (e) {
+      print(e);
+    }
   }
 }

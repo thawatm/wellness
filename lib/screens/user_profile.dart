@@ -208,20 +208,20 @@ class _UserProfilePageState extends State<UserProfilePage> {
         Divider(
           height: 2.0,
         ),
-        isLinkKiosk
-            ? ListTile(
-                leading: Icon(FontAwesomeIcons.idCard),
-                title: Text("เลขบัตรประชาชน",
-                    style: TextStyle(color: Colors.black54)),
-                trailing: Text("${data['citizenId'] ?? ''}",
-                    style: TextStyle(color: Colors.cyan[800], fontSize: 16)),
-                // onTap: () =>
-                //     inputOption('citizenId', 'เลขบัตรประชาชน', data['citizenId']),
-              )
-            : SizedBox(),
-        Divider(
-          height: 2.0,
-        ),
+        // isLinkKiosk
+        //     ? ListTile(
+        //         leading: Icon(FontAwesomeIcons.idCard),
+        //         title: Text("เลขบัตรประชาชน",
+        //             style: TextStyle(color: Colors.black54)),
+        //         trailing: Text("${data['citizenId'] ?? ''}",
+        //             style: TextStyle(color: Colors.cyan[800], fontSize: 16)),
+        //         // onTap: () =>
+        //         //     inputOption('citizenId', 'เลขบัตรประชาชน', data['citizenId']),
+        //       )
+        //     : SizedBox(),
+        // Divider(
+        //   height: 2.0,
+        // ),
         SizedBox(height: 30),
         !isLinkKiosk
             ? ListTile(
@@ -329,7 +329,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
               keyboardType: TextInputType.number,
               // maxLength: 13,
               inputFormatters: <TextInputFormatter>[
-                WhitelistingTextInputFormatter.digitsOnly,
+                FilteringTextInputFormatter.digitsOnly,
               ],
             ),
             SizedBox(height: 36),

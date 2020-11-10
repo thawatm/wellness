@@ -74,14 +74,14 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
       // crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         _isCodeSent ? _signInPhone : _verifyPhone,
-        // Container(
-        //   alignment: Alignment.center,
-        //   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        //   child: Text(
-        //     _message,
-        //     style: TextStyle(color: Colors.red),
-        //   ),
-        // )
+        Container(
+          alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          child: Text(
+            _message,
+            style: TextStyle(color: Colors.red),
+          ),
+        )
       ],
     );
   }
@@ -110,7 +110,7 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
           // autofocus: true,
           focusNode: _textPhoneFocusNode,
           inputFormatters: <TextInputFormatter>[
-            WhitelistingTextInputFormatter.digitsOnly,
+            FilteringTextInputFormatter.digitsOnly
           ],
           validator: (String value) {
             if (value.isEmpty) {
@@ -159,7 +159,7 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
           controller: _smsController,
           keyboardType: TextInputType.number,
           inputFormatters: <TextInputFormatter>[
-            WhitelistingTextInputFormatter.digitsOnly,
+            FilteringTextInputFormatter.digitsOnly
           ],
           focusNode: _textSMSFocusNode,
           maxLength: 6,
@@ -216,7 +216,7 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
       } catch (e) {
         setState(() {
           _isLoading = false;
-          _message = 'error: ${e.message}';
+          _message = '${e.code} : ${e.message}';
         });
       }
     };
@@ -225,10 +225,7 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
         (FirebaseAuthException authException) {
       setState(() {
         _isLoading = false;
-        // _message =
-        //     'Phone number verification failed. Code: ${authException.code}. Message: ${authException.message}';
-        _message =
-            'Phone number verification failed. Code: ${authException.code}.';
+        _message = '${authException.code} : ${authException.message}';
       });
     };
 
@@ -251,8 +248,8 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
     };
 
     await _auth.verifyPhoneNumber(
-        phoneNumber: '+66' + _phoneNumberController.text,
-        timeout: const Duration(seconds: 30),
+        phoneNumber: '+66' + _phoneNumberController.text.substring(1),
+        timeout: const Duration(seconds: 120),
         verificationCompleted: verificationCompleted,
         verificationFailed: verificationFailed,
         codeSent: codeSent,
@@ -299,6 +296,7 @@ class _PhoneSignInSectionState extends State<_PhoneSignInSection> {
 
   void isNewUser() {
     ScopedModel.of<StateModel>(context).isLoading = true;
-    Navigator.pushReplacementNamed(context, '/');
+    // Navigator.pushReplacementNamed(context, '/');
+    Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
   }
 }

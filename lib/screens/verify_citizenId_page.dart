@@ -206,7 +206,7 @@ class _VerifyCitizenIdPageState extends State<VerifyCitizenIdPage> {
               keyboardType: TextInputType.number,
               maxLength: 13,
               inputFormatters: <TextInputFormatter>[
-                WhitelistingTextInputFormatter.digitsOnly,
+                FilteringTextInputFormatter.digitsOnly
               ],
             ),
             SizedBox(height: 36),

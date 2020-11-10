@@ -42,7 +42,7 @@ class RuleBaseAI {
   }
 
   RuleBaseAI.bloodPressure(num bpupper, num bplower) {
-    if (bpupper < 130 && bplower < 80) {
+    if (bpupper <= 130 && bplower <= 85) {
       display.desc = 'ปกติ';
       display.color = AppTheme.kRecovercolor;
     } else {

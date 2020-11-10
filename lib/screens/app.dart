@@ -13,8 +13,10 @@ import 'package:wellness/screens/disclaimer.dart';
 import 'package:wellness/screens/fat.dart';
 import 'package:wellness/screens/intro_page.dart';
 import 'package:wellness/screens/kiosk_info_page.dart';
+import 'package:wellness/screens/knowledge_simple7.dart';
 import 'package:wellness/screens/medical_profile.dart';
 import 'package:wellness/screens/newuser.dart';
+import 'package:wellness/screens/serving_calulate.dart';
 import 'package:wellness/screens/user_profile.dart';
 import 'package:wellness/screens/verify_citizenId_page.dart';
 import 'package:wellness/screens/weight_bmi.dart';
@@ -31,14 +33,42 @@ import 'package:wellness/screens/sleep_monitor.dart';
 import 'package:wellness/screens/workout.dart';
 import 'package:wellness/group/group_add.dart';
 
-class WellnessApp extends StatelessWidget {
+class WellnessApp extends StatefulWidget {
+  @override
+  _WellnessAppState createState() => _WellnessAppState();
+}
+
+class _WellnessAppState extends State<WellnessApp> {
   final FirebaseAnalytics analytics = FirebaseAnalytics();
-  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+
+  Future<void> _initializeFlutterFireFuture;
+
+  // Define an async function to initialize FlutterFire
+  Future<void> _initializeFlutterFire() async {
+    // Wait for Firebase to initialize
+    await Firebase.initializeApp();
+
+    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
+
+    // Pass all uncaught errors to Crashlytics.
+    Function originalOnError = FlutterError.onError;
+    FlutterError.onError = (FlutterErrorDetails errorDetails) async {
+      await FirebaseCrashlytics.instance.recordFlutterError(errorDetails);
+      // Forward to original handler.
+      originalOnError(errorDetails);
+    };
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeFlutterFireFuture = _initializeFlutterFire();
+  }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: _initialization,
+        future: _initializeFlutterFireFuture,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return loading();
@@ -86,6 +116,8 @@ class WellnessApp extends StatelessWidget {
                   '/kioskinfo': (context) => KioskInfoPage(),
                   '/groupadd': (context) => GroupAddPage(),
                   '/groupjoin': (context) => GroupJoinPage(),
+                  '/servingcal': (context) => ServingCalculatePage(),
+                  '/knowledge_simple7': (context) => KnowledgeSimple7Page(),
                 },
               ),
             );
@@ -98,39 +130,45 @@ class WellnessApp extends StatelessWidget {
     return StreamBuilder<User>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (BuildContext context, snapshot) {
+        if (!snapshot.hasData) {
+          //Loading
+          if (ScopedModel.of<StateModel>(context).isLoading) return SizedBox();
+
+          //Unauthenticated
+          ScopedModel.of<StateModel>(context).isLoading = false;
+          return IntroPage();
+        }
+
+        //Authenticated
+        ScopedModel.of<StateModel>(context).addUser(snapshot.data);
+        FirebaseCrashlytics.instance.setUserIdentifier(snapshot.data.uid);
+        FirebaseCrashlytics.instance
+            .setCustomKey('UserName', snapshot.data.phoneNumber);
+
         return StreamBuilder<DocumentSnapshot>(
             stream: FirebaseFirestore.instance
                 .collection('wellness_users')
-                .doc(snapshot?.data?.uid)
+                .doc(snapshot.data.uid)
                 .snapshots(),
             builder: (BuildContext context, userSn) {
-              if (snapshot.hasData && userSn.hasData) {
-                //Authenticated
-                ScopedModel.of<StateModel>(context).addUser(snapshot.data);
+              if (!userSn.hasData) return SizedBox();
+              if (userSn.data.data() == null) return NewUserPage();
 
-                // new user
-                if (userSn.data.data() == null) return NewUserPage();
-
+              if (userSn.data.data().isNotEmpty) {
                 // logged in
                 ScopedModel.of<StateModel>(context).addUserProfile(userSn.data);
-                Crashlytics.instance.setUserIdentifier(snapshot.data.uid);
-                Crashlytics.instance.setUserName(snapshot.data.phoneNumber);
                 return HomePage();
-              } else {
-                //Loading
-                if (ScopedModel.of<StateModel>(context).isLoading)
-                  return SizedBox();
-
-                //Unauthenticated
-                ScopedModel.of<StateModel>(context).dispose();
-                return IntroPage();
               }
+              return SizedBox();
             });
       },
     );
   }
 
   Widget loading() {
-    return MaterialApp(home: LinearProgressIndicator());
+    return MaterialApp(
+        home: Scaffold(
+      body: LinearProgressIndicator(),
+    ));
   }
 }

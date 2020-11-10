@@ -138,6 +138,32 @@ class _BloodDataEntryState extends State<BloodDataEntry> {
                 _showPickerDouble(
                     context, 0, 19, 6, 'Uric Acid (mg/dL)', 'uricAcid');
               }),
+          ListTile(
+              leading: Text('ALT', style: TextStyle(color: Colors.grey[500])),
+              title: Text("ALT/SGPT"),
+              trailing: Text("${monitorData['alt_sgpt'] ?? ''} U/L",
+                  style: TextStyle(color: Colors.grey[500])),
+              onTap: () {
+                _showPickerDouble(
+                    context, 0, 200, 15, 'ALT/SGPT (U/L)', 'alt_sgpt');
+              }),
+          ListTile(
+              leading: Text('ALP', style: TextStyle(color: Colors.grey[500])),
+              title: Text("ALP"),
+              trailing: Text("${monitorData['alp'] ?? ''} U/L",
+                  style: TextStyle(color: Colors.grey[500])),
+              onTap: () {
+                _showPickerDouble(context, 0, 200, 60, 'ALP (U/L)', 'alp');
+              }),
+          ListTile(
+              leading: Text('AST', style: TextStyle(color: Colors.grey[500])),
+              title: Text("AST/SGPT"),
+              trailing: Text("${monitorData['ast_sgpt'] ?? ''} U/L",
+                  style: TextStyle(color: Colors.grey[500])),
+              onTap: () {
+                _showPickerDouble(
+                    context, 0, 200, 15, 'AST/SGPT (U/L)', 'ast_sgpt');
+              }),
           SizedBox(height: 24),
           Padding(
             padding: const EdgeInsets.all(16.0),

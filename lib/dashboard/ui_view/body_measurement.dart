@@ -110,7 +110,7 @@ class BodyMeasurementView extends StatelessWidget {
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                                builder: (_) => WebView(
+                                                builder: (_) => CustomWebView(
                                                     url:
                                                         'http://bsp-kiosk.ddns.net/?id=' +
                                                             kioskDocumentId)));

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:collection/collection.dart';
 import 'package:easy_alert/easy_alert.dart';
 import 'package:flutter/cupertino.dart';
@@ -19,7 +20,6 @@ import 'package:wellness/widgets/image_source.dart';
 import 'package:wellness/widgets/loading_indicator.dart';
 import 'package:wellness/widgets/social_date.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:rounded_modal/rounded_modal.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -518,15 +518,12 @@ class _FoodContentEditDialogState extends State<FoodContentEditDialog> {
     _textMenuController = TextEditingController(text: widget.food.menu);
   }
 
-  bool _autovalidate = false;
-
   void _handleSubmitted() async {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         final FormState form = _formKey.currentState;
         if (!form.validate()) {
-          _autovalidate = true; // Start validating on every change.
           showInSnackBar('No data');
         } else {
           form.save();
@@ -563,7 +560,7 @@ class _FoodContentEditDialogState extends State<FoodContentEditDialog> {
       body: SafeArea(
         child: Form(
           key: _formKey,
-          autovalidate: _autovalidate,
+          autovalidateMode: AutovalidateMode.always,
           child: ListView(
             // padding: EdgeInsets.only(top: 8),
             children: <Widget>[
@@ -641,6 +638,17 @@ class _FoodContentEditDialogState extends State<FoodContentEditDialog> {
                   padding: EdgeInsets.all(12),
                   color: AppTheme.buttonColor,
                   child: Text('Save',
+                      style: TextStyle(color: Colors.white, fontSize: 16)),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                child: RaisedButton(
+                  elevation: 1.0,
+                  onPressed: () => Navigator.pushNamed(context, '/servingcal'),
+                  padding: EdgeInsets.all(12),
+                  color: AppTheme.buttonColor.withOpacity(0.7),
+                  child: Text('ตัวอย่างการคำนวณ serving',
                       style: TextStyle(color: Colors.white, fontSize: 16)),
                 ),
               ),
@@ -757,8 +765,6 @@ class _FoodContentAddDialogState extends State<FoodContentAddDialog> {
     'serving': '1'
   };
 
-  bool _autovalidate = false;
-
   void _handleSubmitted() async {
     try {
       final result = await InternetAddress.lookup('google.com');
@@ -766,7 +772,6 @@ class _FoodContentAddDialogState extends State<FoodContentAddDialog> {
         print("Connected");
         final FormState form = _formKey.currentState;
         if (!form.validate()) {
-          _autovalidate = true; // Start validating on every change.
           Alert.toast(context, "ไม่มีข้อมูล");
         } else {
           form.save();
@@ -797,7 +802,7 @@ class _FoodContentAddDialogState extends State<FoodContentAddDialog> {
         body: SafeArea(
             child: Form(
           key: _formKey,
-          autovalidate: _autovalidate,
+          autovalidateMode: AutovalidateMode.always,
           child: ListView(
             padding: EdgeInsets.only(top: 8),
             children: <Widget>[
@@ -855,6 +860,17 @@ class _FoodContentAddDialogState extends State<FoodContentAddDialog> {
                   padding: EdgeInsets.all(12),
                   color: AppTheme.buttonColor,
                   child: Text('Add',
+                      style: TextStyle(color: Colors.white, fontSize: 16)),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                child: RaisedButton(
+                  elevation: 1.0,
+                  onPressed: () => Navigator.pushNamed(context, '/servingcal'),
+                  padding: EdgeInsets.all(12),
+                  color: AppTheme.buttonColor.withOpacity(0.7),
+                  child: Text('ตัวอย่างการคำนวณ serving',
                       style: TextStyle(color: Colors.white, fontSize: 16)),
                 ),
               ),

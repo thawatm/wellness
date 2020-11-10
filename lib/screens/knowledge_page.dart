@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -21,8 +20,6 @@ class _KnowledgePageState extends State<KnowledgePage> {
   final ScrollController scrollController = ScrollController();
   double topBarOpacity = 0.0;
 
-  final FirebaseStorage storage =
-      FirebaseStorage(storageBucket: 'gs://bsp-kiosk.appspot.com');
   String uid;
   ImageProvider profileImage;
   File tempImage;
@@ -126,6 +123,25 @@ class _KnowledgePageState extends State<KnowledgePage> {
                     children: <Widget>[
                       buildNotificationItem(
                           icon: FontAwesomeIcons.filePdf,
+                          title: 'Life’s Simple 7',
+                          subtitle: '',
+                          url: 'simple7',
+                          startColor: Color(0xFF738AE6),
+                          endColor: Color(0xFF5C5EDD)),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 24, right: 24, top: 8, bottom: 8),
+                        child: Container(
+                          height: 2,
+                          decoration: BoxDecoration(
+                            color: AppTheme.background,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(4.0)),
+                          ),
+                        ),
+                      ),
+                      buildNotificationItem(
+                          icon: FontAwesomeIcons.filePdf,
                           title: 'เล่ม 1',
                           subtitle: 'คู่มือการดำเนินศูนย์สุขภาพดีวัยทำงาน 1',
                           url: 'http://18.141.44.152/wellness/wellness1.pdf',
@@ -224,7 +240,9 @@ class _KnowledgePageState extends State<KnowledgePage> {
           ),
         ),
         onTap: () async {
-          if (await canLaunch(url)) {
+          if (url == 'simple7') {
+            Navigator.pushNamed(context, '/knowledge_simple7');
+          } else if (await canLaunch(url)) {
             await launch(url);
           } else {
             throw 'Could not launch $url';

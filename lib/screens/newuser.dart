@@ -24,7 +24,6 @@ class _NewUserPageState extends State<NewUserPage> {
 
   Map userData = Map<String, dynamic>();
   User currentUser;
-  bool _autovalidate = false;
   bool _isLoading = false;
 
   @override
@@ -94,7 +93,7 @@ class _NewUserPageState extends State<NewUserPage> {
       bottom: false,
       child: FormBuilder(
         key: _fbKey,
-        autovalidate: _autovalidate,
+        autovalidateMode: AutovalidateMode.always,
         child: SingleChildScrollView(
           dragStartBehavior: DragStartBehavior.down,
           padding: const EdgeInsets.symmetric(horizontal: 16.0),

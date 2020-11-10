@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -23,8 +22,6 @@ class _ProfilePageState extends State<ProfilePage> {
   final ScrollController scrollController = ScrollController();
   double topBarOpacity = 0.0;
 
-  final FirebaseStorage storage =
-      FirebaseStorage(storageBucket: 'gs://bsp-kiosk.appspot.com');
   String uid;
   ImageProvider profileImage;
   File tempImage;
@@ -274,7 +271,9 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _signOut() async {
-    await FirebaseAuth.instance.signOut();
-    Navigator.pushReplacementNamed(context, '/');
+    await FirebaseAuth.instance.signOut().then((value) {
+      ScopedModel.of<StateModel>(context).dispose();
+      Navigator.pushReplacementNamed(context, '/');
+    });
   }
 }

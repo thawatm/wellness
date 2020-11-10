@@ -34,6 +34,9 @@ class _BloodTestPageState extends State<BloodTestPage> {
   List<HealthMonitor> eGFRData;
   List<HealthMonitor> uricAcidData;
   List<HealthMonitor> hba1cData;
+  List<HealthMonitor> altData;
+  List<HealthMonitor> alpData;
+  List<HealthMonitor> astData;
   int chartDays = 99999;
   DateTime today;
 
@@ -189,6 +192,29 @@ class _BloodTestPageState extends State<BloodTestPage> {
                       ..removeWhere(
                           (v) => today.difference(v.date).inDays > chartDays)
                       ..removeWhere((v) => v.uricAcid == null);
+
+                // ALT/SGPT DATA
+                altData = healthData
+                    .map((data) => HealthMonitor.fromSnapshot(data))
+                    .toList()
+                      ..removeWhere(
+                          (v) => today.difference(v.date).inDays > chartDays)
+                      ..removeWhere((v) => v.alt == null);
+                // ALP DATA
+                alpData = healthData
+                    .map((data) => HealthMonitor.fromSnapshot(data))
+                    .toList()
+                      ..removeWhere(
+                          (v) => today.difference(v.date).inDays > chartDays)
+                      ..removeWhere((v) => v.alp == null);
+
+                // AST/SGPT DATA
+                astData = healthData
+                    .map((data) => HealthMonitor.fromSnapshot(data))
+                    .toList()
+                      ..removeWhere(
+                          (v) => today.difference(v.date).inDays > chartDays)
+                      ..removeWhere((v) => v.ast == null);
 
                 return TabBarView(
                   children: <Widget>[
@@ -363,6 +389,51 @@ class _BloodTestPageState extends State<BloodTestPage> {
                   ),
                 ],
               ),
+        SizedBox(height: 30),
+        altData.isEmpty
+            ? SizedBox(height: 0)
+            : Column(
+                children: <Widget>[
+                  ChartPercentTitle(
+                      title: 'ALT/SGPT',
+                      first: altData.first.alt,
+                      last: altData.last.alt),
+                  Container(
+                    height: 220,
+                    child: _buildALTChart(),
+                  ),
+                ],
+              ),
+        SizedBox(height: 30),
+        alpData.isEmpty
+            ? SizedBox(height: 0)
+            : Column(
+                children: <Widget>[
+                  ChartPercentTitle(
+                      title: 'ALP',
+                      first: alpData.first.alp,
+                      last: alpData.last.alp),
+                  Container(
+                    height: 220,
+                    child: _buildALPChart(),
+                  ),
+                ],
+              ),
+        SizedBox(height: 30),
+        astData.isEmpty
+            ? SizedBox(height: 0)
+            : Column(
+                children: <Widget>[
+                  ChartPercentTitle(
+                      title: 'AST/SGPT',
+                      first: astData.first.ast,
+                      last: astData.last.ast),
+                  Container(
+                    height: 220,
+                    child: _buildASTChart(),
+                  ),
+                ],
+              ),
       ],
     );
   }
@@ -517,5 +588,56 @@ class _BloodTestPageState extends State<BloodTestPage> {
 
     return SimpleTimeSeriesChart(_chartData(),
         animate: true, title: 'Uric Acid', unit: 'mg/dL');
+  }
+
+  Widget _buildALTChart() {
+    List<Series<HealthMonitor, DateTime>> _chartData() {
+      return [
+        new Series<HealthMonitor, DateTime>(
+          id: 'ALT/SGPT',
+          colorFn: (_, __) => MaterialPalette.blue.shadeDefault,
+          domainFn: (HealthMonitor health, _) => health.date,
+          measureFn: (HealthMonitor health, _) => health.alt,
+          data: altData,
+        )..setAttribute(rendererIdKey, 'customArea')
+      ];
+    }
+
+    return SimpleTimeSeriesChart(_chartData(),
+        animate: true, title: 'ALT/SGPT', unit: 'U/L');
+  }
+
+  Widget _buildALPChart() {
+    List<Series<HealthMonitor, DateTime>> _chartData() {
+      return [
+        new Series<HealthMonitor, DateTime>(
+          id: 'ALP',
+          colorFn: (_, __) => MaterialPalette.green.shadeDefault,
+          domainFn: (HealthMonitor health, _) => health.date,
+          measureFn: (HealthMonitor health, _) => health.alp,
+          data: alpData,
+        )..setAttribute(rendererIdKey, 'customArea')
+      ];
+    }
+
+    return SimpleTimeSeriesChart(_chartData(),
+        animate: true, title: 'ALP', unit: 'U/L');
+  }
+
+  Widget _buildASTChart() {
+    List<Series<HealthMonitor, DateTime>> _chartData() {
+      return [
+        new Series<HealthMonitor, DateTime>(
+          id: 'AST/SGPT',
+          colorFn: (_, __) => MaterialPalette.red.shadeDefault,
+          domainFn: (HealthMonitor health, _) => health.date,
+          measureFn: (HealthMonitor health, _) => health.ast,
+          data: astData,
+        )..setAttribute(rendererIdKey, 'customArea')
+      ];
+    }
+
+    return SimpleTimeSeriesChart(_chartData(),
+        animate: true, title: 'AST/SGPT', unit: 'U/L');
   }
 }

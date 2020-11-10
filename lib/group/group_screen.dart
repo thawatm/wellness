@@ -138,7 +138,7 @@ class _GroupScreenState extends State<GroupScreen> {
                     : ListView(
                         children: <Widget>[
                           SizedBox(height: 80),
-                          _buildOwnerList(ownerSn),
+                          _buildOwnerList(ownerSn, memberSn),
                           SizedBox(height: 20),
                           _buildMemberList(memberSn)
                         ],
@@ -147,41 +147,80 @@ class _GroupScreenState extends State<GroupScreen> {
         });
   }
 
-  Widget _buildOwnerList(AsyncSnapshot<QuerySnapshot> snapshot) {
-    if (snapshot.data == null) return SizedBox();
-    var ownerList = snapshot.data.docs
-        .map((e) => InkWell(
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => GroupDetailPage(
-                          animationController: widget.animationController,
-                          groupId: e.id,
-                          isAdmin: true,
-                        )),
-              ),
-              child: FutureBuilder(
-                  future: _getGroupName(e.id),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) return SizedBox();
-                    return ListTile(
-                      leading: Icon(
-                        FontAwesomeIcons.userNurse,
-                        color: Colors.teal,
-                      ),
-                      title: Text(snapshot.data),
-                      subtitle: Text('เลขกลุ่ม: ' + e.id),
-                      trailing: InkWell(
-                          onTap: () => Alert.confirm(context,
-                                  title: "Delete group",
-                                  content: "ต้องการลบกลุ่มนี้?")
-                              .then((int ret) =>
-                                  ret == Alert.OK ? _deleteGroup(e.id) : null),
-                          child: Icon(Icons.delete)),
-                    );
-                  }),
-            ))
-        .toList();
+  Widget _buildOwnerList(AsyncSnapshot<QuerySnapshot> ownerSn,
+      AsyncSnapshot<QuerySnapshot> adminSn) {
+    List<Widget> ownerList = [];
+    List<Widget> adminList = [];
+    if (ownerSn.data != null) {
+      ownerList = ownerSn.data.docs
+          .map((e) => InkWell(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => GroupDetailPage(
+                            animationController: widget.animationController,
+                            groupId: e.id,
+                            isGroupOwner: true,
+                            isAdmin: true,
+                          )),
+                ),
+                child: FutureBuilder(
+                    future: _getGroupName(e.id),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) return SizedBox();
+                      return ListTile(
+                        leading: Icon(
+                          FontAwesomeIcons.userNurse,
+                          color: Colors.teal,
+                        ),
+                        title: Text(snapshot.data),
+                        subtitle: Text('เลขกลุ่ม: ' + e.id),
+                        trailing: InkWell(
+                            onTap: () => Alert.confirm(context,
+                                    title: "Delete group",
+                                    content: "ต้องการลบกลุ่มนี้?")
+                                .then((int ret) => ret == Alert.OK
+                                    ? _deleteGroup(e.id)
+                                    : null),
+                            child: Icon(Icons.delete)),
+                      );
+                    }),
+              ))
+          .toList();
+    }
+
+    if (adminSn.data != null) {
+      adminList = adminSn.data.docs
+          .where((i) => i.data()['admin'] == true)
+          .map((e) => InkWell(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => GroupDetailPage(
+                            animationController: widget.animationController,
+                            groupId: e.id,
+                            isGroupOwner: false,
+                            isAdmin: true,
+                          )),
+                ),
+                child: FutureBuilder(
+                    future: _getGroupName(e.id),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) return SizedBox();
+                      return ListTile(
+                        leading: Icon(
+                          FontAwesomeIcons.userNurse,
+                          color: Colors.teal,
+                        ),
+                        title: Text(snapshot.data),
+                        subtitle: Text('เลขกลุ่ม: ' + e.id),
+                      );
+                    }),
+              ))
+          .toList();
+    }
+
+    ownerList = ownerList + adminList;
 
     return ownerList.isEmpty
         ? SizedBox()
@@ -215,6 +254,7 @@ class _GroupScreenState extends State<GroupScreen> {
   Widget _buildMemberList(AsyncSnapshot<QuerySnapshot> snapshot) {
     if (snapshot.data == null) return SizedBox();
     var memberList = snapshot.data.docs
+        .where((i) => i.data()['member'] == true)
         .map((e) => InkWell(
               onTap: () => Navigator.push(
                 context,

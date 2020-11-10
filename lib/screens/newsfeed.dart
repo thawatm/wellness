@@ -13,7 +13,7 @@ import 'package:wellness/widgets/appbar_ui.dart';
 Future<News> loadData() async {
   // add facebook graph link
   String url =
-      'https://graph.facebook.com/v6.0/me?fields=published_posts%7Bmessage%2Cpermalink_url%2Cfull_picture%2Ccreated_time%7D&access_token=EAAUgHKSUGGIBAKNQQxnNXgFrz0Lkep7fVeYlIgHS0omujhZC0OFYzS2VAwBdXxEZBGOpoZBtQ15ZATrgeLh9sRu6hVyODAw0i6FDupcerPmz3Lm986xwfwmmAbxhdZCkH0VudKMZAfRspS7oaZC5JINsQxIZAIuJEeSzLcYZAeWC03cCRRx4afAOrgiCT2xm1NXwZD';
+      'https://graph.facebook.com/v6.0/me?fields=posts%7Bmessage%2Cpermalink_url%2Cfull_picture%2Ccreated_time%7D&access_token=EAAUgHKSUGGIBAKNQQxnNXgFrz0Lkep7fVeYlIgHS0omujhZC0OFYzS2VAwBdXxEZBGOpoZBtQ15ZATrgeLh9sRu6hVyODAw0i6FDupcerPmz3Lm986xwfwmmAbxhdZCkH0VudKMZAfRspS7oaZC5JINsQxIZAIuJEeSzLcYZAeWC03cCRRx4afAOrgiCT2xm1NXwZD';
   File file = await DefaultCacheManager().getSingleFile(url);
   if (file != null) {
     Map jsonString = jsonDecode(file.readAsStringSync());

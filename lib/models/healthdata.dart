@@ -32,6 +32,9 @@ class HealthMonitor {
   num creatinine;
   num eGFR;
   num uricAcid;
+  num alt;
+  num alp;
+  num ast;
 
   final DocumentReference reference;
   final DocumentSnapshot snapshot;
@@ -68,7 +71,10 @@ class HealthMonitor {
         creatinine = snapshot.data()["creatinine"],
         eGFR = snapshot.data()["eGFR"],
         hba1c = snapshot.data()["hba1c"],
-        uricAcid = snapshot.data()["uricAcid"];
+        uricAcid = snapshot.data()["uricAcid"],
+        alt = snapshot.data()["alt_sgpt"],
+        alp = snapshot.data()["alp"],
+        ast = snapshot.data()["ast_sgpt"];
 
   String toStringData(String collection) {
     switch (collection) {

@@ -88,7 +88,7 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       setState(() {
-        addAllListData();
+        listViews.clear();
         getFitData();
       });
     }
@@ -205,8 +205,6 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
 
   void addAllListData() {
     const int count = 9;
-
-    if (listViews.isNotEmpty) listViews.clear();
 
     listViews.add(
       InkWell(
@@ -345,21 +343,34 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
     );
   }
 
+  Future<bool> getData() async {
+    return true;
+  }
+
   Widget getMainListViewUI() {
-    return ListView.builder(
-      controller: scrollController,
-      padding: EdgeInsets.only(
-        top: AppBar().preferredSize.height +
-            MediaQuery.of(context).padding.top +
-            24,
-        bottom: 62 + MediaQuery.of(context).padding.bottom,
-      ),
-      itemCount: listViews.length,
-      scrollDirection: Axis.vertical,
-      itemBuilder: (BuildContext context, int index) {
-        widget.animationController.forward();
-        return listViews[index];
-      },
-    );
+    return FutureBuilder<bool>(
+        future: getData(),
+        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+          if (!snapshot.hasData) {
+            return LinearProgressIndicator();
+          } else {
+            if (listViews.isEmpty) addAllListData();
+            return ListView.builder(
+              controller: scrollController,
+              padding: EdgeInsets.only(
+                top: AppBar().preferredSize.height +
+                    MediaQuery.of(context).padding.top +
+                    24,
+                bottom: 62 + MediaQuery.of(context).padding.bottom,
+              ),
+              itemCount: listViews.length,
+              scrollDirection: Axis.vertical,
+              itemBuilder: (BuildContext context, int index) {
+                widget.animationController.forward();
+                return listViews[index];
+              },
+            );
+          }
+        });
   }
 }

@@ -19,7 +19,6 @@ class _GroupAddPageState extends State<GroupAddPage> {
   final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
 
   String uid;
-  bool _autovalidate = false;
   bool _isLoading = false;
 
   @override
@@ -91,7 +90,7 @@ class _GroupAddPageState extends State<GroupAddPage> {
       bottom: false,
       child: FormBuilder(
         key: _fbKey,
-        autovalidate: _autovalidate,
+        autovalidateMode: AutovalidateMode.always,
         child: SingleChildScrollView(
           dragStartBehavior: DragStartBehavior.down,
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
