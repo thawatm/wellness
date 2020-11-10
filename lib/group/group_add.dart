@@ -94,72 +94,92 @@ class _GroupAddPageState extends State<GroupAddPage> {
         child: SingleChildScrollView(
           dragStartBehavior: DragStartBehavior.down,
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                const SizedBox(height: 30.0),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 8.0),
-                  child: FormBuilderTextField(
-                    maxLines: 1,
-                    attribute: 'name',
-                    decoration: InputDecoration(
-                      labelText: 'ชื่อกลุ่ม',
-                      contentPadding: EdgeInsets.only(top: 10.0, bottom: 4),
-                    ),
-                    style: TextStyle(fontSize: 18),
-                    // onChanged: _onChanged,
-                    validators: [
-                      FormBuilderValidators.required(errorText: 'ใส่ชื่อกลุ่ม'),
-                      FormBuilderValidators.max(50),
-                    ],
-                  ),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: <
+                  Widget>[
+            const SizedBox(height: 30.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8.0),
+              child: FormBuilderTextField(
+                maxLines: 1,
+                attribute: 'name',
+                decoration: InputDecoration(
+                  labelText: 'ชื่อกลุ่ม',
+                  contentPadding: EdgeInsets.only(top: 10.0, bottom: 4),
                 ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                  child: FormBuilderTextField(
-                    maxLines: 2,
-                    attribute: 'desc',
-                    decoration: InputDecoration(
-                      labelText: 'รายละเอียดกลุ่ม',
-                      contentPadding: EdgeInsets.only(top: 10.0, bottom: 4),
-                      // focusedBorder: OutlineInputBorder(
-                      //   borderSide: BorderSide(color: Colors.grey, width: 1.0),
-                      // ),
-                      // enabledBorder: OutlineInputBorder(
-                      //   borderSide: BorderSide(color: Colors.grey, width: 1.0),
-                      // ),
-                    ),
-                    style: TextStyle(fontSize: 18),
-                    // onChanged: _onChanged,
-                    validators: [
-                      FormBuilderValidators.required(
-                          errorText: 'ใส่รายละเอียดกลุ่ม'),
-                      FormBuilderValidators.max(200),
-                    ],
-                  ),
+                style: TextStyle(fontSize: 18),
+                // onChanged: _onChanged,
+                validators: [
+                  FormBuilderValidators.required(errorText: 'ใส่ชื่อกลุ่ม'),
+                  FormBuilderValidators.max(50),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8.0),
+              child: FormBuilderTextField(
+                maxLines: 1,
+                maxLength: 6,
+                keyboardType: TextInputType.number,
+                attribute: 'password',
+                decoration: InputDecoration(
+                  labelText: 'รหัสผ่าน (6 หลัก)',
+                  contentPadding: EdgeInsets.only(top: 10.0, bottom: 4),
                 ),
-                SizedBox(height: 40),
-                Center(
-                  child: Container(
-                    height: 50,
-                    width: 200,
-                    child: RaisedButton.icon(
-                      onPressed: () {
-                        FocusScope.of(context).unfocus();
-                        _handleSubmitted();
-                      },
-                      elevation: 7.0,
-                      color: AppTheme.buttonColor,
-                      icon: Icon(Icons.check, color: Colors.white),
-                      label: Text('ยืนยัน',
-                          style: TextStyle(color: Colors.white, fontSize: 18)),
-                    ),
-                  ),
+                style: TextStyle(fontSize: 18),
+                validators: [
+                  FormBuilderValidators.required(errorText: 'ใส่รหัสผ่าน'),
+                  FormBuilderValidators.numeric(errorText: 'ตัวเลขเท่านั้น'),
+                  FormBuilderValidators.maxLength(6,
+                      errorText: 'ตัวเลข 6 หลัก'),
+                  FormBuilderValidators.minLength(6,
+                      errorText: 'ตัวเลข 6 หลัก'),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+              child: FormBuilderTextField(
+                maxLines: 2,
+                attribute: 'desc',
+                decoration: InputDecoration(
+                  labelText: 'รายละเอียดกลุ่ม',
+                  contentPadding: EdgeInsets.only(top: 10.0, bottom: 4),
+                  // focusedBorder: OutlineInputBorder(
+                  //   borderSide: BorderSide(color: Colors.grey, width: 1.0),
+                  // ),
+                  // enabledBorder: OutlineInputBorder(
+                  //   borderSide: BorderSide(color: Colors.grey, width: 1.0),
+                  // ),
                 ),
-              ]),
+                style: TextStyle(fontSize: 18),
+                // onChanged: _onChanged,
+                validators: [
+                  FormBuilderValidators.required(
+                      errorText: 'ใส่รายละเอียดกลุ่ม'),
+                  FormBuilderValidators.max(200),
+                ],
+              ),
+            ),
+            SizedBox(height: 40),
+            Center(
+              child: Container(
+                height: 50,
+                width: 200,
+                child: RaisedButton.icon(
+                  onPressed: () {
+                    FocusScope.of(context).unfocus();
+                    _handleSubmitted();
+                  },
+                  elevation: 7.0,
+                  color: AppTheme.buttonColor,
+                  icon: Icon(Icons.check, color: Colors.white),
+                  label: Text('ยืนยัน',
+                      style: TextStyle(color: Colors.white, fontSize: 18)),
+                ),
+              ),
+            ),
+          ]),
         ),
       ),
     );

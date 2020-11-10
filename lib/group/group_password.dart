@@ -8,13 +8,14 @@ import 'package:wellness/models/state_model.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-class GroupJoinPage extends StatefulWidget {
-  const GroupJoinPage({Key key}) : super(key: key);
+class GroupPasswordEditPage extends StatefulWidget {
+  const GroupPasswordEditPage({Key key, this.groupId}) : super(key: key);
+  final String groupId;
   @override
-  _GroupJoinPageState createState() => _GroupJoinPageState();
+  _GroupPasswordEditPageState createState() => _GroupPasswordEditPageState();
 }
 
-class _GroupJoinPageState extends State<GroupJoinPage> {
+class _GroupPasswordEditPageState extends State<GroupPasswordEditPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
 
@@ -27,57 +28,31 @@ class _GroupJoinPageState extends State<GroupJoinPage> {
     super.initState();
   }
 
-  void _handleSubmitted() {
+  void _handleSubmitted() async {
     if (_fbKey.currentState.saveAndValidate()) {
-      var formData = _fbKey.currentState.value;
-      Map updateData = Map<String, dynamic>();
-
-      updateData['member'] = true;
-      String groupId = formData['groupId'];
-      String userPassword = formData['password'];
-
       setState(() {
         _isLoading = true;
       });
+
+      var groupData = _fbKey.currentState.value;
+
+      String groupId = widget.groupId;
       FirebaseFirestore.instance
           .doc('wellness_groups/$groupId')
-          .get()
-          .then((onValue) async {
-        if (onValue.exists) {
-          String groupPassword = onValue.data()['password'];
-          if (groupPassword == userPassword || groupPassword == null) {
-            try {
-              await FirebaseFirestore.instance
-                  .doc('wellness_groups/$groupId/members/$uid')
-                  .update(updateData);
+          .update(groupData);
 
-              await FirebaseFirestore.instance
-                  .doc('wellness_users/$uid/groups/$groupId')
-                  .update(updateData);
-            } catch (e) {
-              await FirebaseFirestore.instance
-                  .doc('wellness_groups/$groupId/members/$uid')
-                  .set(updateData);
-
-              await FirebaseFirestore.instance
-                  .doc('wellness_users/$uid/groups/$groupId')
-                  .set(updateData);
-            }
-
-            Navigator.pop(context);
-          } else {
-            showInSnackBar("รหัสผ่านไม่ถูกต้อง");
-          }
-        } else {
-          showInSnackBar("ไม่พบกลุ่มที่ต้องการ");
-        }
-      });
-
+      showInSnackBar("Successful");
+      ScopedModel.of<StateModel>(context).isLoading = true;
       setState(() {
         _isLoading = false;
       });
+
+      Navigator.pop(context);
+      Navigator.pop(context);
     } else {
-      showInSnackBar("validation failed");
+      // print(_fbKey.currentState.value);
+
+      print("validation failed");
     }
   }
 
@@ -93,7 +68,7 @@ class _GroupJoinPageState extends State<GroupJoinPage> {
       drawerDragStartBehavior: DragStartBehavior.down,
       key: _scaffoldKey,
       appBar: GradientAppBar(
-        title: Text('เข้ากลุ่ม'),
+        title: Text('แก้ไขกลุ่ม'),
         gradient: LinearGradient(
             colors: [AppTheme.appBarColor1, AppTheme.appBarColor2]),
       ),
@@ -120,41 +95,21 @@ class _GroupJoinPageState extends State<GroupJoinPage> {
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 8.0),
                   child: FormBuilderTextField(
                     maxLines: 1,
-                    maxLength: 4,
-                    attribute: 'groupId',
-                    decoration: InputDecoration(
-                      labelText: 'เลขกลุ่ม',
-                      contentPadding: EdgeInsets.only(top: 10.0, bottom: 4),
-                    ),
-                    style: TextStyle(fontSize: 18),
-                    keyboardType: TextInputType.number,
-                    // onChanged: _onChanged,
-                    validators: [
-                      FormBuilderValidators.required(errorText: 'ใส่เลขกลุ่ม'),
-                      FormBuilderValidators.numeric(),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 8.0),
-                  child: FormBuilderTextField(
-                    maxLines: 1,
                     maxLength: 6,
                     keyboardType: TextInputType.number,
                     attribute: 'password',
                     decoration: InputDecoration(
-                      labelText: 'รหัสผ่าน (6 หลัก)',
+                      labelText: 'รหัสผ่าน',
                       contentPadding: EdgeInsets.only(top: 10.0, bottom: 4),
                     ),
                     style: TextStyle(fontSize: 18),
+                    // onChanged: _onChanged,
                     validators: [
-                      // FormBuilderValidators.required(errorText: 'ใส่รหัสผ่าน'),
-                      // FormBuilderValidators.numeric(errorText: 'ตัวเลขเท่านั้น'),
+                      FormBuilderValidators.required(errorText: 'รหัสผ่าน'),
                       FormBuilderValidators.maxLength(6,
                           errorText: 'ตัวเลข 6 หลัก'),
-                      // FormBuilderValidators.minLength(6,
-                      //     errorText: 'ตัวเลข 6 หลัก'),
+                      FormBuilderValidators.minLength(6,
+                          errorText: 'ตัวเลข 6 หลัก'),
                     ],
                   ),
                 ),

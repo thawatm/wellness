@@ -10,6 +10,7 @@ import 'package:wellness/dashboard/ui_view/title_view.dart';
 import 'package:wellness/group/group_admin.dart';
 import 'package:wellness/group/group_detail_edit.dart';
 import 'package:wellness/group/group_edit.dart';
+import 'package:wellness/group/group_password.dart';
 import 'package:wellness/models/state_model.dart';
 import 'package:wellness/models/userdata.dart';
 import 'package:wellness/report/report_screen.dart';
@@ -37,6 +38,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
   Future<bool> initData; //changed
   String groupName;
   String groupDesc;
+  String password;
   String owner;
   bool isOwner = false;
   String uid;
@@ -56,6 +58,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
         .then((g) {
       groupName = g.data()['name'];
       groupDesc = g.data()['desc'];
+      password = g.data()['password'];
       owner = g.data()['owner'];
       if (uid == owner) isOwner = true;
       return true;
@@ -253,6 +256,21 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                                 adminLists);
                       }),
                 ),
+                widget.isAdmin
+                    ? ListTile(
+                        onTap: () {
+                          if (widget.isGroupOwner)
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => GroupPasswordEditPage(
+                                      groupId: widget.groupId)),
+                            );
+                        },
+                        leading: Icon(FontAwesomeIcons.key, color: Colors.teal),
+                        title: Text('รหัสผ่าน'),
+                        subtitle: Text(password ?? ''))
+                    : SizedBox(),
                 ListTile(
                     onTap: () {
                       if (widget.isGroupOwner)
