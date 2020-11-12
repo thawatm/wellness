@@ -48,7 +48,7 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
                     children: <Widget>[
                       Padding(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 8.0),
+                            horizontal: 24, vertical: 4.0),
                         child: FormBuilderTextField(
                           initialValue: snapshot.data.data()['diagnosis'] ?? '',
                           maxLines: 2,
@@ -59,7 +59,7 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 8.0),
+                            horizontal: 24, vertical: 4.0),
                         child: FormBuilderTextField(
                           initialValue:
                               snapshot.data.data()['currentMedication'] ?? '',
@@ -71,7 +71,7 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 8.0),
+                            horizontal: 24, vertical: 4.0),
                         child: FormBuilderTextField(
                           initialValue:
                               snapshot.data.data()['passMedication'] ?? '',
@@ -83,7 +83,7 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 8.0),
+                            horizontal: 24, vertical: 4.0),
                         child: FormBuilderTextField(
                           initialValue:
                               snapshot.data.data()['vaccination'] ?? '',
@@ -96,7 +96,7 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 8.0),
+                            horizontal: 24, vertical: 4.0),
                         child: FormBuilderTextField(
                           initialValue:
                               snapshot.data.data()['drugAllergy'] ?? '',
@@ -107,7 +107,7 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
                               InputDecoration(labelText: "ประวัติการแพ้"),
                         ),
                       ),
-                      const SizedBox(height: 60.0),
+                      const SizedBox(height: 30.0),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
                         child: FlatButton(
@@ -125,6 +125,17 @@ class _MedicalProfilePageState extends State<MedicalProfilePage> {
                                 Navigator.pop(context);
                               }
                             }),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
+                        child: FlatButton(
+                            padding: EdgeInsets.all(12),
+                            color: AppTheme.buttonColor,
+                            child: Text('ข้อมูลอื่น ๆ',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 16)),
+                            onPressed: () =>
+                                Navigator.pushNamed(context, '/medical_memo')),
                       )
                     ],
                   ),
