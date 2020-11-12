@@ -134,7 +134,9 @@ class _SleepDataEntryState extends State<SleepDataEntry> {
           endTime = endTime.add(Duration(days: 1));
         }
 
-        monitorData['sleepHours'] = endTime.difference(startTime).inHours;
+        monitorData['sleepHours'] = endTime
+            .difference(startTime.subtract(Duration(minutes: 1)))
+            .inHours;
         monitorData['startTime'] = DateFormat.Hm().format(startTime);
         monitorData['endTime'] = DateFormat.Hm().format(endTime);
 
