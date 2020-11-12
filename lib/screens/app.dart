@@ -13,7 +13,6 @@ import 'package:wellness/screens/disclaimer.dart';
 import 'package:wellness/screens/fat.dart';
 import 'package:wellness/screens/intro_page.dart';
 import 'package:wellness/screens/kiosk_info_page.dart';
-import 'package:wellness/screens/knowledge_simple7.dart';
 import 'package:wellness/screens/medical_memo.dart';
 import 'package:wellness/screens/medical_memo_add.dart';
 import 'package:wellness/screens/medical_profile.dart';
@@ -119,7 +118,6 @@ class _WellnessAppState extends State<WellnessApp> {
                   '/groupadd': (context) => GroupAddPage(),
                   '/groupjoin': (context) => GroupJoinPage(),
                   '/servingcal': (context) => ServingCalculatePage(),
-                  '/knowledge_simple7': (context) => KnowledgeSimple7Page(),
                   '/medical_memo': (context) => MedicalMemoPage(),
                   '/medical_memo_add': (context) => MedicalMemoAddPage(),
                 },

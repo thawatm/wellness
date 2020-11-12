@@ -422,7 +422,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
           .doc('wellness_groups/$groupId/members/$uid')
           .get()
           .then((onValue) async {
-        if (onValue['member'] == true) {
+        if (onValue.data()['member'] == true) {
           await FirebaseFirestore.instance
               .doc('wellness_users/$uid/groups/$groupId')
               .update(groupData);
