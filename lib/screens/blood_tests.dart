@@ -425,7 +425,7 @@ class _BloodTestPageState extends State<BloodTestPage> {
             : Column(
                 children: <Widget>[
                   ChartPercentTitle(
-                      title: 'AST/SGPT',
+                      title: 'AST/SGOT',
                       first: astData.first.ast,
                       last: astData.last.ast),
                   Container(
@@ -628,7 +628,7 @@ class _BloodTestPageState extends State<BloodTestPage> {
     List<Series<HealthMonitor, DateTime>> _chartData() {
       return [
         new Series<HealthMonitor, DateTime>(
-          id: 'AST/SGPT',
+          id: 'AST/SGOT',
           colorFn: (_, __) => MaterialPalette.red.shadeDefault,
           domainFn: (HealthMonitor health, _) => health.date,
           measureFn: (HealthMonitor health, _) => health.ast,
@@ -638,6 +638,6 @@ class _BloodTestPageState extends State<BloodTestPage> {
     }
 
     return SimpleTimeSeriesChart(_chartData(),
-        animate: true, title: 'AST/SGPT', unit: 'U/L');
+        animate: true, title: 'AST/SGOT', unit: 'U/L');
   }
 }

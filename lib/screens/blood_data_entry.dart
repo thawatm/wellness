@@ -157,12 +157,12 @@ class _BloodDataEntryState extends State<BloodDataEntry> {
               }),
           ListTile(
               leading: Text('AST', style: TextStyle(color: Colors.grey[500])),
-              title: Text("AST/SGPT"),
-              trailing: Text("${monitorData['ast_sgpt'] ?? ''} U/L",
+              title: Text("AST/SGOT"),
+              trailing: Text("${monitorData['ast_sgot'] ?? ''} U/L",
                   style: TextStyle(color: Colors.grey[500])),
               onTap: () {
                 _showPickerDouble(
-                    context, 0, 200, 15, 'AST/SGPT (U/L)', 'ast_sgpt');
+                    context, 0, 200, 15, 'AST/SGOT (U/L)', 'ast_sgot');
               }),
           SizedBox(height: 24),
           Padding(

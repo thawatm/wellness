@@ -74,7 +74,7 @@ class HealthMonitor {
         uricAcid = snapshot.data()["uricAcid"],
         alt = snapshot.data()["alt_sgpt"],
         alp = snapshot.data()["alp"],
-        ast = snapshot.data()["ast_sgpt"];
+        ast = snapshot.data()["ast_sgot"];
 
   String toStringData(String collection) {
     switch (collection) {
