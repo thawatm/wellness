@@ -124,8 +124,8 @@ class _KnowledgePageState extends State<KnowledgePage> {
                       buildNotificationItem(
                           icon: FontAwesomeIcons.filePdf,
                           title: 'Life’s Simple 7',
-                          subtitle: '',
-                          url: 'simple7',
+                          subtitle: 'ตัวชี้วัดสุขภาพ 7 ตัว',
+                          url: 'https://www.youtube.com/watch?v=J5wor5ZxhgQ',
                           startColor: Color(0xFF738AE6),
                           endColor: Color(0xFF5C5EDD)),
                       Padding(
