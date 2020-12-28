@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
 import 'package:intl/intl.dart';
@@ -16,6 +18,8 @@ import 'package:wellness/models/fitkitdata.dart';
 import 'package:wellness/models/state_model.dart';
 import 'package:wellness/models/userdata.dart';
 import 'package:wellness/widgets/appbar_ui.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:device_info/device_info.dart';
 
 class MyDiaryScreen extends StatefulWidget {
   const MyDiaryScreen({Key key, this.animationController}) : super(key: key);
@@ -163,7 +167,23 @@ class _MyDiaryScreenState extends State<MyDiaryScreen>
     }
   }
 
-  void getFitData() {
+  void getFitData() async {
+    if (Platform.isIOS) {
+      getFit();
+    } else if (Platform.isAndroid) {
+      var androidInfo = await DeviceInfoPlugin().androidInfo;
+      if (androidInfo.version.sdkInt > 28) {
+        // Android 10
+        if (await Permission.activityRecognition.request().isGranted) {
+          getFit();
+        }
+      } else {
+        getFit();
+      }
+    }
+  }
+
+  void getFit() {
     DateTime start = DateTime.now().subtract(Duration(days: 7));
     DateTime dateFrom = DateTime(start.year, start.month, start.day);
     FitKitData(dateFrom: dateFrom).read().then((fitData) {
